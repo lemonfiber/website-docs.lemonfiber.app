@@ -1,22 +1,26 @@
 #!/usr/bin/env node
 /** Serves the built site, sweeps it with axe, and stops the server. */
 import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 
-const URL_ = "http://127.0.0.1:4321/";
+const ROOT = fileURLToPath(new URL("..", import.meta.url));
+const BIN = `${ROOT}node_modules/.bin/`;
+const ORIGIN = "http://127.0.0.1:4321/";
 
-const run = (args: string[]): number =>
-  spawnSync("npx", args, { stdio: "inherit" }).status ?? 1;
+const run = (tool: string, args: string[]): number =>
+  spawnSync(`${BIN}${tool}`, args, { stdio: "inherit", shell: false }).status ??
+  1;
 
 const reachable = async (): Promise<boolean> => {
   try {
-    const response = await fetch(URL_);
+    const response = await fetch(ORIGIN);
     return response.ok;
   } catch {
     return false;
   }
 };
 
-run(["astro", "preview", "--port", "4321", "--host", "127.0.0.1"]);
+run("astro", ["preview", "--port", "4321", "--host", "127.0.0.1"]);
 
 let up = false;
 for (let attempt = 0; attempt < 60; attempt++) {
@@ -28,8 +32,8 @@ for (let attempt = 0; attempt < 60; attempt++) {
 }
 
 let status = 1;
-if (up) status = run(["playwright", "test"]);
+if (up) status = run("playwright", ["test"]);
 else console.error("a11y: the preview server never answered");
 
-run(["astro", "preview", "stop"]);
+run("astro", ["preview", "stop"]);
 process.exit(status);

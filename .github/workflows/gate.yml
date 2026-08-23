@@ -27,7 +27,7 @@ jobs:
         run: npm ci
 
       - name: Install the browser the accessibility sweep drives
-        run: npx playwright install --with-deps chromium
+        run: npm run browser
 
       - name: Run the gate
         run: npm run ci

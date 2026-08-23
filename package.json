@@ -27,7 +27,8 @@
     "test": "vitest run",
     "coverage": "vitest run --coverage",
     "ci": "npm run messages && npm run sync && npm run format:check && npm run lint && npm run types && npm run guard && npm run arch && npm run coverage && npm run build && npm run a11y",
-    "a11y": "node scripts/a11y.ts"
+    "a11y": "node scripts/a11y.ts",
+    "browser": "playwright install --with-deps chromium"
   },
   "dependencies": {
     "@lemonfiber/brand": "github:lemonfiber/brand#21b8d507bf5a394f24fedc08f10a954abc3e2549"
