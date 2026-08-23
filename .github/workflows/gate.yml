@@ -26,5 +26,8 @@ jobs:
       - name: Install exactly what the lockfile says
         run: npm ci
 
+      - name: Install the browser the accessibility sweep drives
+        run: npm run browser
+
       - name: Run the gate
         run: npm run ci

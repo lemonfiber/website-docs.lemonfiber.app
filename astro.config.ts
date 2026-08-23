@@ -23,6 +23,15 @@ export default defineConfig({
         "Documentation for lemonfiber: install it, run it, fix it, and build on it.",
       defaultLocale: "en",
       locales: { root: { label: "English", lang: "en" } },
+      head: [
+        {
+          tag: "script",
+          content:
+            "(function(){var d=document.documentElement;" +
+            "var sync=function(){d.dataset.lfTheme=d.dataset.theme==='dark'?'ink':'paper';};" +
+            "sync();new MutationObserver(sync).observe(d,{attributes:true,attributeFilter:['data-theme']});})();",
+        },
+      ],
       lastUpdated: true,
       pagination: true,
       customCss: ["./src/app.css"],

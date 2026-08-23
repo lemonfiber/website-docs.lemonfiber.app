@@ -99,7 +99,16 @@ check against.
 
 `src/app.css` imports the brand tokens and re-aliases them into product-local
 names. Components use those names; they never reference a `--lf-*` token or a
-hex value directly.
+hex value directly — and neither does `app.css`, which contains no colour of its
+own in either theme. Brand owns the values, so a change there reaches this site
+and a gap there stays visible rather than being masked by a local literal.
+
+Brand's dark theme is `[data-lf-theme="ink"]` and Starlight's is
+`[data-theme="dark"]`. `astro.config.ts` mirrors the second onto the first.
+
+The accessibility sweep is what keeps that honest: `npm run a11y` builds the
+site, serves it, and runs axe over every route in both themes at WCAG 2.1 AA.
+It is part of `npm run ci`.
 
 ## Licence
 
