@@ -1,8 +1,25 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-/** Every route the site serves today, in both themes. */
-const routes = ["/", "/start/what-lemonfiber-is/"];
+/**
+ * One route of every kind the site serves, in both themes: the landing page,
+ * an authored page, a section landing page, a mirrored page, a mirrored page
+ * from a repository other than the specification, and a long reference table.
+ */
+const routes = [
+  "/",
+  "/start/",
+  "/start/what-lemonfiber-is/",
+  "/fixing/",
+  "/fixing/every-error-by-code/",
+  "/commands/",
+  "/spec/",
+  "/spec/00-overview/vision/",
+  "/spec/10-functional/features/b-running/b1-forms/",
+  "/develop/architecture/error-model/",
+  "/develop/repos/sdk-ts/",
+  "/contributing/conduct/",
+];
 const themes = ["light", "dark"] as const;
 
 for (const route of routes)

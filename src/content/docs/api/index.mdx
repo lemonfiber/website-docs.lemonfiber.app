@@ -1,0 +1,63 @@
+---
+title: The API
+description: One envelope, six payload kinds, and two SDKs generated from a single contract artefact.
+sidebar:
+  order: 0
+---
+
+import { CardGrid, LinkCard } from "@astrojs/starlight/components";
+
+Everything lemonfiber can tell you, it can tell a machine. Every answer arrives
+in one wrapper — `api_version`, `kind`, `data` — and that wrapper is a stable,
+versioned interface rather than output that happens to be parsable.
+
+Today that reaches you through [`--json`](/commands/global-flags/) on the command
+line. The local HTTP API the same envelope is designed for is specified in
+[the web API contract](/spec/20-architecture/contracts/web-api/) and not yet
+built: the web surface has not been started. The two SDKs below are written
+against that contract and generate their types from the same artefact the
+command line serialises with, so what they parse is what the command line already
+emits.
+
+<CardGrid>
+  <LinkCard
+    title="The envelope"
+    href="/api/the-envelope/"
+    description="The three fields every payload arrives in, and the rules a client has to keep."
+  />
+  <LinkCard
+    title="Every payload kind"
+    href="/api/kinds/"
+    description="The six kinds the contract describes, field by field."
+  />
+  <LinkCard
+    title="The TypeScript SDK"
+    href="/api/typescript-sdk/"
+    description="Typed calls, a typed event stream and a typed error, with no runtime dependencies."
+  />
+  <LinkCard
+    title="The PHP SDK"
+    href="/api/php-sdk/"
+    description="A peer of the TypeScript client, built on Saloon, with one class per kind."
+  />
+  <LinkCard
+    title="Two version numbers"
+    href="/api/two-version-numbers/"
+    description="Why the package version and the wire version are different numbers doing different jobs."
+  />
+</CardGrid>
+
+The shapes are generated and the meanings are not. Fields, types, optionality and
+permitted enum values come from a contract artefact built out of the Rust types
+that actually serialise the reply, so no client transcribes them by hand.
+Everything a schema cannot express — the heartbeat, what a resumed stream may
+claim is current, where the token travels — is prose in the contract, and every
+client implements and tests it.
+
+## Where to go next
+
+If you are writing a script rather than a client, [the global flags](/commands/global-flags/)
+covers `--json` and [the commands](/commands/) covers what you can ask for. If
+you are building against the boundary itself,
+[the architecture notes](/develop/architecture/) explain how the core is put
+together behind it.

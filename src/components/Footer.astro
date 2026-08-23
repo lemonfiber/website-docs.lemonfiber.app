@@ -1,0 +1,36 @@
+---
+import Default from "@astrojs/starlight/components/Footer.astro";
+
+import { dayOf, shortSha } from "../lib/mirror";
+import type { Provenance } from "../lib/mirror-loader";
+import * as m from "../paraglide/messages.js";
+
+const { entry } = Astro.locals.starlightRoute;
+const mirror = (entry.data as { mirror?: Provenance }).mirror;
+
+const stamped =
+  mirror === undefined
+    ? null
+    : {
+        heading: m.mirror_heading(),
+        stamp: m.mirror_stamp({
+          repo: mirror.label,
+          revision: shortSha(mirror.revision),
+          date: dayOf(mirror.date),
+        }),
+        source: m.mirror_source(),
+        href: mirror.source,
+      };
+---
+
+<Default><slot /></Default>
+{
+  stamped && (
+    <p class="mirror-stamp">
+      <strong>{stamped.heading}</strong> {stamped.stamp}{" "}
+      <a href={stamped.href} rel="noreferrer">
+        {stamped.source}
+      </a>
+    </p>
+  )
+}

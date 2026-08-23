@@ -1,0 +1,147 @@
+---
+title: When something is wrong
+description: Triage what is happening with your stack, then go straight to the page that answers it.
+sidebar:
+  order: 0
+---
+
+import { CardGrid, LinkCard } from "@astrojs/starlight/components";
+
+Almost every serious failure in a media stack is silent. A VPN that failed open still reports itself as up. Imports that quietly dropped from linking to copying still succeed. An indexer returning nothing looks exactly like an indexer with nothing to return.
+
+So the first move is nearly always the same: run the checks, and read what they establish rather than what the services claim.
+
+```sh
+$ lemonfiber doctor
+```
+
+If that leaves you no wiser, work down the questions below.
+
+## Start here: what is happening?
+
+1. [Nothing starts at all](#nothing-starts-at-all)
+2. [Something started, and it is not working](#something-started-and-it-is-not-working)
+3. [Downloads are not arriving](#downloads-are-not-arriving)
+4. [I am not sure my VPN is hiding me](#i-am-not-sure-my-vpn-is-hiding-me)
+5. [Imports are slow, or the disk is filling twice as fast as it should](#imports-are-slow-or-the-disk-is-filling-twice-as-fast-as-it-should)
+6. [My terminal printed a code](#my-terminal-printed-a-code)
+7. [I need help from a person](#i-need-help-from-a-person)
+
+### Nothing starts at all
+
+Nothing containerised runs without a container engine, so that is the first thing to establish.
+
+```sh
+$ lemonfiber doctor --only environment
+```
+
+- Codes in the `ENV`, `DOCKER` and `PROC` families all mean the engine, not your stack. [Look them up](/fixing/every-error-by-code/#env--the-container-engine).
+- A `STACK` or `CONFIG` code means lemonfiber has not been set up here yet, or the stack description cannot be read. `lemonfiber setup` answers most of them — see [your first stack](/start/your-first-stack/).
+- A `FORM` code means the thing you named is not something this stack can start. `lemonfiber forms` lists what it has; [forms and slices](/running/forms-and-slices/) explains what they are.
+- Nothing printed at all? Confirm the install with [install lemonfiber](/start/install/).
+
+### Something started, and it is not working
+
+Start with the whole diagnosis, then narrow.
+
+```sh
+$ lemonfiber doctor
+$ lemonfiber ps
+$ lemonfiber logs <service>
+```
+
+- A `LIFE-1` means a service never became usable. Its own logs say why.
+- A `CRED` or `SEED` code means the services are running and not talking to each other properly. `lemonfiber doctor --fix` offers to put right what it can.
+- A `WIRING-1` means a download client is filing somewhere the rest of the stack no longer looks. [Adopt and reset](/advanced/adopt-and-reset/) covers which way you want that resolved.
+- If the services themselves are fine, read [the services](/running/the-services/) to work out which one owns the step that stopped.
+
+### Downloads are not arriving
+
+This is the recurring failure once a stack is running, and it is almost never configuration.
+
+```sh
+$ lemonfiber stuck
+$ lemonfiber trace "the thing you are waiting for"
+```
+
+[Stuck downloads](/fixing/stuck-downloads/) walks through each way a queue jams and what fixes it. [Where is my show?](/running/where-is-my-show/) covers reading a trace.
+
+### I am not sure my VPN is hiding me
+
+This is the one failure whose consequences reach outside your machine, and the one you cannot check by hand — a running tunnel container proves nothing about your download client's traffic.
+
+```sh
+$ lemonfiber doctor --only vpn
+```
+
+[Is my VPN hiding me?](/fixing/is-my-vpn-hiding-me/) explains what that check actually establishes, what it deliberately will not claim, and how to test the killswitch.
+
+### Imports are slow, or the disk is filling twice as fast as it should
+
+Both are the same fault: the data location has stopped hardlinking, so every import is copying.
+
+```sh
+$ lemonfiber doctor --only storage
+```
+
+[Hardlinks and one mount point](/fixing/hardlinks-and-one-mount-point/) explains the contract, which filesystems cannot keep it, and what to do when one used to and no longer does.
+
+### My terminal printed a code
+
+Every refusal lemonfiber prints carries a code like `VPN-1` or `STORAGE-5`. Search this site for the code itself, or go straight to [every error by code](/fixing/every-error-by-code/), where each one sits beside what it means and what to do.
+
+### I need help from a person
+
+Collect a bundle first. It gathers what someone helping you would ask for and replaces every value not known to be safe, so you can attach it to a public thread.
+
+```sh
+$ lemonfiber support
+$ lemonfiber support --write
+```
+
+[The support bundle](/fixing/the-support-bundle/) explains what goes in one and how to check it before you share it. [Where to ask](/contributing/where-to-ask/) says where to take it.
+
+## The pages in this section
+
+<CardGrid>
+  <LinkCard
+    title="Run the doctor"
+    href="/fixing/run-the-doctor/"
+    description="What the checks prove, how to read a verdict, and why 'unverified' is never a pass."
+  />
+  <LinkCard
+    title="Every error by code"
+    href="/fixing/every-error-by-code/"
+    description="Every code lemonfiber raises, what it means, and what to do about it."
+  />
+  <LinkCard
+    title="Is my VPN hiding me?"
+    href="/fixing/is-my-vpn-hiding-me/"
+    description="How egress is compared, what port forwarding needs, and how to test the killswitch."
+  />
+  <LinkCard
+    title="Stuck downloads"
+    href="/fixing/stuck-downloads/"
+    description="The ways a queue jams, how to tell them apart, and what fixes each."
+  />
+  <LinkCard
+    title="Hardlinks and one mount point"
+    href="/fixing/hardlinks-and-one-mount-point/"
+    description="The filesystem contract, what breaks it, and what it costs when it breaks."
+  />
+  <LinkCard
+    title="The support bundle"
+    href="/fixing/the-support-bundle/"
+    description="Ask for help without publishing your credentials."
+  />
+</CardGrid>
+
+## What the tool will not do
+
+Two habits run through all of this, and they are worth knowing before you read a report.
+
+**It will not report success for something it could not check.** A check that timed out, or could not reach what it needed, comes back `unverified` — not `pass`. A killswitch that has never been tested is not a working killswitch.
+
+**It will not guess at a remedy.** Where nothing is known, the answer is a support bundle rather than advice. That costs you a file to attach; confident wrong guidance would cost you an afternoon.
+
+Both come from [C1, diagnostics](/spec/10-functional/features/c-trust/c1-diagnostics/), which is the requirement the whole of this section is written against.

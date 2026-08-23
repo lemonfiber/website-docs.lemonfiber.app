@@ -1,0 +1,87 @@
+---
+title: Building on lemonfiber
+description: The repositories, the checks, the architecture and the design system — everything you need to work on lemonfiber rather than with it.
+sidebar: { order: 0 }
+---
+
+import { CardGrid, LinkCard } from "@astrojs/starlight/components";
+
+This section is for working **on** lemonfiber: where the code lives, what shape
+it has, and what a change has to satisfy before it merges.
+
+Most of what follows is not written here. Each repository documents itself, and
+this site renders those documents at the exact revision it pins, so a sentence
+is fixed where it was written rather than copied and left to drift. Two pages
+are the exception, because they are about the whole: the map of the
+repositories, and the gates every one of them enforces.
+
+## The ground floor
+
+<CardGrid>
+  <LinkCard
+    title="The repository map"
+    href="/develop/repo-map/"
+    description="Eleven repositories, what each is for, and the one property to remember about each."
+  />
+  <LinkCard
+    title="The gates"
+    href="/develop/the-gates/"
+    description="Every check a pull request meets, and what each one is defending."
+  />
+  <LinkCard
+    title="Architecture"
+    href="/develop/architecture/"
+    description="How the subsystems are built in Rust, from the workspace's own notes."
+  />
+  <LinkCard
+    title="The Rust workspace"
+    href="/develop/repos/lemonfiber/"
+    description="The binary: three surfaces over one core, and the crate that may render."
+  />
+</CardGrid>
+
+## The seams worth knowing
+
+<CardGrid>
+  <LinkCard
+    title="Ports and adapters"
+    href="/develop/architecture/ports-and-adapters/"
+    description="The boundary between logic and the outside world, and how to fake it in a test."
+  />
+  <LinkCard
+    title="Module layout"
+    href="/develop/architecture/module-layout/"
+    description="Where things live across the workspace, and which rules a test enforces."
+  />
+  <LinkCard
+    title="The error model"
+    href="/develop/architecture/error-model/"
+    description="Typed errors for control flow, one value type for the operator."
+  />
+  <LinkCard
+    title="The embedded stack"
+    href="/develop/architecture/embedded-stack/"
+    description="How the stack gets into the binary, and why an incompatible pairing cannot ship."
+  />
+</CardGrid>
+
+## Speaking to it from outside
+
+<CardGrid>
+  <LinkCard
+    title="The API"
+    href="/api/"
+    description="The JSON API the binary serves, and the two SDKs that speak it."
+  />
+  <LinkCard
+    title="Colour"
+    href="/develop/brand/colour/"
+    description="The palette and its rules, from the brand repository that owns them."
+  />
+</CardGrid>
+
+## Where to go next
+
+Read [cite the spec](/contributing/cite-the-spec/) before you open anything —
+it is the one rule that will otherwise cost you a round-trip. For what has been
+built and what is coming, see [the project section](/project/).

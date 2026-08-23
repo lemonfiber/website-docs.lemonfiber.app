@@ -17,11 +17,23 @@ page:
   The submodule is the pin: an exact upstream revision, recorded here, with no
   second copy of the bytes.
 
-## What it is not
+The specification is one of those mirrors. It is authored and checked in
+[`lemonfiber/spec`](https://github.com/lemonfiber/spec) and published here, at
+`/spec/`, inside this site's own sidebar and search. A mirrored page's edit link
+points at the repository that owns it, and its footer names the revision it was
+rendered from.
 
-It is not the specification. The requirements lemonfiber is built against live
-in [their own book](https://lemonfiber.github.io/spec/), which is the single
-home for that material. This site links there and never restates it.
+## The nine sections, and the specification
+
+`src/lib/sections.ts` is the sidebar. The nine authored sections address three
+audiences in order — someone using the tool, someone building on it, someone
+changing it — and the specification is rendered alongside them rather than
+linked away to a site of its own.
+
+Every section has a landing page, and every landing page ends by pointing at the
+sections next to it. Moving between "how do I do this", "why is it broken",
+"what does the API return" and "what does the specification require" is the
+thing a reader does most, so it is the thing the navigation is built for.
 
 ## Running it
 
@@ -89,7 +101,28 @@ what the tests exercise. They enforce:
 - **No owned page whose slug collides with a mirrored path.** One home per fact.
 
 The mirrors are declared in `mirrors.json`, which is what the last two rules
-check against.
+check against. A tree mirror's own root route is the one place an owned page may
+sit beside a mirror: it is the section landing page, and nothing upstream
+renders there.
+
+## How a mirrored page is built
+
+`src/lib/mirror.ts` holds the rules as pure functions; `src/lib/mirror-source.ts`
+is the three calls that touch git and the filesystem; `src/lib/mirror-loader.ts`
+wires them into the content collection. For each page it:
+
+- takes the title from frontmatter, else the first heading, else what
+  `mirrors.json` declares — and fails the build if a page names itself nowhere;
+- drops that first heading, because Starlight renders the title itself;
+- rewrites every relative link: to another page this site renders, it becomes
+  that page's route; to anything else it becomes the file's address upstream at
+  the pinned revision, so it resolves to the bytes that were rendered;
+- rewrites a link written as an upstream file address the same way, so one
+  repository's prose lands on this site rather than leaving it;
+- records the revision and its date, an edit link into the owning repository,
+  and the exact blob the page came from.
+
+Routes are lower case, and a `README` is the index of the directory holding it.
 
 ## What it consumes
 
@@ -108,7 +141,10 @@ Brand's dark theme is `[data-lf-theme="ink"]` and Starlight's is
 
 The accessibility sweep is what keeps that honest: `npm run a11y` builds the
 site, serves it, and runs axe over every route in both themes at WCAG 2.1 AA.
-It is part of `npm run ci`.
+It is part of `npm run ci`, and it covers one route of each kind the site
+serves: the landing page, an authored page, a section landing page, a mirrored
+page, a mirrored page from a repository other than the specification, and a long
+reference table.
 
 ## Licence
 

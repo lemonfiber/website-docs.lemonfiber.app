@@ -1,0 +1,81 @@
+---
+title: Contributing
+description: How a change gets into lemonfiber, starting with the one rule that shapes every other rule here.
+sidebar: { order: 0 }
+---
+
+import { CardGrid, LinkCard } from "@astrojs/starlight/components";
+
+Contributing here runs on a single rule: **every change cites something in the
+specification, and that something already exists**. It is the one genuinely
+unusual thing about this project, and reading it first will save you a
+round-trip.
+
+Everything else is ordinary. Sign your commits off, be decent to the people
+around you, and file your issue wherever you can find a box for it — routing is
+a maintainer's job, not yours.
+
+## You do not have to write code
+
+The most useful contributions often are not code. Trying it and reporting what
+broke, fixing a paragraph that misled you, saying that a screen is hard to read,
+answering someone else's question: all of it counts, and all of it follows the
+same one rule.
+
+## Start here
+
+<CardGrid>
+  <LinkCard
+    title="Cite the spec"
+    href="/contributing/cite-the-spec/"
+    description="The one rule, the three cases you are likely to be in, and what happens if you skip it."
+  />
+  <LinkCard
+    title="How change gets in"
+    href="/contributing/how-change-gets-in/"
+    description="The org's own contributor guide, mirrored from the repository that owns it."
+  />
+  <LinkCard
+    title="Sign-off and licensing"
+    href="/contributing/sign-off-and-licensing/"
+    description="Why every commit needs -s, and what licence your work ships under."
+  />
+  <LinkCard
+    title="Where does my issue go?"
+    href="/contributing/where-does-my-issue-go/"
+    description="One question decides the repository. If it does not, file anywhere."
+  />
+  <LinkCard
+    title="Proposing a change"
+    href="/contributing/rfcs/"
+    description="The RFC flow: an issue form, a maintainer decision, and no git required of you."
+  />
+  <LinkCard
+    title="Working with AI agents"
+    href="/contributing/ai-contributors/"
+    description="The five rules an agent and the person directing it are both held to."
+  />
+  <LinkCard
+    title="Where to ask"
+    href="/contributing/where-to-ask/"
+    description="Four destinations for a question, a problem, or an idea."
+  />
+  <LinkCard
+    title="Reporting a vulnerability"
+    href="/contributing/reporting-a-vulnerability/"
+    description="The private disclosure path, and what is in scope."
+  />
+  <LinkCard
+    title="Code of conduct"
+    href="/contributing/conduct/"
+    description="What is expected of everyone taking part, and how to report a problem."
+  />
+</CardGrid>
+
+## Where to go next
+
+If you are about to open a pull request, read
+[the gates](/develop/the-gates/) — the checks it will meet — and
+[the repository map](/develop/repo-map/) to find which of the eleven repos your
+change belongs in. For what is built, what is next and what the project stands
+on, see [the project section](/project/).

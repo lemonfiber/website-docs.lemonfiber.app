@@ -1,0 +1,36 @@
+[submodule "spec"]
+	path = vendor/spec
+	url = https://github.com/lemonfiber/spec.git
+	branch = main
+[submodule "lemonfiber"]
+	path = vendor/lemonfiber
+	url = https://github.com/lemonfiber/lemonfiber.git
+	branch = main
+[submodule "brand"]
+	path = vendor/brand
+	url = https://github.com/lemonfiber/brand.git
+	branch = main
+[submodule "org"]
+	path = vendor/org
+	url = https://github.com/lemonfiber/.github.git
+	branch = main
+[submodule "sdk-ts"]
+	path = vendor/sdk-ts
+	url = https://github.com/lemonfiber/sdk-ts.git
+	branch = main
+[submodule "sdk-php"]
+	path = vendor/sdk-php
+	url = https://github.com/lemonfiber/sdk-php.git
+	branch = main
+[submodule "lemonfiber-media-stack"]
+	path = vendor/lemonfiber-media-stack
+	url = https://github.com/lemonfiber/lemonfiber-media-stack.git
+	branch = main
+[submodule "lemonfiber-web"]
+	path = vendor/lemonfiber-web
+	url = https://github.com/lemonfiber/lemonfiber-web.git
+	branch = main
+[submodule "homebrew-tap"]
+	path = vendor/homebrew-tap
+	url = https://github.com/lemonfiber/homebrew-tap.git
+	branch = main

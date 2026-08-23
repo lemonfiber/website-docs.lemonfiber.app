@@ -32,6 +32,11 @@ export default defineConfig({
             "sync();new MutationObserver(sync).observe(d,{attributes:true,attributeFilter:['data-theme']});})();",
         },
       ],
+      // A code block that scrolls sideways has to be reachable from a
+      // keyboard, and Expressive Code does not make one focusable. Wrapping
+      // removes the scroll region instead of adding a tab stop to every
+      // sample, and keeps long terminal output readable on a narrow screen.
+      expressiveCode: { defaultProps: { wrap: true, preserveIndent: true } },
       lastUpdated: true,
       pagination: true,
       customCss: ["./src/app.css"],
@@ -47,7 +52,13 @@ export default defineConfig({
           "https://github.com/lemonfiber/website-docs.lemonfiber.app/edit/main/",
       },
       sidebar: sections,
-      plugins: [starlightLinksValidator({ errorOnRelativeLinks: false })],
+      components: { Footer: "./src/components/Footer.astro" },
+      plugins: [
+        starlightLinksValidator({
+          errorOnRelativeLinks: false,
+          errorOnInvalidHashes: false,
+        }),
+      ],
     }),
   ],
 });

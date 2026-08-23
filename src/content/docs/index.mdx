@@ -1,30 +1,92 @@
 ---
 title: lemonfiber documentation
-description: Install lemonfiber, run a media stack, fix it when it breaks, and build on it.
-template: splash
+description: Install lemonfiber, run a media stack, fix it when it breaks, build on its API, and read the specification it is written against.
 hero:
   tagline: Run a media stack you understand.
   actions:
     - text: Start here
-      link: /start/what-lemonfiber-is/
+      link: /start/
       icon: right-arrow
     - text: The specification
-      link: https://lemonfiber.github.io/spec/
-      icon: external
+      link: /spec/
+      icon: document
       variant: minimal
 ---
 
-import { CardGrid, LinkCard } from "@astrojs/starlight/components";
+import { Card, CardGrid, LinkCard } from "@astrojs/starlight/components";
+
+lemonfiber runs a media stack for you and keeps checking that what it built
+still matches what you asked for. This site covers all of it: using it, fixing
+it, building on it, and the specification the whole project is written against.
+
+## Using it
 
 <CardGrid>
   <LinkCard
     title="Start here"
-    href="/start/what-lemonfiber-is/"
+    href="/start/"
     description="What lemonfiber is, how to install it, and your first stack."
   />
   <LinkCard
-    title="The specification"
-    href="https://lemonfiber.github.io/spec/"
-    description="The requirements this project is built against. It lives in its own book."
+    title="Running your stack"
+    href="/running/"
+    description="Forms and slices, the nineteen services, quality, requests, backups."
+  />
+  <LinkCard
+    title="When something's wrong"
+    href="/fixing/"
+    description="Start with the doctor. Every error code, and what to do about it."
+  />
+  <LinkCard
+    title="Command reference"
+    href="/commands/"
+    description="Every subcommand and flag, generated from what the binary parses."
   />
 </CardGrid>
+
+## Building on it
+
+<CardGrid>
+  <LinkCard
+    title="The API and the SDKs"
+    href="/api/"
+    description="One envelope, six kinds, and a client generated from the contract."
+  />
+  <LinkCard
+    title="Advanced configuration"
+    href="/advanced/"
+    description="The stack manifest, adding a service, remote access, runtime engines."
+  />
+  <LinkCard
+    title="Contributing"
+    href="/contributing/"
+    description="How change gets in, and the one rule: cite the specification."
+  />
+  <LinkCard
+    title="Building lemonfiber"
+    href="/develop/"
+    description="The repositories, the architecture notes, the gates every change clears."
+  />
+</CardGrid>
+
+## The project, and what it is written against
+
+<CardGrid>
+  <LinkCard
+    title="The specification"
+    href="/spec/"
+    description="Every requirement this project is built against, rendered here and searchable with everything else."
+  />
+  <LinkCard
+    title="Project"
+    href="/project/"
+    description="The roadmap, what is built, the version train, the licence."
+  />
+</CardGrid>
+
+<Card title="One home per fact">
+  Most of this site is not written here. Each page belongs to the repository
+  that also holds the thing it describes, and reaches this site pinned to an
+  exact revision. Every mirrored page says at the bottom which revision it was
+  rendered from, and links to the file it came from.
+</Card>

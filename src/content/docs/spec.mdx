@@ -1,0 +1,108 @@
+---
+title: The specification
+description: The canonical specification for lemonfiber — what it must do, how it is built, and the rules every change is held to. Rendered here from the repository that owns it.
+---
+
+import { Aside, CardGrid, LinkCard } from "@astrojs/starlight/components";
+
+The specification is the canonical description of lemonfiber: what it must do,
+how the system is assembled, and the rules a change is held to. Code cites it.
+Pull requests cite it. Nothing lands anywhere in the project without naming an
+identifier that already exists in it.
+
+It is **written and checked** in the
+[`spec` repository](https://github.com/lemonfiber/spec), and **read here**. Every
+page below is that repository's own file at the revision this site pins, and each
+one says at its foot which revision that was.
+
+<Aside title="How to cite it">
+  Every requirement has a permanent identifier — `B1-R2`, `ARCH-R64`, `GOV-R12`.
+  A change cites one in a `Spec:` trailer, and CI refuses the change if the
+  identifier does not exist. The identifier never changes meaning and is never
+  reused. [How the specification works](/spec/00-overview/how-the-spec-works/)
+  is the five-minute version.
+</Aside>
+
+## Where to start
+
+<CardGrid>
+  <LinkCard
+    title="Vision"
+    href="/spec/00-overview/vision/"
+    description="The problem, and the principles every later decision is measured against."
+  />
+  <LinkCard
+    title="How the specification works"
+    href="/spec/00-overview/how-the-spec-works/"
+    description="Identifiers, statuses, the release train and the change lifecycle."
+  />
+  <LinkCard
+    title="Glossary"
+    href="/spec/00-overview/glossary/"
+    description="The words this project uses, and what each one means here."
+  />
+  <LinkCard
+    title="Feature board"
+    href="/spec/10-functional/features/"
+    description="Every feature, its area, its track and its status."
+  />
+</CardGrid>
+
+## The nine sections
+
+<CardGrid>
+  <LinkCard
+    title="Overview and decisions"
+    href="/spec/00-overview/vision/"
+    description="Vision, roadmap, glossary, and the fifteen architecture decision records."
+  />
+  <LinkCard
+    title="Functional"
+    href="/spec/10-functional/features/"
+    description="Sixty-eight features and nine end-to-end journeys."
+  />
+  <LinkCard
+    title="Architecture"
+    href="/spec/20-architecture/"
+    description="How the system is assembled, and the seven normative contracts between its parts."
+  />
+  <LinkCard
+    title="Repositories"
+    href="/spec/30-repos/"
+    description="One page per repository: what it is for, and the rules specific to it."
+  />
+  <LinkCard
+    title="Quality"
+    href="/spec/40-quality/"
+    description="The bar a change is held to — testing, coverage, comments, CI and security."
+  />
+  <LinkCard
+    title="Governance"
+    href="/spec/50-governance/"
+    description="How change enters: the canonical-spec rule, RFCs, sign-off, issue routing."
+  />
+  <LinkCard
+    title="Brand"
+    href="/spec/60-brand/"
+    description="The visual language as requirements, and the contrast contract."
+  />
+  <LinkCard
+    title="Operations"
+    href="/spec/70-operations/"
+    description="Releasing, the version train, maintainers and one-time setup."
+  />
+  <LinkCard
+    title="Appendix"
+    href="/spec/90-appendix/faq/"
+    description="The FAQ, the colophon, and why the licence is what it is."
+  />
+</CardGrid>
+
+## If you were looking for something else
+
+The specification says what must be true. It is not a guide to using the tool.
+
+- To install and run it, start at [Start here](/start/).
+- To fix something, start at [When something's wrong](/fixing/).
+- To change the project, start at [Contributing](/contributing/), which explains
+  how to cite the specification in the change you open.

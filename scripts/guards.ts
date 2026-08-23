@@ -9,7 +9,7 @@ import {
   format,
   mirrorViolations,
   routeOf,
-  type Mirror,
+  type Declared,
   type MirrorState,
   type SourceFile,
   type Violation,
@@ -60,7 +60,7 @@ for (const path of authored) {
 const manifest: unknown = JSON.parse(
   await readFile(join(ROOT, "mirrors.json"), "utf8"),
 );
-const declared = (manifest as { mirrors: Mirror[] }).mirrors;
+const declared = (manifest as { mirrors: Declared[] }).mirrors;
 
 const state: MirrorState[] = [];
 for (const link of links.filter((l) => l.startsWith(CONTENT + sep))) {

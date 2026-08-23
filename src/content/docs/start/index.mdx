@@ -1,0 +1,52 @@
+---
+title: Start here
+description: What lemonfiber is, what you need before you begin, and how to get your first stack running.
+sidebar: { order: 0 }
+---
+
+import { CardGrid, LinkCard } from "@astrojs/starlight/components";
+
+lemonfiber runs a media stack for you — the indexers, the download clients, the
+automation services and the library — and does the parts that are usually manual:
+guided setup, wiring the services to each other, and checking that what it built
+is actually doing what you asked.
+
+These four pages take you from nothing to a running stack. Read them in order the
+first time; afterwards, [Running your stack](/running/) is where you will spend
+your time.
+
+<CardGrid>
+  <LinkCard
+    title="What lemonfiber is"
+    href="/start/what-lemonfiber-is/"
+    description="The problem it solves, the three commitments it makes, and what it deliberately does not do."
+  />
+  <LinkCard
+    title="Install lemonfiber"
+    href="/start/install/"
+    description="What you need on the machine first, which platforms are built today, and how to get the binary."
+  />
+  <LinkCard
+    title="Your first stack"
+    href="/start/your-first-stack/"
+    description="Run setup, answer the questions, and watch one thing download end to end."
+  />
+  <LinkCard
+    title="Words we use"
+    href="/start/words-we-use/"
+    description="Indexer, hardlink, retention, grab, seed — the vocabulary this ecosystem assumes you already have."
+  />
+</CardGrid>
+
+## Where to go next
+
+Once your stack is up, [Running your stack](/running/) covers the day-to-day:
+which slice to start, what each service is for, quality, requests from the
+household, and where a particular show got to.
+
+When something is not working, go straight to
+[When something's wrong](/fixing/) — the doctor is the first thing to reach for,
+not the last.
+
+If you would rather read the requirements this is all built against, they live in
+[the specification](/spec/).

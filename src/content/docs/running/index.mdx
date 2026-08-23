@@ -1,0 +1,68 @@
+---
+title: Running your stack
+description: "The day-to-day: which slice to start, what each service does, quality, requests, and where a particular show got to."
+sidebar: { order: 0 }
+---
+
+import { CardGrid, LinkCard } from "@astrojs/starlight/components";
+
+Once your stack is up, most of what you do falls into a handful of shapes:
+starting the part you need, checking on something that was asked for, adjusting
+quality, and keeping a backup you could actually restore from.
+
+These pages cover each of those. None of them assume you have read the others.
+
+<CardGrid>
+  <LinkCard
+    title="Forms and slices"
+    href="/running/forms-and-slices/"
+    description="Run only the part of the stack you need right now, and compose slices together."
+  />
+  <LinkCard
+    title="The services"
+    href="/running/the-services/"
+    description="All nineteen services, what each one does, and which form starts it."
+  />
+  <LinkCard
+    title="Starting and stopping"
+    href="/running/starting-and-stopping/"
+    description="Up, down, switch, restart, and what each one will affect before it acts."
+  />
+  <LinkCard
+    title="Quality presets"
+    href="/running/quality-presets/"
+    description="Choose how good your media should look, and see what it costs in disk."
+  />
+  <LinkCard
+    title="Requests and the household"
+    href="/running/requests-and-the-household/"
+    description="How everyone else asks for things, and how you see where each request stands."
+  />
+  <LinkCard
+    title="Where is my show?"
+    href="/running/where-is-my-show/"
+    description="Follow one item across every service that touched it, and find out where it stopped."
+  />
+  <LinkCard
+    title="Backup and restore"
+    href="/running/backup-and-restore/"
+    description="Make your configuration recoverable, so it stops being precious."
+  />
+  <LinkCard
+    title="Updating"
+    href="/running/updating/"
+    description="Move the stack forward deliberately, and understand the one step you cannot undo."
+  />
+</CardGrid>
+
+## Where to go next
+
+If you have not set anything up yet, [Start here](/start/) comes first —
+particularly [Your first stack](/start/your-first-stack/).
+
+When something is wrong, [When something's wrong](/fixing/) is the section to
+open. [Run the doctor](/fixing/run-the-doctor/) is almost always the right first
+move, because it checks the claims rather than repeating them.
+
+For the exact flags on any command, see [Commands](/commands/), and for the
+terminal dashboard, [The TUI](/commands/the-tui/).
