@@ -45,6 +45,15 @@ export default tseslint.config(
     rules: { "@typescript-eslint/no-unsafe-assignment": "off" },
   },
 
+  // The Astro parser reports the type of every expression in a template as an
+  // error type, so a list rendered from a `.map` is an unsafe return to this
+  // rule and to nothing else. `astro check` type-checks these files, at zero
+  // hints, and it reads the templates with the compiler that renders them.
+  {
+    files: ["**/*.astro"],
+    rules: { "@typescript-eslint/no-unsafe-return": "off" },
+  },
+
   // The guards and sync scripts are the files the whole quality story rests on.
   // They are linted, with Node globals and a console they are allowed to use.
   {

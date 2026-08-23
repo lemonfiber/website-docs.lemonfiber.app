@@ -1,7 +1,7 @@
 ---
 title: The licence
 description: Hippocratic 3.0 for the code, CC BY-SA 4.0 for the prose, proprietary marks — and an honest account of what that choice costs.
-sidebar: { order: 2 }
+sidebar: { order: 4 }
 ---
 
 lemonfiber is not licensed the way most software you install is. Read this

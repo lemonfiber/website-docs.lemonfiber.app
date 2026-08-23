@@ -19,6 +19,9 @@ const GIT = "/usr/bin/git";
 export function gitLog(directory: string): string {
   return execFileSync(GIT, ["-C", directory, "log", "-1", "--format=%H%n%cI"], {
     encoding: "utf8",
+    // Captured rather than inherited: what git says about a directory it
+    // cannot read belongs to whoever called this, not to the console.
+    stdio: ["ignore", "pipe", "pipe"],
   });
 }
 

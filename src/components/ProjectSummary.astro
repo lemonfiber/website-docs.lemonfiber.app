@@ -1,0 +1,47 @@
+---
+import { theProject } from "../lib/project";
+import * as m from "../paraglide/messages.js";
+
+const project = theProject();
+
+const figures = [
+  m.project_milestones({
+    done: project.doneMilestones,
+    total: project.totalMilestones,
+  }),
+  m.project_deliverables({
+    done: project.overall.done,
+    total: project.overall.total,
+  }),
+  m.project_scale({
+    features: project.counts.features,
+    requirements: project.counts.requirements,
+    areas: project.counts.areas,
+  }),
+];
+---
+
+<ul class="summary">
+  {figures.map((figure) => <li class="summary__cell">{figure}</li>)}
+</ul>
+
+<style>
+  .summary {
+    list-style: none;
+    padding: 0;
+    margin: var(--sp-5) 0;
+    display: grid;
+    gap: var(--sp-3);
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  }
+  .summary__cell {
+    margin: 0;
+    padding: var(--sp-4);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    background: var(--pith);
+    font-family: var(--mono);
+    font-size: var(--lf-size-caption);
+    color: var(--text);
+  }
+</style>

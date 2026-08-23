@@ -1,0 +1,136 @@
+---
+import StatusPill from "./StatusPill.astro";
+import { theProject } from "../lib/project";
+import * as m from "../paraglide/messages.js";
+
+const milestones = theProject().milestones.map((milestone) => ({
+  id: milestone.id,
+  title: milestone.title,
+  blurb: milestone.blurb,
+  status: milestone.status,
+  recorded:
+    milestone.total === 0
+      ? m.project_elsewhere()
+      : m.project_deliverables({
+          done: milestone.done,
+          total: milestone.total,
+        }),
+  heading: milestone.total === 0 ? null : m.project_deliverable_list(),
+  // A grouping heading is a section title rather than a work item, so it
+  // carries no mark; a row that cites no requirement shows no identifier.
+  deliverables: milestone.deliverables.map((deliverable) => ({
+    title: deliverable.title,
+    status: deliverable.status,
+    spec: deliverable.spec ?? null,
+    group: deliverable.group === true,
+    marked: deliverable.group !== true,
+  })),
+}));
+---
+
+<ol class="ms">
+  {
+    milestones.map((milestone) => (
+      <li class="ms__item" id={milestone.id}>
+        <div class="ms__head">
+          <code class="ms__id">{milestone.id}</code>
+          <h3 class="ms__title">{milestone.title}</h3>
+          <StatusPill status={milestone.status} />
+        </div>
+        <p class="ms__blurb">{milestone.blurb}</p>
+        <p class="ms__count">{milestone.recorded}</p>
+        {milestone.heading && <p class="ms__deliverh">{milestone.heading}</p>}
+        <ul class="dels">
+          {milestone.deliverables.map((deliverable) => (
+            <li class:list={["del", { "del--group": deliverable.group }]}>
+              <span class="del__title">{deliverable.title}</span>
+              {deliverable.marked && <StatusPill status={deliverable.status} />}
+              {deliverable.spec && (
+                <code class="del__spec">{deliverable.spec}</code>
+              )}
+            </li>
+          ))}
+        </ul>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .ms {
+    list-style: none;
+    padding: 0;
+    margin: var(--sp-5) 0 0;
+    display: grid;
+    gap: var(--sp-5);
+  }
+  .ms__item {
+    padding: var(--sp-4);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    background: var(--pith);
+    scroll-margin-top: 6rem;
+  }
+  .ms__head {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: var(--sp-3);
+  }
+  .ms__id {
+    font-family: var(--mono);
+    font-weight: 700;
+    color: var(--fiber-deep);
+  }
+  .ms__title {
+    margin: 0;
+    font-family: var(--brandface);
+    font-size: var(--lf-size-display-m);
+    letter-spacing: var(--lf-tracking-display);
+    flex: 1 1 14rem;
+  }
+  .ms__blurb {
+    margin: var(--sp-3) 0 0;
+    color: var(--muted);
+  }
+  .ms__count {
+    margin: var(--sp-2) 0 0;
+    font-family: var(--mono);
+    font-size: var(--lf-size-caption);
+    color: var(--muted);
+  }
+  .ms__deliverh {
+    margin: var(--sp-4) 0 0;
+    font-size: var(--lf-size-eyebrow);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--faint);
+    font-weight: 700;
+  }
+  .dels {
+    list-style: none;
+    padding: 0;
+    margin: var(--sp-2) 0 0;
+    display: grid;
+  }
+  .del {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: var(--sp-2) var(--sp-3);
+    padding: var(--sp-2) 0;
+    border-top: 1px solid var(--line-soft);
+  }
+  .del__title {
+    flex: 1 1 18rem;
+  }
+  .del--group .del__title {
+    font-weight: 700;
+    font-family: var(--brandface);
+  }
+  .del__spec {
+    font-family: var(--mono);
+    font-size: var(--lf-size-eyebrow);
+    color: var(--muted);
+  }
+</style>

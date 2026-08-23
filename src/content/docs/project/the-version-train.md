@@ -1,7 +1,7 @@
 ---
 title: The version train
 description: How a lemonfiber release comes together — goals locked before the work, and a gate that refuses to ship until every one of them is proven.
-sidebar: { order: 1 }
+sidebar: { order: 3 }
 ---
 
 Releases here run as a train: one version in flight at a time, its goals fixed
