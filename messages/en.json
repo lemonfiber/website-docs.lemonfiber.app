@@ -1,0 +1,17 @@
+{
+  "$schema": "https://inlang.com/schema/inlang-message-format",
+  "site_title": "lemonfiber docs",
+  "site_tagline": "Run a media stack you understand.",
+  "nav_start": "Start here",
+  "nav_running": "Running your stack",
+  "nav_fixing": "When something's wrong",
+  "nav_commands": "Command reference",
+  "nav_api": "The API and the SDKs",
+  "nav_advanced": "Advanced configuration",
+  "nav_contributing": "Contributing",
+  "nav_building": "Building lemonfiber",
+  "nav_project": "Project",
+  "mirror_stamp": "Content as of {revision}, {date}",
+  "mirror_source": "Source repository",
+  "spec_home": "The specification"
+}

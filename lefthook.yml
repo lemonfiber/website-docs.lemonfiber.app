@@ -1,0 +1,14 @@
+# Hooks mirror CI and enforce nothing CI does not.
+pre-commit:
+  parallel: true
+  commands:
+    format:
+      glob: "*.{ts,mjs,astro,css,json,md,mdx,yml,yaml}"
+      run: npx prettier --check {staged_files}
+    guard:
+      run: node scripts/guards.mjs
+
+pre-push:
+  commands:
+    gate:
+      run: npm run ci

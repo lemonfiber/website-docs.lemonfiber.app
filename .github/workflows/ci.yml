@@ -1,0 +1,25 @@
+# The gates every repo in the org shares, kept in one place so improving one
+# improves all of them. Pinned by commit, bumped deliberately.
+name: ci
+
+on: [pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  spec-check:
+    uses: lemonfiber/spec/.github/workflows/spec-check.yml@2eada7417e11209ebfa323e7d422b02d727da85e # main
+  hygiene:
+    uses: lemonfiber/spec/.github/workflows/hygiene.yml@2eada7417e11209ebfa323e7d422b02d727da85e # main
+  security:
+    uses: lemonfiber/spec/.github/workflows/security.yml@2eada7417e11209ebfa323e7d422b02d727da85e # main
+  dco:
+    uses: lemonfiber/spec/.github/workflows/dco.yml@2eada7417e11209ebfa323e7d422b02d727da85e # main
+  commitlint:
+    uses: lemonfiber/spec/.github/workflows/commitlint.yml@2eada7417e11209ebfa323e7d422b02d727da85e # main
+  labeler:
+    permissions:
+      contents: read
+      pull-requests: write
+    uses: lemonfiber/spec/.github/workflows/labeler.yml@2eada7417e11209ebfa323e7d422b02d727da85e # main

@@ -1,0 +1,30 @@
+---
+title: lemonfiber documentation
+description: Install lemonfiber, run a media stack, fix it when it breaks, and build on it.
+template: splash
+hero:
+  tagline: Run a media stack you understand.
+  actions:
+    - text: Start here
+      link: /start/what-lemonfiber-is/
+      icon: right-arrow
+    - text: The specification
+      link: https://lemonfiber.github.io/spec/
+      icon: external
+      variant: minimal
+---
+
+import { CardGrid, LinkCard } from "@astrojs/starlight/components";
+
+<CardGrid>
+  <LinkCard
+    title="Start here"
+    href="/start/what-lemonfiber-is/"
+    description="What lemonfiber is, how to install it, and your first stack."
+  />
+  <LinkCard
+    title="The specification"
+    href="https://lemonfiber.github.io/spec/"
+    description="The requirements this project is built against. It lives in its own book."
+  />
+</CardGrid>
