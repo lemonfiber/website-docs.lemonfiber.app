@@ -145,6 +145,7 @@ const release = (
     headline: "",
     delivers: "",
     goals: [],
+    releasedOn: "",
     pins: {},
     features: [],
   },

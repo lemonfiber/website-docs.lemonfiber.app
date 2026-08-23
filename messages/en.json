@@ -50,6 +50,7 @@
   "project_deliverable_list": "What is recorded for it",
   "project_elsewhere": "Recorded in another repository",
   "project_epoch_untracked": "No milestone of this epoch is tracked yet",
+  "releases_on": "Released {date}",
   "releases_proved": "{done} of {total} locked requirements proved",
   "releases_embedded": "Embedded {repo} at {revision}",
   "releases_none": "No release is recorded yet",
