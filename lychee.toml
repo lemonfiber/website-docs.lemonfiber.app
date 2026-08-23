@@ -1,7 +1,8 @@
-# Root-relative links resolve against the checkout, which is where the site's
-# routes are rooted. starlight-links-validator fails the build on any internal
-# link that does not resolve; this is the second pass, over what leaves the site.
-root_dir = "/home/runner/work/website-docs.lemonfiber.app/website-docs.lemonfiber.app"
+# A site route is not a source path: `/start/what-lemonfiber-is/` is a page the
+# build produces, not a file in the checkout. starlight-links-validator resolves
+# those against the real route table and fails the build on any that do not.
+# lychee checks what leaves the site.
+exclude = ["^file:"]
 exclude_loopback = true
 max_retries = 2
 accept = ["200", "206", "429"]
