@@ -236,6 +236,21 @@ describe("rewriteLinks", () => {
   const at = (body: string, from = "00-overview/roadmap.md"): string =>
     rewriteLinks(body, tree, revision, from, routes);
 
+  it("sends a link out of a mirrored file from beside it, not through it", () => {
+    // `one` mirrors a single README, so its `path` is the file itself. Resolving
+    // a sibling against it produced `README.md/AGENTS.md`, which 404s upstream.
+    const written = rewriteLinks(
+      "[a](AGENTS.md)",
+      one,
+      revision,
+      "",
+      new Map(),
+    );
+
+    expect(written).toContain("/AGENTS.md)");
+    expect(written).not.toContain("README.md/");
+  });
+
   it("routes a page's own README link through the directory it indexes", () => {
     const dirs = new Map([["30-repos/README.md", "spec/30-repos"]]);
     expect(rewriteLinks("[a](30-repos/)", tree, revision, "x.md", dirs)).toBe(
