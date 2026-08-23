@@ -11,5 +11,5 @@
     "resolveJsonModule": true
   },
   "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist", "node_modules", "src/paraglide"]
+  "exclude": ["dist", "node_modules", "src/paraglide", "vendor"]
 }

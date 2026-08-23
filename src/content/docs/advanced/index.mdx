@@ -1,0 +1,60 @@
+---
+title: Advanced
+description: The manifest, your own services, your own edits, and the paths that lead away from lemonfiber entirely.
+sidebar:
+  order: 0
+---
+
+import { CardGrid, LinkCard } from "@astrojs/starlight/components";
+
+This section is for changing the stack rather than running it. Most of it rests
+on one promise: lemonfiber is never the thing standing between you and your
+stack. Everything it knows about the services comes from a file you can read and
+edit, everything it writes you can edit back, and the stack underneath runs on
+plain Docker Compose with no lemonfiber binary anywhere.
+
+<CardGrid>
+  <LinkCard
+    title="The stack manifest"
+    href="/advanced/the-stack-manifest/"
+    description="Every field of stack.toml — profiles, forms, services — and what validation refuses."
+  />
+  <LinkCard
+    title="Adding a service"
+    href="/advanced/adding-a-service/"
+    description="Three data edits and no code. What to write, and what checks it against the compose file."
+  />
+  <LinkCard
+    title="Adopt and reset"
+    href="/advanced/adopt-and-reset/"
+    description="Your edits survive by default. How to make one permanent, and how to throw them all away."
+  />
+  <LinkCard
+    title="Running without lemonfiber"
+    href="/advanced/without-lemonfiber/"
+    description="The stack is a standalone Compose project. Clone it, set the variables, run it."
+  />
+  <LinkCard
+    title="Remote access"
+    href="/advanced/remote-access/"
+    description="Watching from outside the home. Specified, and not yet built."
+  />
+  <LinkCard
+    title="Runtime engines"
+    href="/advanced/runtime-engines/"
+    description="What drives the containers today, and the Podman and native paths that are specified."
+  />
+</CardGrid>
+
+Two of these pages describe work that is specified and not yet built. They say so
+at the top and link to the specification, rather than describing something that
+does not run as though it did.
+
+## Where to go next
+
+If you have not run the stack yet, [running your stack](/running/) comes first —
+particularly [forms and slices](/running/forms-and-slices/), which is the
+vocabulary the manifest is written in. If something is wrong rather than
+missing, [when something is wrong](/fixing/) starts with the doctor. If you want
+to build on the boundary rather than the stack, [the API](/api/) describes the
+shape everything comes out in.

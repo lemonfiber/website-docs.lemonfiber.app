@@ -1,0 +1,69 @@
+---
+title: The project
+description: What lemonfiber has built, what is coming, how versions are cut, and what the whole thing stands on.
+sidebar: { order: 0 }
+---
+
+import { CardGrid, LinkCard } from "@astrojs/starlight/components";
+
+lemonfiber is built in the open, and the facts about it live where they are
+already kept current rather than in a page somebody remembers to update. This
+section is the way in to those facts: what is finished, what is next, how a
+version comes together, and the terms the whole thing ships under.
+
+Nothing here is a status report written by hand. The roadmap is the sequenced
+plan, the implementation status is the per-deliverable truth, and each version's
+goals are locked in a file before the work is called done.
+
+## Where the project is
+
+<CardGrid>
+  <LinkCard
+    title="The roadmap"
+    href="/spec/00-overview/roadmap/"
+    description="Every milestone in order, and the versions that carry them."
+  />
+  <LinkCard
+    title="What is built"
+    href="/project/whats-built/"
+    description="Deliverable by deliverable: done, in progress, or not started yet."
+  />
+  <LinkCard
+    title="The version train"
+    href="/project/the-version-train/"
+    description="How a release comes together — goals locked first, and a gate that proves they shipped."
+  />
+</CardGrid>
+
+## What it stands on
+
+<CardGrid>
+  <LinkCard
+    title="The specification"
+    href="/spec/"
+    description="The requirements lemonfiber is written against, and how to read them."
+  />
+  <LinkCard
+    title="The licence"
+    href="/project/licence/"
+    description="Hippocratic 3.0 for code, CC BY-SA 4.0 for prose, and what that costs."
+  />
+  <LinkCard
+    title="The colophon"
+    href="/spec/90-appendix/colophon/"
+    description="The nineteen services and the tools this is built on, credited by name."
+  />
+  <LinkCard
+    title="The FAQ"
+    href="/spec/90-appendix/faq/"
+    description="The questions people actually ask, answered canonically and in one place."
+  />
+</CardGrid>
+
+## Where to go next
+
+If you want to change something rather than read about it, start with
+[cite the spec](/contributing/cite-the-spec/) — the one rule every contribution
+obeys. If you want to know how the code is put together, start with
+[the repository map](/develop/repo-map/). If you have not run it yet,
+[start here](/start/what-lemonfiber-is/).

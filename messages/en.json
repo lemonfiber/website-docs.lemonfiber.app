@@ -11,7 +11,19 @@
   "nav_contributing": "Contributing",
   "nav_building": "Building lemonfiber",
   "nav_project": "Project",
-  "mirror_stamp": "Content as of {revision}, {date}",
-  "mirror_source": "Source repository",
-  "spec_home": "The specification"
+  "nav_spec": "The specification",
+  "spec_home": "What the specification is",
+  "spec_overview": "Overview and decisions",
+  "spec_features": "Features",
+  "spec_journeys": "Journeys",
+  "spec_architecture": "Architecture",
+  "spec_repos": "Repositories",
+  "spec_quality": "Quality",
+  "spec_governance": "Governance",
+  "spec_brand": "Brand",
+  "spec_operations": "Operations",
+  "spec_appendix": "Appendix",
+  "mirror_stamp": "Rendered from {repo} at {revision}, {date}.",
+  "mirror_source": "Read the source of this page",
+  "mirror_heading": "This page lives in another repository"
 }

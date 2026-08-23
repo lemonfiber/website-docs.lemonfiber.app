@@ -12,3 +12,16 @@ project.inlang/
 # reformatting them here would fork a file that is meant to have one home.
 .markdownlint.jsonc
 .github/labeler.yml
+
+# Mirrored trees. The bytes belong to another repository; formatting them here
+# would rewrite files this repository does not own.
+src/content/docs/spec/
+src/content/docs/develop/architecture/
+src/content/docs/develop/brand/
+src/content/docs/develop/repos/
+src/content/docs/commands/every-command.md
+src/content/docs/contributing/conduct.md
+src/content/docs/contributing/how-change-gets-in.md
+src/content/docs/contributing/reporting-a-vulnerability.md
+src/content/docs/contributing/where-to-ask.md
+src/content/docs/project/whats-built.md

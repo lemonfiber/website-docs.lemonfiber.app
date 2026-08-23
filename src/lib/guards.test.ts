@@ -8,7 +8,7 @@ import {
   LINE_CAP,
   mirrorViolations,
   routeOf,
-  type Mirror,
+  type Declared,
   type MirrorState,
 } from "./guards.ts";
 
@@ -137,7 +137,7 @@ describe("chromeProse", () => {
 });
 
 describe("mirrorViolations", () => {
-  const declared: Mirror[] = [
+  const declared: Declared[] = [
     {
       route: "develop/architecture",
       repo: "lemonfiber",
@@ -181,6 +181,20 @@ describe("mirrorViolations", () => {
     ).toContain("mirror symlink does not resolve");
   });
 
+  it("resolves a mirror of a whole repository to the repository", () => {
+    const whole: Declared[] = [{ route: "spec", repo: "spec", path: "" }];
+    expect(
+      mirrorViolations(whole, [
+        {
+          route: "spec",
+          isSymlink: true,
+          exists: true,
+          resolvesTo: "vendor/spec",
+        },
+      ]),
+    ).toEqual([]);
+  });
+
   it("catches a mirror pointing somewhere unexpected", () => {
     const found = mirrorViolations(declared, [
       { ...good, resolvesTo: "vendor/other/.docs" },
@@ -193,7 +207,7 @@ describe("mirrorViolations", () => {
   it("catches an undeclared mirror", () => {
     const found = mirrorViolations([], [good]);
     expect(found[0]?.message).toBe(
-      "undeclared mirror — add it to mirrors.json",
+      "undeclared mirror — declare it in the mirror manifest",
     );
     expect(found[0]?.where).toBe("src/content/docs/develop/architecture");
   });
@@ -211,7 +225,7 @@ describe("routeOf", () => {
 });
 
 describe("collisionViolations", () => {
-  const declared: Mirror[] = [
+  const declared: Declared[] = [
     {
       route: "develop/architecture",
       repo: "lemonfiber",
@@ -223,15 +237,23 @@ describe("collisionViolations", () => {
     expect(collisionViolations(["start/install"], declared)).toEqual([]);
   });
 
-  it("catches an owned page at a mirrored route", () => {
-    const found = collisionViolations(["develop/architecture"], declared);
-    expect(found[0]?.message).toContain("one home per fact");
+  it("allows a landing page at a tree mirror's own root", () => {
+    expect(collisionViolations(["develop/architecture"], declared)).toEqual([]);
   });
 
   it("catches an owned page beneath a mirrored route", () => {
-    expect(
-      collisionViolations(["develop/architecture/ports"], declared),
-    ).toHaveLength(1);
+    const found = collisionViolations(["develop/architecture/ports"], declared);
+    expect(found[0]?.message).toContain("one home per fact");
+  });
+
+  it("catches an owned page at a file mirror's route", () => {
+    const file: Declared[] = [
+      { route: "commands/every-command.md", repo: "lemonfiber", path: "x.md" },
+    ];
+    expect(collisionViolations(["commands/every-command"], file)).toHaveLength(
+      1,
+    );
+    expect(collisionViolations(["commands/index"], file)).toEqual([]);
   });
 
   it("does not catch a route that merely shares a prefix", () => {

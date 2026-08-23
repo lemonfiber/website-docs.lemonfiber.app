@@ -1,5 +1,7 @@
 /** The structural rules, as pure functions over a described tree. */
 
+import type { Mirror } from "./mirror";
+
 export interface Violation {
   readonly where: string;
   readonly line: number | null;
@@ -12,13 +14,8 @@ export interface SourceFile {
   readonly text: string;
 }
 
-/** A tree under `src/content/docs` that another repository owns. */
-export interface Mirror {
-  /** Route below `src/content/docs`, e.g. `develop/architecture`. */
-  readonly route: string;
-  readonly repo: string;
-  readonly path: string;
-}
+/** What a mirror has to say about itself for the tree to be checkable. */
+export type Declared = Pick<Mirror, "route" | "repo" | "path">;
 
 /** What the filesystem actually holds at a declared mirror's route. */
 export interface MirrorState {
@@ -118,7 +115,7 @@ export function fileViolations(file: SourceFile): Violation[] {
  * that already has a home.
  */
 export function mirrorViolations(
-  declared: readonly Mirror[],
+  declared: readonly Declared[],
   state: readonly MirrorState[],
 ): Violation[] {
   const found: Violation[] = [];
@@ -142,7 +139,9 @@ export function mirrorViolations(
       );
       continue;
     }
-    const expected = `vendor/${mirror.repo}/${mirror.path}`;
+    const expected = ["vendor", mirror.repo, mirror.path]
+      .filter((part) => part !== "")
+      .join("/");
     if (actual.resolvesTo === null) {
       found.push(at(where, null, "mirror symlink does not resolve"));
       continue;
@@ -164,7 +163,7 @@ export function mirrorViolations(
         at(
           `src/content/docs/${actual.route}`,
           null,
-          "undeclared mirror — add it to mirrors.json",
+          "undeclared mirror — declare it in the mirror manifest",
         ),
       );
 
@@ -176,15 +175,24 @@ export function routeOf(relativePath: string): string {
   return relativePath.replace(/\.(md|mdx)$/, "").replace(/(^|\/)index$/, "");
 }
 
-/** A page this repository owns must not claim a route a mirror already serves. */
+/**
+ * A page this repository owns must not claim a route a mirror already serves.
+ *
+ * A tree mirror's own root is the exception: nothing upstream renders there,
+ * and a section of the site with no way in is worse than one landing page.
+ */
 export function collisionViolations(
   ownedRoutes: readonly string[],
-  declared: readonly Mirror[],
+  declared: readonly Declared[],
 ): Violation[] {
   const found: Violation[] = [];
   for (const route of ownedRoutes)
-    for (const mirror of declared)
-      if (route === mirror.route || route.startsWith(`${mirror.route}/`))
+    for (const mirror of declared) {
+      const served = mirror.route.replace(/\.md$/, "");
+      const clashes = mirror.route.endsWith(".md")
+        ? route === served
+        : route.startsWith(`${served}/`);
+      if (clashes)
         found.push(
           at(
             `src/content/docs/${route}`,
@@ -192,6 +200,7 @@ export function collisionViolations(
             `slug collides with the ${mirror.repo} mirror — one home per fact`,
           ),
         );
+    }
   return found;
 }
 

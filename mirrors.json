@@ -1,4 +1,153 @@
 {
-  "$comment": "Every tree this site renders but does not own. Each route under src/content/docs must be a symlink into vendor/<repo>/<path>. Filled in when the submodules land.",
-  "mirrors": []
+  "$comment": "Every tree this site renders but does not own. Each route under src/content/docs is a symlink into vendor/<repo>/<path>, and vendor/ is submodules pinned to exact revisions. Nothing here is fetched at build time.",
+  "mirrors": [
+    {
+      "route": "spec",
+      "repo": "spec",
+      "path": "",
+      "remote": "https://github.com/lemonfiber/spec",
+      "branch": "main",
+      "label": "lemonfiber/spec",
+      "include": [
+        "00-overview",
+        "10-functional",
+        "20-architecture",
+        "30-repos",
+        "40-quality",
+        "50-governance",
+        "60-brand",
+        "70-operations",
+        "90-appendix"
+      ]
+    },
+    {
+      "route": "develop/architecture",
+      "repo": "lemonfiber",
+      "path": ".docs/architecture",
+      "remote": "https://github.com/lemonfiber/lemonfiber",
+      "branch": "main",
+      "label": "lemonfiber/lemonfiber",
+      "index": "00-index"
+    },
+    {
+      "route": "develop/brand",
+      "repo": "brand",
+      "path": ".docs",
+      "remote": "https://github.com/lemonfiber/brand",
+      "branch": "main",
+      "label": "lemonfiber/brand"
+    },
+    {
+      "route": "commands/every-command.md",
+      "repo": "lemonfiber",
+      "path": "reference/commands.md",
+      "remote": "https://github.com/lemonfiber/lemonfiber",
+      "branch": "main",
+      "label": "lemonfiber/lemonfiber"
+    },
+    {
+      "route": "project/whats-built.md",
+      "repo": "lemonfiber",
+      "path": "IMPLEMENTATION-STATUS.md",
+      "remote": "https://github.com/lemonfiber/lemonfiber",
+      "branch": "main",
+      "label": "lemonfiber/lemonfiber",
+      "title": "What is built"
+    },
+    {
+      "route": "contributing/how-change-gets-in.md",
+      "repo": "org",
+      "path": "CONTRIBUTING.md",
+      "remote": "https://github.com/lemonfiber/.github",
+      "branch": "main",
+      "label": "lemonfiber/.github"
+    },
+    {
+      "route": "contributing/conduct.md",
+      "repo": "org",
+      "path": "CODE_OF_CONDUCT.md",
+      "remote": "https://github.com/lemonfiber/.github",
+      "branch": "main",
+      "label": "lemonfiber/.github"
+    },
+    {
+      "route": "contributing/reporting-a-vulnerability.md",
+      "repo": "org",
+      "path": "SECURITY.md",
+      "remote": "https://github.com/lemonfiber/.github",
+      "branch": "main",
+      "label": "lemonfiber/.github"
+    },
+    {
+      "route": "contributing/where-to-ask.md",
+      "repo": "org",
+      "path": "SUPPORT.md",
+      "remote": "https://github.com/lemonfiber/.github",
+      "branch": "main",
+      "label": "lemonfiber/.github"
+    },
+    {
+      "route": "develop/repos/lemonfiber.md",
+      "repo": "lemonfiber",
+      "path": "README.md",
+      "remote": "https://github.com/lemonfiber/lemonfiber",
+      "branch": "main",
+      "label": "lemonfiber/lemonfiber",
+      "title": "lemonfiber — the Rust workspace"
+    },
+    {
+      "route": "develop/repos/media-stack.md",
+      "repo": "lemonfiber-media-stack",
+      "path": "README.md",
+      "remote": "https://github.com/lemonfiber/lemonfiber-media-stack",
+      "branch": "main",
+      "label": "lemonfiber/lemonfiber-media-stack",
+      "title": "lemonfiber-media-stack — the stack itself"
+    },
+    {
+      "route": "develop/repos/sdk-ts.md",
+      "repo": "sdk-ts",
+      "path": "README.md",
+      "remote": "https://github.com/lemonfiber/sdk-ts",
+      "branch": "main",
+      "label": "lemonfiber/sdk-ts",
+      "title": "sdk-ts — the TypeScript client"
+    },
+    {
+      "route": "develop/repos/sdk-php.md",
+      "repo": "sdk-php",
+      "path": "README.md",
+      "remote": "https://github.com/lemonfiber/sdk-php",
+      "branch": "main",
+      "label": "lemonfiber/sdk-php",
+      "title": "sdk-php — the PHP client"
+    },
+    {
+      "route": "develop/repos/web.md",
+      "repo": "lemonfiber-web",
+      "path": "README.md",
+      "remote": "https://github.com/lemonfiber/lemonfiber-web",
+      "branch": "main",
+      "label": "lemonfiber/lemonfiber-web",
+      "title": "lemonfiber-web — the web surface"
+    },
+    {
+      "route": "develop/repos/brand.md",
+      "repo": "brand",
+      "path": "README.md",
+      "remote": "https://github.com/lemonfiber/brand",
+      "branch": "main",
+      "label": "lemonfiber/brand",
+      "title": "brand — the tokens and the marks"
+    },
+    {
+      "route": "develop/repos/homebrew-tap.md",
+      "repo": "homebrew-tap",
+      "path": "README.md",
+      "remote": "https://github.com/lemonfiber/homebrew-tap",
+      "branch": "main",
+      "label": "lemonfiber/homebrew-tap",
+      "title": "homebrew-tap — the formula"
+    }
+  ]
 }

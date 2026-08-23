@@ -1,0 +1,122 @@
+---
+title: Commands
+description: Every lemonfiber subcommand, what it does, and when to reach for it.
+sidebar:
+  order: 0
+---
+
+import { CardGrid, LinkCard } from "@astrojs/starlight/components";
+
+lemonfiber is one binary with one subcommand at a time. Run it with no
+subcommand at all on a machine that is already set up and you get
+[the terminal interface](/commands/the-tui/) instead.
+
+Every subcommand below accepts the same four [global flags](/commands/global-flags/),
+and every one of them has a machine-readable form. The tables here say what each
+command is for; the full generated reference, with every argument and flag,
+is [the complete command reference](/commands/every-command/).
+
+<CardGrid>
+  <LinkCard
+    title="Global flags"
+    href="/commands/global-flags/"
+    description="The four flags every subcommand takes, and the ones that only look global."
+  />
+  <LinkCard
+    title="The terminal interface"
+    href="/commands/the-tui/"
+    description="The dashboard and the log viewer, and every key they answer to."
+  />
+  <LinkCard
+    title="The complete command reference"
+    href="/commands/every-command/"
+    description="Generated from what the binary parses, so it cannot drift from the binary."
+  />
+  <LinkCard
+    title="Words we use"
+    href="/start/words-we-use/"
+    description="Form, profile, slice, drift, seed — the vocabulary these commands assume."
+  />
+</CardGrid>
+
+## Getting started
+
+| Command       | What it does                                        | Reach for it when                                                                                                |
+| ------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `setup`       | Sets up the stack by answering a few questions      | You are starting, or re-answering a question you got wrong. Interactive by default; the flags make it unattended |
+| `walkthrough` | Adds one thing, end to end, and narrates every step | You want to watch the stack work once, so you know what it does because you saw it do it                         |
+| `version`     | Reports the versions in play                        | You need the binary, stack, manifest schema and Compose versions in one place                                    |
+
+## Running the stack
+
+| Command   | What it does                                                             | Reach for it when                                                                                     |
+| --------- | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| `forms`   | Lists the forms this stack has, and what each one is for                 | You want to know what starting something would come to, without starting it                           |
+| `up`      | Starts a form, or the union of several                                   | You want part or all of the stack running                                                             |
+| `down`    | Stops and removes what a form started                                    | You want it stopped. `--wait` lets downloads in flight finish first                                   |
+| `switch`  | Makes these forms the active set, leaving shared services running        | You are changing shape and do not want a running download interrupted for it                          |
+| `restart` | Restarts services without touching the rest                              | One service is misbehaving and the rest is fine                                                       |
+| `pull`    | Fetches newer images without applying them                               | You want the download done now and the change made later                                              |
+| `watch`   | Guards the data location while forms run, stopping them if it disappears | The library lives on a disk that can go away, and you would rather stop than write to the wrong place |
+
+## Seeing what is happening
+
+| Command     | What it does                                                      | Reach for it when                                                                   |
+| ----------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `ps`        | Reports what each service is actually doing                       | You want the state of the stack in one screen                                       |
+| `logs`      | Shows what services are saying                                    | You want the lines. `--follow` keeps reading; `--watch` opens the scrollable viewer |
+| `trace`     | Follows one show or film across the services                      | You are asking "where is my show?" and want the answer step by step                 |
+| `household` | Shows what the household asked for, and where each request stands | You want the queue grouped by whoever asked for it                                  |
+| `stuck`     | Lists the items whose downloads are stuck                         | Something reported a count of stuck items and you want them named                   |
+
+## Settings and quality
+
+| Command           | What it does                                                            | Reach for it when                                                                                                   |
+| ----------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `config`          | Reads or changes one setting, through the three subcommands below       | You are reaching for one of the three below                                                                         |
+| `config get`      | Reads one setting                                                       | You want one value                                                                                                  |
+| `config set`      | Changes one setting                                                     | You want to change one value without opening a file                                                                 |
+| `config show`     | Shows every setting, with credentials withheld                          | You want the whole picture and it is safe to look at                                                                |
+| `quality`         | Chooses how good your media should look, in plain language              | You are reaching for one of the four below                                                                          |
+| `quality show`    | Shows the quality choice in force, and what each preset means and costs | You are deciding, and the cost is the thing you are deciding on                                                     |
+| `quality set`     | Chooses a preset, for everything or for one media type                  | You want different quality, from now on                                                                             |
+| `quality reapply` | Re-asserts the recorded preset over a hand-edited Recyclarr config      | You edited the config, changed your mind, and want the preset to win                                                |
+| `quality upgrade` | Re-downloads what is already here at the higher quality                 | You want the back catalogue brought up as well. Large and bandwidth-expensive, so it does nothing until `--confirm` |
+
+## Checking and repairing
+
+| Command  | What it does                                                 | Reach for it when                                                                                                                                         |
+| -------- | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `doctor` | Runs the checks that prove the stack is doing what it should | Anything is wrong, or nothing is and you want that established rather than assumed. `--fix` offers repairs one at a time; `--undo` puts the last one back |
+
+## Wiring, and your own edits
+
+| Command | What it does                                                                 | Reach for it when                                                                                                  |
+| ------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `seed`  | Wires the stack's services to each other, idempotently                       | A service has just joined the running set, or you want the wiring re-checked. It never overwrites what you changed |
+| `adopt` | Adopts your current edits as lemonfiber's expected state                     | You are happy with a change you made by hand and want it kept across future seeds and restores                     |
+| `reset` | Puts the stack back to lemonfiber's own state, reverting every edit you made | You want your edits gone. It names what will be lost and does nothing until `--confirm`                            |
+
+## Keeping and sharing your configuration
+
+| Command   | What it does                                              | Reach for it when                                                                                             |
+| --------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `backup`  | Backs up your configuration to an archive                 | You are about to change something, or you would rather your configuration stopped being precious              |
+| `restore` | Restores your configuration from a backup archive         | You are putting a stack back, here or on another machine. A different data root needs `--repoint`             |
+| `support` | Gathers what a person helping you would ask for, redacted | You are asking for help. A bare run writes nothing and says what the bundle would hold; `--write` produces it |
+
+## Words, and help
+
+| Command   | What it does                                            | Reach for it when                                                                     |
+| --------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `explain` | Says what one of this product's words means             | A report used a word you do not have, and you want more than the sentence it gave you |
+| `help`    | Prints this message or the help of the given subcommand | You want the same text this site generates its reference from                         |
+
+## Where to go next
+
+The [global flags](/commands/global-flags/) apply to all of the above, and
+[the terminal interface](/commands/the-tui/) is what you get when you run none of
+them. If you are following what a command told you rather than choosing one,
+[when something is wrong](/fixing/) starts with the doctor. If you are writing a
+script against the output rather than reading it,
+[the API and the SDKs](/api/) describe the shape it arrives in.
