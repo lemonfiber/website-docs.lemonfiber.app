@@ -12,7 +12,9 @@ specification, and neither defines it. Where this client disagrees with
 
 **Not yet published.** Nothing consumes it, so it stays unreleased until there is
 a stable major worth pinning; registration on Packagist happens then rather than
-now. The local HTTP surface it talks to has not been built either.
+now. The surface it talks to is `lemonfiber ui` — six read endpoints,
+`POST /api/actions/<name>` and `GET /api/events`, on a loopback socket behind a
+token minted for that run.
 
 ## Install
 

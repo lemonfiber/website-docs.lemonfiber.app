@@ -105,6 +105,12 @@ is [the complete command reference](/commands/every-command/).
 | `restore` | Restores your configuration from a backup archive         | You are putting a stack back, here or on another machine. A different data root needs `--repoint`             |
 | `support` | Gathers what a person helping you would ask for, redacted | You are asking for help. A bare run writes nothing and says what the bundle would hold; `--write` produces it |
 
+## Serving it over HTTP
+
+| Command | What it does                                                                                                                       | Reach for it when                                                                                                                         |
+| ------- | ---------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `ui`    | Serves the JSON API on a loopback socket for as long as you leave it running, printing the address and a token minted for that run | You are driving lemonfiber from a browser, a client or a script rather than a terminal. `--assets <dir>` serves a built web app beside it |
+
 ## Words, and help
 
 | Command   | What it does                                            | Reach for it when                                                                     |

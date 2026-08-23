@@ -248,6 +248,15 @@ Raised by `lemonfiber explain`. See [the words we use](/start/words-we-use/).
 | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | `WORD-1` | The word you asked about is not one this product explains. What it explains is this ecosystem's own vocabulary — the words that are load-bearing and cannot be guessed. Having no entry is not the same as meaning nothing, and nothing is wrong with your stack. | Ask about one of the words its reports use. The message lists every word it knows. |
 
+## SERVE — the web surface
+
+Raised by `lemonfiber ui`. See [the web API](/api/).
+
+| Code      | What it means                                                                                                                                                                               | What to do                                                                                                 |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `SERVE-1` | The address could not be taken, so there is nowhere for a browser to connect. Usually something else on this machine is already listening there.                                            | Ask for a different port with `lemonfiber ui --port 7171`, or name no port at all and be given a free one. |
+| `SERVE-2` | A token could not be minted for this run. Every request to this surface has to carry a secret only that run knows, and this machine would not supply the unpredictable bytes it is made of. | Run it again. If it happens twice, the operating system's own random source is at fault.                   |
+
 ## TUI — the terminal interface
 
 Raised by the interactive surface. See [the TUI](/commands/the-tui/).

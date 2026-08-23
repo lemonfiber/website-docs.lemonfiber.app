@@ -15,9 +15,11 @@ It is a peer of [the PHP SDK](/api/php-sdk/), not its original. Both implement
 one specification, and neither is the reference for the other. Where a client
 disagrees with the contract, the client is wrong.
 
-**Status: unreleased.** The request half and the generated types are in; the
-package is not on npm yet. The local HTTP surface it talks to has not been built
-either, which is [the envelope](/api/the-envelope/) in more detail.
+**Status: unreleased.** Reads, actions, the event stream and the generated types
+are all in; the package is not on npm yet. The surface it talks to is
+`lemonfiber ui` — six read endpoints, `POST /api/actions/<name>` and
+`GET /api/events`, on a loopback socket behind a token minted for that run.
+[The envelope](/api/the-envelope/) has it in more detail.
 
 ## Install
 
