@@ -317,4 +317,6 @@ Some commands decide their exit from their result rather than from a problem:
 
 The codes on this page are read from the crate that raises each one, at the revision this site is pinned to. Each is declared as a constant beside the code that raises it, rather than in a central list, so a code and its meaning move together — and no code is ever recycled, so a search that found an answer once finds the same answer later.
 
+The crate emits the whole list, and this site's own gate compares that list against this page in both directions on every change. So the sentence at the top of the page is checked rather than promised: a code added to the crate and not to this page fails the build, and so does a code on this page that nothing raises.
+
 For the model behind them — why a problem cannot be constructed without a remedy, how a typed failure becomes something you read, and why the core never formats — see [the error model architecture note](/develop/architecture/error-model/). The requirement it is written against is [G4, the error and remedy model](/spec/10-functional/features/g-ux/g4-error-model/).
