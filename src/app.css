@@ -1,0 +1,111 @@
+/**
+ * The documentation surface's visual language.
+ *
+ * Colour, radii and spacing come from `@lemonfiber/brand`; nothing here invents
+ * one. What this file adds is the mapping onto the variables Starlight's own
+ * chrome reads, so the theme is brand-driven rather than overridden per
+ * component. No component references an `--lf-*` token or a hex value directly.
+ */
+@import "@lemonfiber/brand/tokens.css";
+
+:root {
+  /* Brand, renamed to what this site calls them. */
+  --ink: var(--lf-color-ink);
+  --paper: var(--lf-color-paper);
+  --pith: var(--lf-color-pith);
+  --canvas: var(--lf-color-canvas);
+  --line: var(--lf-color-line);
+  --line-soft: var(--lf-color-line-soft);
+  --muted: var(--lf-color-text-muted);
+  --faint: var(--lf-color-text-faint);
+  --lemon: var(--lf-color-lemon);
+  --lemon-bright: var(--lf-color-lemon-bright);
+  --fiber: var(--lf-color-fiber);
+  --fiber-deep: var(--lf-color-fiber-deep);
+  --fiber-light: var(--lf-color-fiber-light);
+  --text: var(--lf-color-ink);
+
+  --brandface: var(--lf-font-display);
+  --sans: "Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "DM Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --r-sm: var(--lf-radius-sm);
+  --r-md: var(--lf-radius-md);
+
+  --sp-1: var(--lf-space-1);
+  --sp-2: var(--lf-space-2);
+  --sp-3: var(--lf-space-3);
+  --sp-4: var(--lf-space-4);
+  --sp-5: var(--lf-space-5);
+  --sp-6: var(--lf-space-6);
+
+  --tracking-eyebrow: var(--lf-tracking-eyebrow);
+  --text-stamp: 12px;
+
+  /* Lemon is lemon in both themes, so what sits on it does not follow --ink. */
+  --on-lemon: var(--lf-color-ink);
+}
+
+/* Starlight reads its own scale. Point it at the brand rather than restyling
+   each component. */
+:root {
+  --sl-font: var(--sans);
+  --sl-font-mono: var(--mono);
+
+  --sl-color-accent: var(--fiber-deep);
+  --sl-color-accent-low: var(--lf-color-line-soft);
+  --sl-color-accent-high: var(--ink);
+
+  --sl-color-white: var(--ink);
+  --sl-color-gray-1: var(--ink);
+  --sl-color-gray-2: var(--muted);
+  --sl-color-gray-3: var(--faint);
+  --sl-color-gray-4: var(--line);
+  --sl-color-gray-5: var(--line-soft);
+  --sl-color-gray-6: var(--pith);
+  --sl-color-gray-7: var(--canvas);
+  --sl-color-black: var(--paper);
+
+  --sl-color-bg: var(--paper);
+  --sl-color-bg-nav: var(--pith);
+  --sl-color-bg-sidebar: var(--pith);
+  --sl-color-text: var(--ink);
+  --sl-color-text-accent: var(--fiber-deep);
+  --sl-color-hairline: var(--line);
+  --sl-color-hairline-light: var(--line-soft);
+}
+
+:root[data-theme="dark"] {
+  --paper: #17160f;
+  --pith: #100f0a;
+  --canvas: #100f0a;
+  --text: #fbf7ea;
+  --ink: #fbf7ea;
+  --muted: #a9a48c;
+  --faint: #7c7865;
+  --line: #34322a;
+  --line-soft: #2b2921;
+
+  /* --fiber-deep is a light-theme amber and reads below AA on a dark ground. */
+  --fiber-deep: var(--lf-color-fiber-light);
+
+  --sl-color-accent: var(--fiber-deep);
+  --sl-color-white: var(--ink);
+  --sl-color-black: var(--paper);
+  --sl-color-bg: var(--pith);
+  --sl-color-bg-nav: var(--paper);
+  --sl-color-bg-sidebar: var(--paper);
+  --sl-color-text: var(--ink);
+  --sl-color-text-accent: var(--fiber-deep);
+  --sl-color-hairline: var(--line);
+  --sl-color-hairline-light: var(--line-soft);
+}
+
+/* The freshness stamp a mirrored page carries. */
+.mirror-stamp {
+  margin-top: var(--sp-5);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: var(--text-stamp);
+}

@@ -1,0 +1,4 @@
+{
+  "$comment": "Every tree this site renders but does not own. Each route under src/content/docs must be a symlink into vendor/<repo>/<path>. Filled in when the submodules land.",
+  "mirrors": []
+}

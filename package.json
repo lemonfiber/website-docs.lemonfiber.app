@@ -1,0 +1,54 @@
+{
+  "name": "@lemonfiber/website-docs",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "The lemonfiber documentation site: a renderer over the repos' own docs, for users, developers and powerusers.",
+  "license": "SEE LICENSE IN LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lemonfiber/website-docs.lemonfiber.app.git"
+  },
+  "engines": {
+    "node": ">=26"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "messages": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide",
+    "sync": "astro sync",
+    "types": "astro check --minimumFailingSeverity hint",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "guard": "node scripts/guards.ts",
+    "arch": "depcruise src scripts astro.config.ts --config .dependency-cruiser.cjs",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage",
+    "ci": "npm run messages && npm run sync && npm run format:check && npm run lint && npm run types && npm run guard && npm run arch && npm run coverage && npm run build"
+  },
+  "dependencies": {
+    "@lemonfiber/brand": "github:lemonfiber/brand#7b11c863c69a9e058d295711a66bc18d638dcf9d"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@astrojs/starlight": "^0.41.7",
+    "@eslint/js": "^10.0.1",
+    "@inlang/paraglide-js": "^2.24.1",
+    "@inlang/plugin-message-format": "^4.4.3",
+    "@vitest/coverage-v8": "^4.1.11",
+    "astro": "^7.2.4",
+    "dependency-cruiser": "^18.2.0",
+    "eslint": "^10.9.0",
+    "eslint-plugin-astro": "^3.1.0",
+    "globals": "^17.11.0",
+    "prettier": "^3.9.6",
+    "prettier-plugin-astro": "^0.14.1",
+    "starlight-links-validator": "^0.25.3",
+    "starlight-versions": "^0.10.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.67.0",
+    "vitest": "^4.1.11"
+  }
+}

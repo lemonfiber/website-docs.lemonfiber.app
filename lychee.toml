@@ -1,0 +1,9 @@
+# Internal links are validated by starlight-links-validator, which fails the
+# build. lychee checks what leaves this site.
+exclude = [
+  "^/",
+  "^https://docs\\.lemonfiber\\.app",
+]
+exclude_loopback = true
+max_retries = 2
+accept = ["200", "206", "429"]
