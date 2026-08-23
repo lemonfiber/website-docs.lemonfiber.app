@@ -8,15 +8,18 @@
 import { execFileSync } from "node:child_process";
 import { readdirSync, readFileSync } from "node:fs";
 
-/** The revision and date of the commit a checkout is sitting on. */
+const GIT = "/usr/bin/git";
+
+/**
+ * The revision and date of the commit a checkout is sitting on.
+ *
+ * The program is named by its absolute path: a build resolving `git` through
+ * `PATH` runs whichever `git` the environment happens to offer.
+ */
 export function gitLog(directory: string): string {
-  return execFileSync(
-    "git",
-    ["-C", directory, "log", "-1", "--format=%H%n%cI"],
-    {
-      encoding: "utf8",
-    },
-  );
+  return execFileSync(GIT, ["-C", directory, "log", "-1", "--format=%H%n%cI"], {
+    encoding: "utf8",
+  });
 }
 
 /** Every path under a directory, recursively, relative to it. */

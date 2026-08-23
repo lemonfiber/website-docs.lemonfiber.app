@@ -50,12 +50,13 @@ export interface MirroredPage {
 }
 
 const FRONTMATTER = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/;
-const SCALAR = /^([A-Za-z][A-Za-z0-9_-]*):[ \t]+(.+?)[ \t]*$/;
-const HEADING = /^#[ \t]+(.+?)[ \t]*$/m;
+const SCALAR = /^([A-Za-z][A-Za-z0-9_-]*):[ \t]+(\S.*)$/;
+const HEADING = /^#[ \t]+(\S.*)$/m;
 const MARKUP = /[`*_]/g;
-const LINK = /(!?\[[^\]]*\]\()([^)\s]+)((?:\s+"[^"]*")?\))/g;
+const LINK = /(!?\[[^\]]*\]\()([^)]*)(\))/g;
 const ABSOLUTE = /^(?:[a-z][a-z0-9+.-]*:|\/\/|#|\/)/i;
-const ATTRIBUTE = /(<[^>]*?\s)(src|href|srcset)="([^"\s]+)(")/g;
+const TAG = /<[a-zA-Z][^>]*>/g;
+const ATTRIBUTE = /(\s)(src|href|srcset)="([^"]*)(")/g;
 
 /** A capture group's text. A group that did not participate contributed none. */
 export function captured(match: RegExpExecArray, index: number): string {
@@ -67,6 +68,18 @@ export function captured(match: RegExpExecArray, index: number): string {
 export function head(path: string): string {
   const at = path.indexOf("/");
   return at === -1 ? path : path.slice(0, at);
+}
+
+/** A link's target and whatever follows it, which is the optional title. */
+export function untitled(inside: string): [string, string] {
+  const at = inside.search(/\s/);
+  if (at === -1) return [inside, ""];
+  return [inside.slice(0, at), inside.slice(at)];
+}
+
+/** A fragment as it is written back into a link, or nothing. */
+function anchorOf(fragment: string | undefined): string {
+  return fragment === undefined ? "" : `#${fragment}`;
 }
 
 /** A link target split into its path and its fragment. */
@@ -97,7 +110,9 @@ export function frontmatter(source: string): Record<string, string> {
   for (const line of captured(block, 1).split(/\r?\n/)) {
     const pair = SCALAR.exec(line);
     if (pair !== null)
-      found[captured(pair, 1)] = captured(pair, 2).replace(/^["']|["']$/g, "");
+      found[captured(pair, 1)] = captured(pair, 2)
+        .trim()
+        .replace(/^["']|["']$/g, "");
   }
   return found;
 }
@@ -110,7 +125,8 @@ export function titleOf(source: string, declared?: string): string | null {
   const stated = frontmatter(source)["title"];
   if (stated !== undefined && stated !== "") return stated;
   const heading = HEADING.exec(withoutFrontmatter(source));
-  if (heading !== null) return captured(heading, 1).replace(MARKUP, "").trim();
+  if (heading !== null)
+    return captured(heading, 1).replace(MARKUP, "").trimEnd();
   return declared ?? null;
 }
 
@@ -213,7 +229,7 @@ export function rewriteLinks(
 
   const here = (target: string): string | null => {
     const [path, fragment] = split(target);
-    const anchor = fragment === undefined ? "" : `#${fragment}`;
+    const anchor = anchorOf(fragment);
     const mine = resolvePath(within, path);
     const local =
       mine === null
@@ -225,29 +241,34 @@ export function rewriteLinks(
     return other === undefined ? null : `/${other}/${anchor}`;
   };
 
+  const moved = (target: string, kind: "raw" | "blob"): string | null => {
+    if (!ABSOLUTE.test(target)) return here(target) ?? away(target, kind);
+    return crossRoute(target, cross);
+  };
+
   const markdown = body.replace(
     LINK,
-    (whole, open: string, target: string, close: string) => {
-      const kind = open.startsWith("!") ? "raw" : "blob";
-      if (ABSOLUTE.test(target)) {
-        const known = crossRoute(target, cross);
-        return known === null ? whole : `${open}${known}${close}`;
-      }
-      return `${open}${here(target) ?? away(target, kind)}${close}`;
+    (whole, open: string, inside: string, close: string) => {
+      const [target, title] = untitled(inside);
+      if (target === "") return whole;
+      const resolved = moved(target, open.startsWith("!") ? "raw" : "blob");
+      if (resolved === null) return whole;
+      return `${open}${resolved}${title}${close}`;
     },
   );
 
-  return markdown.replace(
-    ATTRIBUTE,
-    (whole, open: string, name: string, target: string, close: string) => {
-      if (ABSOLUTE.test(target)) {
-        const known = crossRoute(target, cross);
-        return known === null ? whole : `${open}${name}="${known}${close}`;
-      }
-      const kind = name === "href" ? "blob" : "raw";
-      const resolved = name === "href" ? here(target) : null;
-      return `${open}${name}="${resolved ?? away(target, kind)}${close}`;
-    },
+  return markdown.replace(TAG, (tag) =>
+    tag.replace(
+      ATTRIBUTE,
+      (whole, open: string, name: string, target: string, close: string) => {
+        const kind = name === "href" ? "blob" : "raw";
+        const resolved = ABSOLUTE.test(target)
+          ? crossRoute(target, cross)
+          : ((name === "href" ? here(target) : null) ?? away(target, kind));
+        if (resolved === null) return whole;
+        return `${open}${name}="${resolved}${close}`;
+      },
+    ),
   );
 }
 
@@ -268,12 +289,10 @@ export function crossRoute(
   if (match === null) return null;
   const remote = captured(match, 1);
   const [path, fragment] = split(captured(match, 2));
-  const trimmed = path.replace(/\/$/, "");
-  const route =
-    cross.get(`${remote}|${trimmed}`) ??
-    cross.get(`${remote}|${trimmed}/README.md`);
+  const key = `${remote}|${path.replace(/\/$/, "")}`;
+  const route = cross.get(key) ?? cross.get(`${key}/README.md`);
   if (route === undefined) return null;
-  return `/${route}/${fragment === undefined ? "" : `#${fragment}`}`;
+  return `/${route}/${anchorOf(fragment)}`;
 }
 
 /** Where a reader edits the page: the file itself, on the default branch. */

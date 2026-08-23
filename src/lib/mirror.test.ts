@@ -19,6 +19,7 @@ import {
   shortSha,
   sourceUrl,
   titleOf,
+  untitled,
   withoutFrontmatter,
   withoutLeadingHeading,
   type Mirror,
@@ -187,6 +188,13 @@ describe("isIncluded", () => {
   });
 });
 
+describe("untitled", () => {
+  it("separates a target from the title beside it", () => {
+    expect(untitled("a.md")).toEqual(["a.md", ""]);
+    expect(untitled('a.md "A title"')).toEqual(["a.md", ' "A title"']);
+  });
+});
+
 describe("crossRoute", () => {
   const cross = new Map([
     [`${FORGE}/spec|00-overview/vision.md`, "spec/00-overview/vision"],
@@ -232,6 +240,13 @@ describe("rewriteLinks", () => {
     const dirs = new Map([["30-repos/README.md", "spec/30-repos"]]);
     expect(rewriteLinks("[a](30-repos/)", tree, revision, "x.md", dirs)).toBe(
       "[a](/spec/30-repos/)",
+    );
+  });
+
+  it("leaves a link with no target alone, and keeps a title", () => {
+    expect(at("[a]()")).toBe("[a]()");
+    expect(at('[a](vision.md "Vision")')).toBe(
+      '[a](/spec/00-overview/vision/ "Vision")',
     );
   });
 

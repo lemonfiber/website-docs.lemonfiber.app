@@ -14,6 +14,7 @@ import type { Loader, LoaderContext } from "astro/loaders";
 
 import type { Mirror } from "./mirror.ts";
 import {
+  byCodePoint,
   crossRoutes,
   mirrorLoader,
   pagesOf,
@@ -115,6 +116,13 @@ describe("mirror-source", () => {
     expect(read(join(root, "vendor", "repo", "docs", "two.md"))).toContain(
       "Two",
     );
+  });
+});
+
+describe("byCodePoint", () => {
+  it("orders by code point, so a capital sorts before a lower case", () => {
+    expect(byCodePoint("README.md", "one.md")).toBe(-1);
+    expect(byCodePoint("one.md", "README.md")).toBe(1);
   });
 });
 

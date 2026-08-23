@@ -50,19 +50,30 @@ export interface Reading {
 
 const CONTENT = "src/content/docs";
 
+/**
+ * Sorted the way the paths read, not the way a locale would order them. A
+ * directory listing holds each path once, so there is no equal pair to order.
+ */
+export const byCodePoint = (a: string, b: string): number => (a < b ? -1 : 1);
+
 /** The paths a mirror renders, relative to the mirror's own root. */
 export function pagesOf(mirror: Mirror, root: string): string[] {
   if (isFile(mirror)) return [""];
   return listing(`${root}/${CONTENT}/${mirror.route}`)
-    .map((entry) => entry.split("\\").join("/"))
+    .map((entry) => entry.replaceAll("\\", "/"))
     .filter((entry) => isIncluded(mirror, entry))
-    .sort();
+    .sort(byCodePoint);
+}
+
+/** Where a page is filed, relative to the repository root. */
+export function fileOf(mirror: Mirror, relative: string): string {
+  const base = `${CONTENT}/${mirror.route}`;
+  return isFile(mirror) ? base : `${base}/${relative}`;
 }
 
 /** Where a page's bytes are, through the symlink that declares the mirror. */
 export function pathOf(mirror: Mirror, root: string, relative: string): string {
-  const base = `${root}/${CONTENT}/${mirror.route}`;
-  return isFile(mirror) ? base : `${base}/${relative}`;
+  return `${root}/${fileOf(mirror, relative)}`;
 }
 
 /** What this repository pins, and what that revision holds. */
@@ -133,7 +144,7 @@ export async function storeMirror(
       id,
       data,
       body,
-      filePath: `${CONTENT}/${mirror.route}${isFile(mirror) ? "" : `/${relative}`}`,
+      filePath: fileOf(mirror, relative),
       digest: context.generateDigest(`${revision.sha}:${source}`),
       rendered: await context.renderMarkdown(body, {
         fileURL: pathToFileURL(`${root}/${attributedPath(id)}`),
