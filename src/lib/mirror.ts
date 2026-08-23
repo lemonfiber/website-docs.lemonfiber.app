@@ -201,6 +201,54 @@ const join = (...parts: string[]): string =>
   parts.filter((part) => part !== "").join("/");
 
 /**
+ * The body in runs, saying of each whether it is an example.
+ *
+ * A fenced block is what a reader copies. A link inside one is being *shown*,
+ * not offered — rewriting it hands them a hundred-character absolute URL where
+ * the example said `../AGENTS.md`, and what they copy no longer demonstrates
+ * what it was written to demonstrate.
+ *
+ * An unclosed fence takes the rest of the document with it, which is what a
+ * renderer does with one too.
+ */
+export function runs(
+  body: string,
+): { readonly code: boolean; readonly text: string }[] {
+  const out: { code: boolean; text: string }[] = [];
+  let held: string[] = [];
+  let fence: string | null = null;
+
+  // Only a run that holds lines is emitted. An empty one would join back with a
+  // separator the body never had, and putting the document back together
+  // unchanged is the whole contract here.
+  const flush = (code: boolean): void => {
+    if (held.length > 0) out.push({ code, text: held.join("\n") });
+    held = [];
+  };
+
+  for (const line of body.split("\n")) {
+    const marker = /^[ \t]*(`{3,}|~{3,})/.exec(line)?.[1]?.[0] ?? null;
+
+    if (fence === null && marker !== null) {
+      flush(false);
+      held = [line];
+      fence = marker;
+      continue;
+    }
+    if (fence !== null && marker === fence) {
+      held.push(line);
+      flush(true);
+      fence = null;
+      continue;
+    }
+    held.push(line);
+  }
+
+  flush(fence !== null);
+  return out;
+}
+
+/**
  * Rewrite the links of a mirrored page.
  *
  * A relative link to another mirrored page becomes that page's route, whether
@@ -251,30 +299,37 @@ export function rewriteLinks(
     return crossRoute(target, cross);
   };
 
-  const markdown = body.replace(
-    LINK,
-    (whole, open: string, inside: string, close: string) => {
-      const [target, title] = untitled(inside);
-      if (target === "") return whole;
-      const resolved = moved(target, open.startsWith("!") ? "raw" : "blob");
-      if (resolved === null) return whole;
-      return `${open}${resolved}${title}${close}`;
-    },
-  );
-
-  return markdown.replace(TAG, (tag) =>
-    tag.replace(
-      ATTRIBUTE,
-      (whole, open: string, name: string, target: string, close: string) => {
-        const kind = name === "href" ? "blob" : "raw";
-        const resolved = ABSOLUTE.test(target)
-          ? crossRoute(target, cross)
-          : ((name === "href" ? here(target) : null) ?? away(target, kind));
+  const prose = (text: string): string => {
+    const markdown = text.replace(
+      LINK,
+      (whole, open: string, inside: string, close: string) => {
+        const [target, title] = untitled(inside);
+        if (target === "") return whole;
+        const resolved = moved(target, open.startsWith("!") ? "raw" : "blob");
         if (resolved === null) return whole;
-        return `${open}${name}="${resolved}${close}`;
+        return `${open}${resolved}${title}${close}`;
       },
-    ),
-  );
+    );
+
+    return markdown.replace(TAG, (tag) =>
+      tag.replace(
+        ATTRIBUTE,
+        (whole, open: string, name: string, target: string, close: string) => {
+          const kind = name === "href" ? "blob" : "raw";
+          const resolved = ABSOLUTE.test(target)
+            ? crossRoute(target, cross)
+            : ((name === "href" ? here(target) : null) ?? away(target, kind));
+          if (resolved === null) return whole;
+          return `${open}${name}="${resolved}${close}`;
+        },
+      ),
+    );
+  };
+
+  // An example is shown, not offered.
+  return runs(body)
+    .map((run) => (run.code ? run.text : prose(run.text)))
+    .join("\n");
 }
 
 const UPSTREAM =
