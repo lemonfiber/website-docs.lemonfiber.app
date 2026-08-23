@@ -159,6 +159,15 @@ describe("parseManifest", () => {
     expect(parsed.pins).toEqual({ "media-stack": "aaabfbb" });
   });
 
+  it("reads the day the release shipped", () => {
+    const parsed = parseManifest('version = "9"\nreleased_on = "2026-08-22"');
+    expect(parsed.releasedOn).toBe("2026-08-22");
+  });
+
+  it("has no day for a version that has not shipped", () => {
+    expect(parseManifest('version = "9"').releasedOn).toBe("");
+  });
+
   it("takes the first comment as the release's own sentence", () => {
     expect(parseManifest(manifest).headline).toBe(
       "The bootstrap release — the baseline the train governs from.",
@@ -193,6 +202,7 @@ const manifests = new Map<string, Manifest>([
       headline: "The bootstrap release.",
       delivers: "Core",
       goals: ["A1-R1"],
+      releasedOn: "2026-07-26",
       pins: { "media-stack": "aaabfbb" },
     },
   ],

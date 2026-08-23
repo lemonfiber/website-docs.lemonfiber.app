@@ -53,6 +53,8 @@ export interface Manifest {
   /** The short phrase naming what the version delivers. */
   readonly delivers: string;
   readonly goals: readonly string[];
+  /** The day the release was published, as the manifest records it. */
+  readonly releasedOn: string;
   /** Submodule commits the release embedded, by repository. */
   readonly pins: Readonly<Record<string, string>>;
 }
@@ -75,6 +77,7 @@ export interface TrainVersion {
   readonly headline: string;
   readonly delivers: string;
   readonly goals: readonly string[];
+  readonly releasedOn: string;
   readonly pins: Readonly<Record<string, string>>;
   readonly features: readonly TrainFeature[];
 }
@@ -253,6 +256,7 @@ export function parseManifest(source: string): Manifest {
     headline: plain(headline),
     delivers: plain(scalars["delivers"] ?? ""),
     goals,
+    releasedOn: scalars["released_on"] ?? "",
     pins,
   };
 }
@@ -293,6 +297,7 @@ export function trainOf(
       headline: manifest?.headline ?? "",
       delivers: manifest?.delivers ?? "",
       goals: manifest?.goals ?? [],
+      releasedOn: manifest?.releasedOn ?? "",
       pins: manifest?.pins ?? {},
       features: byVersion.get(version.version) ?? [],
     };

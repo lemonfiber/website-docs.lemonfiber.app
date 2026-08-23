@@ -21,6 +21,10 @@ const releases = project.train
     headline: version.headline,
     milestone: m.project_milestone({ id: version.milestone }),
     proved: m.releases_proved({ done: built.done, total: built.total }),
+    releasedOn:
+      version.releasedOn === ""
+        ? ""
+        : m.releases_on({ date: version.releasedOn }),
     embedded: Object.entries(version.pins).map(([repo, sha]) =>
       m.releases_embedded({ repo, revision: shortSha(sha) }),
     ),
@@ -38,6 +42,7 @@ const releases = project.train
           <div class="rel__head">
             <code class="rel__id">{release.id}</code>
             <span class="rel__ms">{release.milestone}</span>
+            <span class="rel__on">{release.releasedOn}</span>
           </div>
           <p class="rel__headline">{release.headline}</p>
           <p class="rel__meta">
@@ -90,6 +95,15 @@ const releases = project.train
     color: var(--fiber-deep);
   }
   .rel__ms {
+    font-family: var(--mono);
+    font-size: var(--lf-size-caption);
+    color: var(--muted);
+  }
+  .rel__on:empty {
+    display: none;
+  }
+  .rel__on {
+    margin-left: auto;
     font-family: var(--mono);
     font-size: var(--lf-size-caption);
     color: var(--muted);
