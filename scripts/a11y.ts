@@ -1,15 +1,11 @@
 #!/usr/bin/env node
 /** Serves the built site, sweeps it with axe, and stops the server. */
-import { spawnSync } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const BIN = `${ROOT}node_modules/.bin/`;
 const ORIGIN = "http://127.0.0.1:4321/";
-
-const run = (tool: string, args: string[]): number =>
-  spawnSync(`${BIN}${tool}`, args, { stdio: "inherit", shell: false }).status ??
-  1;
 
 const reachable = async (): Promise<boolean> => {
   try {
@@ -20,10 +16,21 @@ const reachable = async (): Promise<boolean> => {
   }
 };
 
-run("astro", ["preview", "--port", "4321", "--host", "127.0.0.1"]);
+// `astro preview` daemonises on some platforms and stays in the foreground on
+// others, so the server is started without waiting on it and stopped both ways.
+const server = spawn(
+  `${BIN}astro`,
+  ["preview", "--port", "4321", "--host", "127.0.0.1"],
+  { stdio: "inherit", detached: false },
+);
+
+const stop = (): void => {
+  server.kill("SIGTERM");
+  spawnSync(`${BIN}astro`, ["preview", "stop"], { stdio: "inherit" });
+};
 
 let up = false;
-for (let attempt = 0; attempt < 60; attempt++) {
+for (let attempt = 0; attempt < 120; attempt++) {
   if (await reachable()) {
     up = true;
     break;
@@ -32,8 +39,10 @@ for (let attempt = 0; attempt < 60; attempt++) {
 }
 
 let status = 1;
-if (up) status = run("playwright", ["test"]);
+if (up)
+  status =
+    spawnSync(`${BIN}playwright`, ["test"], { stdio: "inherit" }).status ?? 1;
 else console.error("a11y: the preview server never answered");
 
-run("astro", ["preview", "stop"]);
+stop();
 process.exit(status);
