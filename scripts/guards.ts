@@ -3,6 +3,7 @@
 import { readdir, readFile, realpath } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
 
+import { codeViolations } from "../src/lib/codes.ts";
 import {
   collisionViolations,
   fileViolations,
@@ -83,6 +84,24 @@ const owned = kept
   .filter((p) => p.startsWith(CONTENT + sep) && /\.(md|mdx)$/.test(p))
   .map((p) => routeOf(relative(CONTENT, p).split(sep).join("/")));
 found.push(...collisionViolations(owned, declared));
+
+// The error-code page claims to list every code lemonfiber can raise and no
+// others. The crate emits its own list, so the claim is checked rather than
+// maintained. A missing artefact is a violation: an unchecked-out submodule
+// leaves the claim unverified, and silently unverified is what this replaces.
+const text = async (path: string): Promise<string> => {
+  try {
+    return await readFile(join(ROOT, path), "utf8");
+  } catch {
+    return "";
+  }
+};
+found.push(
+  ...codeViolations(
+    await text("vendor/lemonfiber/reference/error-codes.md"),
+    await text("src/content/docs/fixing/every-error-by-code.md"),
+  ),
+);
 
 if (found.length > 0) {
   console.error(`guards: ${String(found.length)} violation(s)\n`);
