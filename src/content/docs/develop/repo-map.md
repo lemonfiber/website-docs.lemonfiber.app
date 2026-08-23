@@ -56,8 +56,12 @@ the binary as a pinned submodule at build time.
 
 **Every repository feeds this site.** Each one's own documentation arrives as a
 git submodule pinned to an exact revision and is rendered rather than copied.
-Nothing is fetched during a build. The specification is the exception: it is
-linked to its own book rather than restated.
+Nothing is fetched during a build. The specification arrives the same way and is
+rendered here, at [`/spec/`](/spec/) — it is the largest body of prose the org has,
+and a reader searching the documentation for a requirement should find it rather
+than be sent to another domain. It is authored in `spec` and published only here
+([ADR-0015](/spec/00-overview/decisions/0015-docs-site-renders-what-it-does-not-own/),
+`REPO-R52`).
 
 And running underneath all of it: **no change lands in any of them without
 citing the specification.**
