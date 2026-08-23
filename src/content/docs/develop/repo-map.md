@@ -17,9 +17,9 @@ its row, and its own README is rendered on this site under
 | Repository                                                         | Language   | What it is                                                               |
 | ------------------------------------------------------------------ | ---------- | ------------------------------------------------------------------------ |
 | [`spec`](/spec/)                                                   | Markdown   | The specification. Canonical, and cited by every change to the rest      |
-| [`lemonfiber`](/spec/30-repos/lemonfiber/)                         | Rust       | The binary: CLI, TUI and web UI over one core                            |
+| [`lemonfiber`](/spec/30-repos/lemonfiber/)                         | Rust       | The binary: the command line, the terminal interface and the web API     |
 | [`lemonfiber-web`](/spec/30-repos/lemonfiber-web/)                 | TypeScript | The web surface — a static app that draws the API and implements nothing |
-| [`sdk-ts`](/spec/30-repos/sdk-ts/)                                 | TypeScript | The published TypeScript client for the web API                          |
+| [`sdk-ts`](/spec/30-repos/sdk-ts/)                                 | TypeScript | The TypeScript client for the web API, and all the web surface uses      |
 | [`sdk-php`](/spec/30-repos/sdk-php/)                               | PHP        | The same contract in PHP, as a peer rather than a translation            |
 | [`lemonfiber-media-stack`](/spec/30-repos/lemonfiber-media-stack/) | YAML/TOML  | The Compose definitions, profiles, manifest and service configs          |
 | [`homebrew-tap`](/spec/30-repos/homebrew-tap/)                     | Ruby       | The generated formula, so `brew` works                                   |

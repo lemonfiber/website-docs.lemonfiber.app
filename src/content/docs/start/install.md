@@ -1,6 +1,6 @@
 ---
 title: Install lemonfiber
-description: What the machine needs first, which platforms are built today, and how to get the binary while the release pipeline is still being finished.
+description: What the machine needs first, which platforms the release build targets, and the routes that get you the binary.
 sidebar: { order: 2 }
 ---
 
@@ -48,14 +48,29 @@ stack on Windows through Docker Desktop, but not the `lemonfiber` binary itself.
 
 ## Getting the binary
 
-Two of the three install routes are not finished, and it is better to say so than
-to give you a command that fails.
+Three routes get you a binary. The fourth, Homebrew, is a placeholder, and it is
+better to say so than to give you a command that fails.
 
-| Route                                               | State today                                                                                                                                          |
-| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Homebrew — `brew install lemonfiber/tap/lemonfiber` | The tap repository exists, but the formula in it is a placeholder. CI does not publish to it yet, so this command will not get you a working binary. |
-| One-line shell installer                            | Configured in the release pipeline, but the pipeline has not yet run against a tag, so there is nothing published to fetch.                          |
-| Building from source                                | Works today. This is the route to take.                                                                                                              |
+| Route                                               | What it gets you                                                                                            |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| One-line shell installer                            | `lemonfiber-installer.sh`, attached to every release. It puts the binary in your Cargo home.                |
+| Prebuilt archive                                    | A `.tar.xz` per platform, each with a `.sha256` beside it and a `sha256.sum` over the set.                  |
+| Building from source                                | The route for a change you are making yourself.                                                             |
+| Homebrew — `brew install lemonfiber/tap/lemonfiber` | Nothing. The tap repository exists, but the formula in it is a placeholder and no release job writes to it. |
+
+### The shell installer
+
+Every release is a **pre-release**, so `releases/latest/` does not resolve. Name
+the tag you want — the newest is on the
+[releases page](https://github.com/lemonfiber/lemonfiber/releases):
+
+```sh
+$ curl --proto '=https' --tlsv1.2 -LsSf \
+    https://github.com/lemonfiber/lemonfiber/releases/download/v0.8.0/lemonfiber-installer.sh | sh
+```
+
+The archives sit beside it on the same release, if you would rather check a
+checksum and unpack one yourself.
 
 ### Building from source
 

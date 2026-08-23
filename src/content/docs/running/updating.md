@@ -71,8 +71,9 @@ Updating the binary does not stop, restart or alter your stack. lemonfiber is a
 control surface; the containers run independently of it, and you can update the
 tool without touching a working system.
 
-How to update depends on how you installed. Since building from source is the
-route that works today, updating means pulling the repository and building again:
+How to update depends on how you installed. From the shell installer or a release
+archive, take the newer one from the tag you want. From source, pull and build
+again:
 
 ```sh
 $ git pull --recurse-submodules
@@ -84,9 +85,9 @@ A newer lemonfiber carries a newer pinned stack, so the version of the stack
 service by itself — the images are still the ones your containers were started
 with until you pull and bring the form up again.
 
-See [Install lemonfiber](/start/install/) for the state of the other install
-channels, and [E2 Self-update](/spec/10-functional/features/e-maintenance/e2-self-update/)
-for how updating is specified to work once those channels exist. Downgrading
+See [Install lemonfiber](/start/install/) for every install route, and
+[E2 Self-update](/spec/10-functional/features/e-maintenance/e2-self-update/)
+for the in-place update the binary does not yet perform for itself. Downgrading
 lemonfiber is fine: unlike the service databases, it holds no state that migrates
 irreversibly.
 
