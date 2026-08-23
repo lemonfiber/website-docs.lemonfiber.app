@@ -1,9 +1,11 @@
-# Internal links are validated by starlight-links-validator, which fails the
-# build. lychee checks what leaves this site.
-exclude = [
-  "^/",
-  "^https://docs\\.lemonfiber\\.app",
-]
+# A site route is not a source path: `/start/what-lemonfiber-is/` is a page the
+# build produces, not a file in the checkout. The root directory lets lychee
+# resolve such a link far enough to recognise it as local; the exclusion then
+# leaves it to starlight-links-validator, which resolves routes against the real
+# route table and fails the build on any that do not. lychee checks what leaves
+# the site.
+root_dir = "/home/runner/work/website-docs.lemonfiber.app/website-docs.lemonfiber.app"
+exclude = ["^file:"]
 exclude_loopback = true
 max_retries = 2
 accept = ["200", "206", "429"]
