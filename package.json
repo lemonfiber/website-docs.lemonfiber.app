@@ -26,10 +26,11 @@
     "arch": "depcruise src scripts astro.config.ts --config .dependency-cruiser.cjs",
     "test": "vitest run",
     "coverage": "vitest run --coverage",
-    "ci": "npm run messages && npm run sync && npm run format:check && npm run lint && npm run types && npm run guard && npm run arch && npm run coverage && npm run build"
+    "ci": "npm run messages && npm run sync && npm run format:check && npm run lint && npm run types && npm run guard && npm run arch && npm run coverage && npm run build && npm run a11y",
+    "a11y": "node scripts/a11y.ts"
   },
   "dependencies": {
-    "@lemonfiber/brand": "github:lemonfiber/brand#7b11c863c69a9e058d295711a66bc18d638dcf9d"
+    "@lemonfiber/brand": "github:lemonfiber/brand#21b8d507bf5a394f24fedc08f10a954abc3e2549"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
@@ -49,6 +50,8 @@
     "starlight-versions": "^0.10.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.67.0",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.11",
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.62.1"
   }
 }
