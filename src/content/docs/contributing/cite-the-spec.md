@@ -21,10 +21,22 @@ normative statement, and the reasoning behind it, is
 | Requirement     | `A2-R4`, `C9-R13` | [The feature catalogue](/spec/10-functional/features/) |
 | Decision        | `ADR-0006`        | [The decision record](/spec/00-overview/decisions/)    |
 | Governance rule | `GOV-R12`         | [The governance section](/spec/50-governance/)         |
+| Architecture    | `ARCH-R44`        | [The architecture section](/spec/20-architecture/)     |
+| Quality rule    | `Q-R12`           | [The quality section](/spec/40-quality/)               |
+| Per-repo rule   | `REPO-R18`        | [The repository specs](/spec/30-repos/)                |
+| Operations rule | `OPS-R31`         | [The operations section](/spec/70-operations/)         |
+| Brand rule      | `DES-R21`         | [The brand section](/spec/60-brand/)                   |
 
 A requirement identifier reads as feature, then requirement number: `A2-R4` is
 the fourth requirement of feature `A2`. Every one of them sits in a table at the
-foot of its feature page.
+foot of its feature page. The other six requirement namespaces work the same
+way — a table at the foot of the page that owns the rule.
+
+Most changes cite a feature requirement, because most changes are about what the
+product does. The rest are for changes that are not: a crate boundary is `ARCH-R`,
+a lint or a coverage gate is `Q-R`, one repository's own structure is `REPO-R`,
+releasing and version manifests are `OPS-R`, and a checkable visual constraint is
+`DES-R`.
 
 ## Which case are you in?
 

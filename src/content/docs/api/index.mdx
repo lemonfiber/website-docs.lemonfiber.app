@@ -1,6 +1,6 @@
 ---
 title: The API
-description: One envelope, six payload kinds, and two SDKs generated from a single contract artefact.
+description: One envelope, twenty-five payload kinds, a local HTTP surface, and two SDKs generated from a single contract artefact.
 sidebar:
   order: 0
 ---
@@ -11,13 +11,22 @@ Everything lemonfiber can tell you, it can tell a machine. Every answer arrives
 in one wrapper — `api_version`, `kind`, `data` — and that wrapper is a stable,
 versioned interface rather than output that happens to be parsable.
 
-Today that reaches you through [`--json`](/commands/global-flags/) on the command
-line. The local HTTP API the same envelope is designed for is specified in
-[the web API contract](/spec/20-architecture/contracts/web-api/) and not yet
-built: the web surface has not been started. The two SDKs below are written
-against that contract and generate their types from the same artefact the
-command line serialises with, so what they parse is what the command line already
-emits.
+It reaches you two ways. [`--json`](/commands/global-flags/) on the command line
+prints it. `lemonfiber ui` serves it over local HTTP: six read endpoints,
+`POST /api/actions/<name>` for anything that changes something, and
+`GET /api/events` as a live stream — all of it behind a token minted for that run,
+on a socket bound to this machine. Both surfaces dispatch through the same entry
+point, so neither can say something about your stack that the other would not.
+
+What the binary does **not** yet carry is the web app itself, so `lemonfiber ui`
+today serves the API and no interface unless `--assets` points it at a build. The
+shape of the surface is [the web API contract](/spec/20-architecture/contracts/web-api/);
+[the envelope](/api/the-envelope/) covers the endpoints, the guard, and what is
+still missing.
+
+The two SDKs below are written against that contract and generate their types from
+the same artefact the command line serialises with, so what they parse is what both
+surfaces already emit.
 
 <CardGrid>
   <LinkCard
@@ -28,7 +37,7 @@ emits.
   <LinkCard
     title="Every payload kind"
     href="/api/kinds/"
-    description="The six kinds the contract describes, field by field."
+    description="Every kind the contract describes, and the six documented field by field."
   />
   <LinkCard
     title="The TypeScript SDK"

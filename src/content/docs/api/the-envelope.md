@@ -24,7 +24,7 @@ byte order: a client reads it first and then reads `data` **as that kind**, neve
 as an open value. The kinds and their payloads are
 [every payload kind](/api/kinds/).
 
-## Where you get one today
+## On the command line
 
 `--json` on any command. The answer goes to standard output; a failure is an
 envelope too, of kind `error`, and it goes to the error stream instead — so a
@@ -38,15 +38,74 @@ The plain-language footnote a human report prints under itself is never appended
 to a machine-readable answer. It is prose for a person, and adding it would
 corrupt the one thing that answer exists to be.
 
-## The HTTP surface is specified and not yet built
+## The HTTP surface
 
-The [web API contract](/spec/20-architecture/contracts/web-api/) describes a local
-HTTP surface carrying exactly this envelope: one endpoint per command that
-supports `--json`, named for the command, with query parameters mirroring the
-command's flags; `POST /api/actions/<name>` for anything that changes something;
-and `GET /api/events` as a server-sent event stream whose event name is the
-envelope's `kind`. The web surface has not been started, so none of that is
-running yet. The contract and both SDKs exist ahead of it deliberately: the
+`lemonfiber ui` serves the same envelope over local HTTP. It takes a loopback
+socket — whichever port is free, unless `--port` names one — and prints the whole
+address together with a token minted for that run. Nothing is installed, nothing
+keeps running afterwards, and the connection is not encrypted, which it says as it
+starts.
+
+Six endpoints answer a question and close. Each one is a command a person could
+have typed, dispatched through the same entry point the command line uses, so the
+two surfaces cannot say different things about the same stack.
+
+| Endpoint            | What it answers                                                                 |
+| ------------------- | ------------------------------------------------------------------------------- |
+| `GET /api/status`   | What the whole stack is doing                                                   |
+| `GET /api/services` | The same reading, narrowed to the forms named in `?form=`                       |
+| `GET /api/checks`   | What the diagnostic checks found, or the one group named in `?only=`            |
+| `GET /api/storage`  | The checks about the disk                                                       |
+| `GET /api/logs`     | The scrollback, one envelope per line; takes `?form=`, `?service=` and `?tail=` |
+| `GET /api/requests` | What the household has asked for, narrowed to `?member=`                        |
+
+Query parameters are the commands' own flags, and only the flags that read. A read
+looks and does not touch: narrowing a diagnosis is a parameter here, while
+accepting a warning or running the checks that disturb a running stack changes
+something and belongs where changes are asked for.
+
+`POST /api/actions/<name>` is where changes are asked for. An action that only
+reads and writes lemonfiber's own files is answered with its outcome, because it
+has already finished by the time it could be answered. One that reaches the
+container engine runs for minutes, so it is answered `202` with a `job` envelope
+naming the work, and the work runs somewhere the connection cannot reach — a
+browser tab closed mid-repair takes nothing with it.
+
+`GET /api/events` is a server-sent event stream, and it is described in full under
+[what a client keeps](#what-a-client-keeps-that-the-schema-cannot-say) below. Each
+event's name is the envelope's `kind`.
+
+## What a request has to carry
+
+Every request meets the same guard, applied over the whole route tree rather than
+written into each handler — so an endpoint added later is guarded by having been
+added.
+
+| Header               | Rule                                                                                                                                                                             |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `X-Lemonfiber-Token` | The run's token, on every request. The stream too: a connection held open is a request that has not finished, not one never made                                                 |
+| `Host`               | Must name the address the server is listening on. A request without one is refused — a `Host` check is what still holds when DNS rebinding has defeated an origin check          |
+| `Origin`             | Where a browser sent one, it must name the same address. Its absence is allowed, because it is a browser's word about itself and a client that is not a browser has none to give |
+
+A refusal is prose, and says so. Nothing about which paths exist is disclosed to a
+caller that has not been admitted: a path nothing serves is refused rather than
+reported as missing.
+
+## What is not built yet
+
+**The binary carries no web app.** The app arrives as a pinned submodule at
+`assets/web`, embedded exactly as the stack beside it is; that submodule does not
+exist, so a build made today serves the API and no interface. What reads an
+embedded app is built and proven — `lemonfiber ui --assets <dir>` serves a
+directory instead, which is how the app is worked on before it is embedded — and
+a request for a file when there is no app is answered plainly rather than with a
+page.
+
+**A job cannot be followed yet.** An action that runs for minutes answers with a
+name for the work, and the stream carries the dashboard's state rather than that
+job's progress. The name is what progress will arrive under; nothing emits it yet.
+
+The contract and both SDKs were published ahead of all of this deliberately: the
 boundary is a published shape rather than a compiler check, and publishing it
 first is what stops two clients inventing two answers to the same question.
 

@@ -1,27 +1,59 @@
 ---
 title: Every payload kind
-description: The six payload kinds the contract artefact describes, and every field each one carries.
+description: The twenty-five payload kinds the contract artefact describes, and every field the six most-used ones carry.
 sidebar:
   order: 2
 ---
 
 `kind` says which payload an [envelope](/api/the-envelope/) carries, so a
-consumer can branch before parsing `data`. The contract artefact describes six of
-them, and each entry is the whole envelope with that kind's payload in place
-rather than the payload alone — a generator wants the shape it will actually
-parse.
+consumer can branch before parsing `data`. The contract artefact describes
+twenty-five of them, and each entry is the whole envelope with that kind's payload
+in place rather than the payload alone — a generator wants the shape it will
+actually parse.
 
-| Kind          | `data` carries       | In one line                                                   |
-| ------------- | -------------------- | ------------------------------------------------------------- |
-| `error`       | A problem            | A command could not do what was asked                         |
-| `log`         | A log line           | One line of one service's output                              |
-| `setup`       | A setup report       | What a setup run came to, and what it settled on              |
-| `walkthrough` | A walkthrough report | What a first-content walk did, narrated line by line          |
-| `watch`       | A supervision report | What a watch saw, once the data root it was guarding was lost |
-| `word`        | A glossary term      | One word this product uses, and what it means                 |
+The set is closed. A kind is named in one place in the source and nowhere else, it
+cannot be constructed outside that place, and the contract is generated from the
+same list — so a kind that reaches the wire without a schema, or a schema for a
+kind nobody emits, fails the build rather than reaching a client.
 
-Everything below is generated from the types that serialise the reply, so a field
-here is a field on the wire.
+| Kind          | `data` carries         | In one line                                                          |
+| ------------- | ---------------------- | -------------------------------------------------------------------- |
+| `config`      | A configuration answer | The settings asked about, and what a change did to them              |
+| `dashboard`   | A dashboard snapshot   | One moment of what the stack is doing, as the dashboard assembles it |
+| `doctor`      | A diagnosis            | What the diagnostic checks found                                     |
+| `error`       | A problem              | A command could not do what was asked                                |
+| `forms`       | The form catalogue     | Every form the stack declares                                        |
+| `household`   | A household view       | What the household asked for, member by member                       |
+| `job`         | A job's name           | The name given to work that outlives the request that started it     |
+| `lifecycle`   | A lifecycle report     | What a lifecycle command did, or would have done                     |
+| `log`         | A log line             | One line of one service's output                                     |
+| `music`       | A music-format report  | The music format chosen, and what became of applying it              |
+| `preview`     | A preview              | What starting or stopping would do, before it is done                |
+| `pull`        | A line of text         | One line the container engine wrote while pulling images             |
+| `quality`     | A quality report       | The quality choice, what it means, and what a command did with it    |
+| `reset`       | A reset report         | What a full reset did, or would do                                   |
+| `seed`        | A seeding report       | What seeding wired, and what it left for a re-run                    |
+| `setup`       | A setup report         | What setup settled on                                                |
+| `start`       | A line of text         | One line the container engine wrote while starting services          |
+| `status`      | A stack reading        | What each service is doing                                           |
+| `stuck`       | The stuck items        | The items whose downloads are stuck                                  |
+| `trace`       | One item's progress    | Where one item is in the pipeline                                    |
+| `upgrade`     | An upgrade report      | What upgrading existing content did, or would do                     |
+| `version`     | The versions in play   | The binary, and the stack it can operate                             |
+| `walkthrough` | A walkthrough report   | What a first-content walk did, narrated line by line                 |
+| `watch`       | A supervision report   | What a watch saw, once the data root it was guarding was lost        |
+| `word`        | A glossary term        | One word this product uses, and what it means                        |
+
+`pull` and `start` are the two whose `data` is not an object. Both are a single
+string: one line the container engine wrote, emitted as it was written, because a
+pull that takes ten minutes has to say something before it ends.
+
+Six of them are set out field by field below — the ones a client meets first, and
+the ones whose payloads are small enough to read as a table. The other nineteen
+are in the artefact in full, and both SDKs generate a type per kind from it, so
+nothing here is the only place their shapes are written down. Everything below is
+generated from the types that serialise the reply, so a field here is a field on
+the wire.
 
 ## `error`
 
@@ -246,13 +278,19 @@ A word this product uses, and what somebody meeting it needs to know.
 moving between their screens should not have to work out that two of them are
 one.
 
-## Kinds the artefact does not describe yet
+## The other nineteen
 
-The command line emits further kinds under `--json` — among them `version`,
-`forms`, `preview`, `lifecycle`, `config`, `quality`, `upgrade`, `music`, `trace`,
-`household`, `stuck`, `status`, `doctor`, `seed` and `reset`. Their shapes are
-not in the contract artefact, so no SDK has generated types for them and they
-should not be treated as fixed. The six above are the ones the contract carries.
+Every kind in the table above is in the contract artefact with its full schema,
+including the nineteen not expanded here. Their payloads are larger — a
+`dashboard` carries nine panels, each with its own shape; a `lifecycle` report
+carries ten fields — and transcribing them into this page would create a second
+place their shapes are written down, which is the one thing the artefact exists to
+prevent.
+
+Read them from `contract/web-api.contract.json`, or let a generated client do it:
+[the TypeScript SDK](/api/typescript-sdk/) and [the PHP SDK](/api/php-sdk/) both
+emit one type per kind from that file, so the shapes arrive typed rather than
+transcribed.
 
 ## Where to go next
 
