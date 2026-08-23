@@ -1,9 +1,7 @@
-# Internal links are validated by starlight-links-validator, which fails the
-# build. lychee checks what leaves this site.
-exclude = [
-  "^/",
-  "^https://docs\\.lemonfiber\\.app",
-]
+# Root-relative links resolve against the checkout, which is where the site's
+# routes are rooted. starlight-links-validator fails the build on any internal
+# link that does not resolve; this is the second pass, over what leaves the site.
+root_dir = "/home/runner/work/website-docs.lemonfiber.app/website-docs.lemonfiber.app"
 exclude_loopback = true
 max_retries = 2
 accept = ["200", "206", "429"]
