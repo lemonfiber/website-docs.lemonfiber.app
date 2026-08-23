@@ -55,7 +55,7 @@ const PAGE = "src/content/docs/fixing/every-error-by-code.md";
 const ARTEFACT = "vendor/lemonfiber/reference/error-codes.md";
 
 const listed = (codes: readonly string[]): string =>
-  [...codes].sort().join(", ");
+  [...codes].sort((a, b) => a.localeCompare(b)).join(", ");
 
 /**
  * What the two lists disagree about.
