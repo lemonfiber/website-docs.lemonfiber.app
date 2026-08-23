@@ -218,7 +218,12 @@ export function rewriteLinks(
   cross: ReadonlyMap<string, string> = new Map(),
 ): string {
   const within = relative.split("/").slice(0, -1).join("/");
-  const inRepo = join(mirror.path, within);
+  // The directory the page sits in *within its repository*, which is what a link
+  // leaving the site resolves against. Taken from the whole path rather than by
+  // joining the mirror's own, because a mirror of a single file has no `relative`
+  // at all — its `path` *is* the file — and treating that as a directory sent
+  // every outward link through it: `README.md/AGENTS.md`.
+  const inRepo = join(mirror.path, relative).split("/").slice(0, -1).join("/");
   const repoPath = (path: string): string =>
     resolvePath(inRepo, path) ?? join(mirror.path, path);
 
