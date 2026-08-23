@@ -1,0 +1,190 @@
+---
+import StatusPill from "./StatusPill.astro";
+import VersionPill from "./VersionPill.astro";
+import { theProject } from "../lib/project";
+import * as m from "../paraglide/messages.js";
+
+const project = theProject();
+
+/** Every epoch, with the sentence that goes under its heading. */
+const epochs = project.epochs.map((epoch) => ({
+  id: epoch.id,
+  heading: m.project_epoch({ id: epoch.id }),
+  released: m.project_versions({
+    done: epoch.released,
+    total: epoch.versions.length,
+  }),
+  built:
+    epoch.built.total === 0
+      ? m.project_epoch_untracked()
+      : m.project_deliverables({
+          done: epoch.built.done,
+          total: epoch.built.total,
+        }),
+  versions: epoch.versions.map(({ version, built }) => ({
+    id: version.version,
+    status: version.status,
+    open: version.status !== "planned",
+    milestone: m.project_milestone({ id: version.milestone }),
+    closes:
+      version.closesEpoch === null
+        ? null
+        : m.version_closes({ epoch: version.closesEpoch }),
+    delivers: version.delivers,
+    goals:
+      built.total === 0
+        ? m.project_no_goals()
+        : m.project_goals({ done: built.done, total: built.total }),
+    featuresLabel:
+      version.features.length === 0
+        ? m.project_no_features()
+        : m.project_features(),
+    features: version.features.map((feature) => {
+      const progress = project.features.get(feature.id);
+      return {
+        ...feature,
+        status: progress?.status ?? "todo",
+        note:
+          progress === undefined
+            ? m.project_feature_untracked()
+            : m.project_feature_built({
+                done: progress.done,
+                total: progress.total,
+              }),
+      };
+    }),
+  })),
+}));
+---
+
+<div class="train">
+  {
+    epochs.map((epoch) => (
+      <section class="epoch">
+        <h3 class="epoch__h">{epoch.heading}</h3>
+        <p class="epoch__meta">
+          <span>{epoch.released}</span>
+          <span>{epoch.built}</span>
+        </p>
+        <ul class="vlist">
+          {epoch.versions.map((version) => (
+            <li>
+              <details class="ver" open={version.open}>
+                <summary class="ver__sum">
+                  <code class="ver__id">{version.id}</code>
+                  <VersionPill status={version.status} />
+                  <span class="ver__delivers">{version.delivers}</span>
+                </summary>
+                <p class="ver__meta">
+                  <span>{version.milestone}</span>
+                  <span>{version.goals}</span>
+                  {version.closes && <span>{version.closes}</span>}
+                </p>
+                <p class="ver__feath">{version.featuresLabel}</p>
+                <ul class="feats">
+                  {version.features.map((feature) => (
+                    <li class="feat">
+                      <a class="feat__link" href={feature.href}>
+                        <code class="feat__id">{feature.id}</code>
+                        <span>{feature.title}</span>
+                      </a>
+                      <StatusPill status={feature.status} />
+                      <span class="feat__note">{feature.note}</span>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</div>
+
+<style>
+  .train {
+    margin-top: var(--sp-5);
+  }
+  .epoch {
+    margin-bottom: var(--sp-6);
+  }
+  .epoch__h {
+    font-family: var(--brandface);
+    letter-spacing: var(--lf-tracking-display);
+    margin: 0;
+  }
+  .epoch__meta,
+  .ver__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-4);
+    margin: var(--sp-2) 0 0;
+    font-family: var(--mono);
+    font-size: var(--lf-size-caption);
+    color: var(--muted);
+  }
+  .vlist,
+  .feats {
+    list-style: none;
+    padding: 0;
+    margin: var(--sp-4) 0 0;
+    display: grid;
+    gap: var(--sp-2);
+  }
+  .ver {
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    background: var(--pith);
+    padding: var(--sp-3) var(--sp-4);
+  }
+  .ver__sum {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: var(--sp-3);
+    cursor: pointer;
+  }
+  .ver__id {
+    font-family: var(--mono);
+    font-weight: 700;
+    color: var(--fiber-deep);
+  }
+  .ver__delivers {
+    flex: 1 1 18rem;
+  }
+  .ver__feath {
+    margin: var(--sp-4) 0 0;
+    font-size: var(--lf-size-eyebrow);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--faint);
+    font-weight: 700;
+  }
+  .feats {
+    margin-top: var(--sp-2);
+  }
+  .feat {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: var(--sp-2) var(--sp-3);
+    padding: var(--sp-1) 0;
+    border-top: 1px solid var(--line-soft);
+  }
+  .feat__link {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--sp-2);
+    flex: 1 1 16rem;
+  }
+  .feat__id {
+    font-family: var(--mono);
+    font-size: var(--lf-size-caption);
+  }
+  .feat__note {
+    font-family: var(--mono);
+    font-size: var(--lf-size-eyebrow);
+    color: var(--muted);
+  }
+</style>

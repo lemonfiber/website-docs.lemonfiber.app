@@ -1,0 +1,40 @@
+---
+title: The changelog
+description: Every version lemonfiber has released, what each one delivered, and the requirements it had to prove before it could be tagged.
+sidebar: { order: 2 }
+---
+
+import Pinned from "../../../components/Pinned.astro";
+import Releases from "../../../components/Releases.astro";
+
+Every release below had to earn its tag. A version's goals — a list of accepted
+requirement identifiers — are locked before the work starts, and the release
+gate refuses to tag until each one is both cited by a merged pull request and
+marked done in the implementation status. So the list under a version is not a
+summary of what happened to land; it is the set the release was measured
+against.
+
+That is why this page counts requirements rather than commits. A commit log
+says what was written. The locked goals say what was promised, and the count
+beside each release says how much of it was proved.
+
+## What shipped
+
+<Releases />
+
+## Downloads and release notes
+
+Binaries, checksums and attestations are attached to each tag on the forge, and
+the install instructions that come with them are generated per release. Start
+from [installing lemonfiber](/start/install/), or go to the
+[releases themselves](https://github.com/lemonfiber/lemonfiber/releases) for a
+specific tag.
+
+## Where this comes from
+
+- [The version train](/project/the-version-train/) — how a release is staged, gated and finalised
+- [The version manifests](/spec/70-operations/versions/) — one file per release, and what it must contain
+- [The roadmap](/project/roadmap/) — the versions still ahead
+- [What is built](/project/whats-built/) — the per-deliverable record the gate reads
+
+<Pinned />

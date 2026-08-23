@@ -1,0 +1,132 @@
+---
+import { shortSha } from "../lib/mirror";
+import { theProject } from "../lib/project";
+import * as m from "../paraglide/messages.js";
+
+const project = theProject();
+
+/**
+ * The releases, newest first.
+ *
+ * The board orders its versions by semantic version, so the released ones read
+ * backwards from the newest. Each carries what its manifest states, and how
+ * much of what it locked the status file marks done — which is the pair the
+ * release gate itself checked before the tag was cut.
+ */
+const releases = project.train
+  .filter(({ version }) => version.status === "released")
+  .reverse()
+  .map(({ version, built }) => ({
+    id: version.version,
+    headline: version.headline,
+    milestone: m.project_milestone({ id: version.milestone }),
+    proved: m.releases_proved({ done: built.done, total: built.total }),
+    embedded: Object.entries(version.pins).map(([repo, sha]) =>
+      m.releases_embedded({ repo, revision: shortSha(sha) }),
+    ),
+    features: version.features,
+  }));
+---
+
+{
+  releases.length === 0 ? (
+    <p class="rel__none">{m.releases_none()}</p>
+  ) : (
+    <ol class="rels">
+      {releases.map((release) => (
+        <li class="rel" id={release.id}>
+          <div class="rel__head">
+            <code class="rel__id">{release.id}</code>
+            <span class="rel__ms">{release.milestone}</span>
+          </div>
+          <p class="rel__headline">{release.headline}</p>
+          <p class="rel__meta">
+            <span>{release.proved}</span>
+            {release.embedded.map((pin) => (
+              <span>{pin}</span>
+            ))}
+          </p>
+          <ul class="rel__feats">
+            {release.features.map((feature) => (
+              <li>
+                <a href={feature.href}>
+                  <code class="rel__fid">{feature.id}</code>
+                  <span>{feature.title}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </li>
+      ))}
+    </ol>
+  )
+}
+
+<style>
+  .rels {
+    list-style: none;
+    padding: 0;
+    margin: var(--sp-5) 0 0;
+    display: grid;
+    gap: var(--sp-4);
+  }
+  .rel {
+    padding: var(--sp-4);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    background: var(--pith);
+    scroll-margin-top: 6rem;
+  }
+  .rel__head {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: var(--sp-3);
+  }
+  .rel__id {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: var(--lf-size-display-m);
+    color: var(--fiber-deep);
+  }
+  .rel__ms {
+    font-family: var(--mono);
+    font-size: var(--lf-size-caption);
+    color: var(--muted);
+  }
+  .rel__headline {
+    margin: var(--sp-3) 0 0;
+  }
+  .rel__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-4);
+    margin: var(--sp-2) 0 0;
+    font-family: var(--mono);
+    font-size: var(--lf-size-caption);
+    color: var(--muted);
+  }
+  .rel__feats {
+    list-style: none;
+    padding: 0;
+    margin: var(--sp-4) 0 0;
+    display: grid;
+  }
+  .rel__feats li {
+    padding: var(--sp-2) 0;
+    border-top: 1px solid var(--line-soft);
+  }
+  .rel__feats a {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--sp-2);
+  }
+  .rel__fid {
+    font-family: var(--mono);
+    font-size: var(--lf-size-caption);
+  }
+  .rel__none {
+    margin-top: var(--sp-5);
+    color: var(--muted);
+  }
+</style>

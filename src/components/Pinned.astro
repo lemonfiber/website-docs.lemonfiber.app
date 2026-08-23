@@ -1,0 +1,42 @@
+---
+import manifest from "../../mirrors.json";
+import { dayOf, shortSha, type Mirror } from "../lib/mirror";
+import { theProject } from "../lib/project";
+import * as m from "../paraglide/messages.js";
+
+const mirrors = manifest.mirrors as readonly Mirror[];
+
+/** How the site names a repository, taken from the manifest that pins it. */
+const labelOf = (repo: string): string =>
+  mirrors.find((mirror) => mirror.repo === repo)?.label ?? repo;
+
+const stamps = theProject().pinned.map((pin) =>
+  m.pinned_at({
+    repo: labelOf(pin.repo),
+    revision: shortSha(pin.sha),
+    date: dayOf(pin.date),
+  }),
+);
+---
+
+{
+  stamps.length > 0 && (
+    <p class="pinned">
+      <strong>{m.pinned_lead()}</strong>
+      <span>{stamps.join(" · ")}</span>
+    </p>
+  )
+}
+
+<style>
+  .pinned {
+    margin-top: var(--sp-5);
+    padding-top: var(--sp-3);
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: var(--text-stamp);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4em;
+  }
+</style>

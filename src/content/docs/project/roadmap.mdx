@@ -1,0 +1,69 @@
+---
+title: The roadmap
+description: Every version lemonfiber has planned and every milestone it is built in, read from the specification's own manifests and the implementation status the binary keeps.
+sidebar: { order: 1 }
+---
+
+import Milestones from "../../../components/Milestones.astro";
+import Pinned from "../../../components/Pinned.astro";
+import ProjectSummary from "../../../components/ProjectSummary.astro";
+import VersionTrain from "../../../components/VersionTrain.astro";
+
+Nothing on this page is written by hand. Every figure is read from two files
+this site pins: the specification's generated feature board with the version
+manifests behind it, and
+[the implementation status](/project/whats-built/) the binary's repository keeps
+in the same pull request as the work it describes.
+
+That has a consequence worth stating plainly. This page is as fresh as the
+revisions at the foot of it, not as fresh as this morning — the site renders a
+pinned checkout so a reader following instructions gets the instructions that
+match the release they installed. When the pins move, these numbers move.
+
+<ProjectSummary />
+
+A number here is a count of marks in the file behind it. Nothing is weighted:
+where a deliverable is half built, it counts as not done rather than as half,
+because "half" is a judgement the source file does not make.
+
+## The version train
+
+Releases run as a train — one version in flight at a time, its goals fixed
+before the work starts, and a gate that refuses to tag until every goal is
+demonstrably built. [The version train](/project/the-version-train/) explains
+the mechanism; this is the train itself.
+
+Two epochs carry it. **v1** is the product: the binary, its surfaces and the
+trust checks under them, closing at `1.0.0`. **v2** is the ecosystem: running
+without Docker, remote access, the platform and everything built on top,
+closing at `2.0.0`. A major closes its epoch and ships no stubs.
+
+Each version below names the milestone it serves, how many of its locked
+requirements the status file marks done, and the features it carries. Expand one
+to see them.
+
+<VersionTrain />
+
+## Milestones
+
+Milestones are the sequence the work is done in; versions are how it ships. One
+milestone can span several versions, and a version serves exactly one milestone.
+
+Each milestone's own mark is the one written beside its heading upstream. That
+can differ from the rows recorded beneath it, because a requirement is often
+recorded in the table of the milestone it grew out of rather than the one it
+belongs to — so a milestone whose recorded rows are all done can still be in
+progress. Where they differ, the heading is the milestone's status and the rows
+are what has been written down here.
+
+<Milestones />
+
+## Where this comes from
+
+- [What is built](/project/whats-built/) — the status file itself, rendered whole
+- [The version train](/project/the-version-train/) — how a release is staged and gated
+- [The roadmap in the specification](/spec/00-overview/roadmap/) — the narrative behind the sequence
+- [The feature board](/spec/10-functional/features/) — every feature, its area and its track
+- [The version manifests](/spec/70-operations/versions/) — the contract each file above obeys
+
+<Pinned />

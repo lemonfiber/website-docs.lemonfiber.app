@@ -1,0 +1,63 @@
+---
+import type { Progress } from "../lib/status";
+import * as m from "../paraglide/messages.js";
+
+interface Props {
+  readonly status: Progress;
+}
+
+const LABEL: Record<Progress, () => string> = {
+  done: m.progress_done,
+  partial: m.progress_partial,
+  todo: m.progress_todo,
+};
+
+const { status } = Astro.props;
+const label = LABEL[status]();
+---
+
+<span class:list={["pill", `pill--${status}`]}>{label}</span>
+
+<style>
+  /* The mark is a shape as well as a word: a reader who cannot separate the
+     two accents still sees three different pills. */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    flex: none;
+    font-size: var(--lf-size-eyebrow);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    padding: 0.15em 0.6em;
+    border-radius: var(--lf-radius-pill);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .pill::before {
+    content: "";
+    width: 0.55em;
+    height: 0.55em;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+  }
+  .pill--done {
+    color: var(--text);
+    border-color: var(--text);
+  }
+  .pill--done::before {
+    background: currentColor;
+  }
+  .pill--partial {
+    color: var(--fiber-deep);
+    border-color: var(--fiber-deep);
+  }
+  .pill--partial::before {
+    background: linear-gradient(
+      to right,
+      currentColor 0 50%,
+      transparent 50% 100%
+    );
+  }
+</style>

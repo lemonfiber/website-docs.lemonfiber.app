@@ -1,0 +1,40 @@
+---
+import * as m from "../paraglide/messages.js";
+
+interface Props {
+  readonly status: string;
+}
+
+const LABEL: Record<string, () => string> = {
+  released: m.version_released,
+  releasable: m.version_releasable,
+  in_progress: m.version_in_progress,
+  staged: m.version_staged,
+  planned: m.version_planned,
+};
+
+const { status } = Astro.props;
+const label = (LABEL[status] ?? m.version_planned)();
+const shipped = status === "released";
+---
+
+<span class:list={["vpill", { "vpill--shipped": shipped }]}>{label}</span>
+
+<style>
+  .vpill {
+    flex: none;
+    font-size: var(--lf-size-eyebrow);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    padding: 0.15em 0.6em;
+    border-radius: var(--lf-radius-pill);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .vpill--shipped {
+    color: var(--text);
+    border-color: var(--text);
+    border-width: 2px;
+  }
+</style>
