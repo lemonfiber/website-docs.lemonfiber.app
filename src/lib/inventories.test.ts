@@ -1,0 +1,251 @@
+import { readdirSync, readFileSync } from "node:fs";
+import { describe, expect, it } from "vitest";
+
+import { countViolations, type Page, type Sources } from "./counts.ts";
+import {
+  columnUnder,
+  firstColumnUnder,
+  INVENTORIES,
+  keysAt,
+  tablesUnder,
+  variantsAt,
+} from "./inventories.ts";
+
+/** Every real file under a directory, symlinked trees left where they are. */
+const walk = (dir: string, keep: (path: string) => boolean): string[] => {
+  const found: string[] = [];
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const path = `${dir}/${entry.name}`;
+    if (entry.isSymbolicLink()) continue;
+    if (entry.isDirectory()) found.push(...walk(path, keep));
+    else if (keep(path)) found.push(path);
+  }
+  return found;
+};
+
+const read = (path: string): string => readFileSync(path, "utf8");
+
+const theTree = (): { sources: Sources; pages: Page[] } => ({
+  sources: {
+    stack: read("vendor/lemonfiber-media-stack/stack.toml"),
+    contract: read("vendor/lemonfiber/contract/web-api.contract.json"),
+    commands: read("vendor/lemonfiber/reference/commands.md"),
+    webApi: read("vendor/spec/20-architecture/contracts/web-api.md"),
+    mirrors: read("mirrors.json"),
+    spec: walk("vendor/spec", () => true),
+  },
+  pages: walk("src/content/docs", (path) => /\.(md|mdx)$/.test(path)).map(
+    (path) => ({ path, text: read(path) }),
+  ),
+});
+
+const nothing: Sources = {
+  stack: "",
+  contract: "",
+  commands: "",
+  webApi: "",
+  mirrors: "",
+  spec: [],
+};
+
+describe("the tree as it stands", () => {
+  it("states no number the trees it renders disagree with", () => {
+    const { sources, pages } = theTree();
+    expect(countViolations(INVENTORIES, sources, pages)).toEqual([]);
+  });
+
+  it("derives every count from something, and nothing from nowhere", () => {
+    const { sources, pages } = theTree();
+    for (const inventory of INVENTORIES)
+      expect({
+        what: inventory.what,
+        members: inventory.members(sources, pages).length,
+      }).toEqual({ what: inventory.what, members: expect.any(Number) });
+    expect(
+      INVENTORIES.every(
+        (inventory) => inventory.members(sources, pages).length > 0,
+      ),
+    ).toBe(true);
+  });
+});
+
+describe("a tree with nothing in it", () => {
+  it("reports every inventory as unreadable rather than as agreeing", () => {
+    const found = countViolations(INVENTORIES, nothing, []);
+    const sources = found.filter((one) =>
+      one.message.includes("missing or unreadable"),
+    );
+    expect(sources).toHaveLength(INVENTORIES.length);
+  });
+});
+
+describe("a generated reference with one section and no more", () => {
+  it("reads the subcommands and the global flags out of it", () => {
+    const commands = [
+      "# `lemonfiber` — command reference",
+      "",
+      "## `lemonfiber`",
+      "",
+      "```text",
+      "Commands:",
+      "  ship         Ships it",
+      "  help         Print this message",
+      "",
+      "Options:",
+      "      --json",
+      "          Print machine-readable output",
+      "  -h, --help",
+      "          Print help",
+      "  -V, --version",
+      "          Print version",
+      "```",
+      "",
+    ].join("\n");
+
+    const found = countViolations(INVENTORIES, { ...nothing, commands }, [
+      { path: "src/content/docs/p.md", text: "the one global flags" },
+    ]);
+    expect(
+      found.some((one) => one.message.includes("no subcommands found")),
+    ).toBe(false);
+    expect(
+      found.some((one) => one.message.includes("no global flags found")),
+    ).toBe(false);
+    expect(
+      found.some((one) => one.message.includes("no quality presets found")),
+    ).toBe(true);
+  });
+});
+
+describe("a manifest that is not what it should be", () => {
+  const repos = (mirrors: string): number =>
+    countViolations(INVENTORIES, { ...nothing, mirrors }, []).filter((one) =>
+      one.message.includes("no repositories this site renders found"),
+    ).length;
+
+  it("reads nothing out of one that is not an object", () => {
+    expect(repos("[1, 2]")).toBe(1);
+  });
+
+  it("reads nothing out of one whose mirrors are not a list", () => {
+    expect(repos('{"mirrors": "some"}')).toBe(1);
+  });
+
+  it("reads the repositories out of one that is", () => {
+    expect(
+      repos('{"mirrors": [{"repo": "a"}, {"repo": "a"}, {"repo": "b"}]}'),
+    ).toBe(0);
+  });
+});
+
+describe("keysAt", () => {
+  it("reads the keys of the object a path leads to", () => {
+    expect(keysAt('{"a": {"b": {"c": 1, "d": 2}}}', "a", "b")).toEqual([
+      "c",
+      "d",
+    ]);
+  });
+
+  it("reads nothing out of a path that stops at a value", () => {
+    expect(keysAt('{"a": 1}', "a", "b")).toEqual([]);
+  });
+
+  it("reads nothing out of a path that leads to a value", () => {
+    expect(keysAt('{"a": 1}', "a")).toEqual([]);
+  });
+
+  it("reads nothing out of a document that will not parse", () => {
+    expect(keysAt("{", "a")).toEqual([]);
+  });
+});
+
+describe("variantsAt", () => {
+  it("reads a variant that names itself at the top of its branch", () => {
+    expect(
+      variantsAt(
+        '{"S": {"oneOf": [{"const": "warn"}, {"const": "fail"}]}}',
+        "S",
+      ),
+    ).toEqual(["warn", "fail"]);
+  });
+
+  it("reads one that names itself under the field discriminating it", () => {
+    expect(
+      variantsAt(
+        '{"V": {"oneOf": [{"properties": {"note": {"type": "string"}, "outcome": {"const": "pass"}}}]}}',
+        "V",
+      ),
+    ).toEqual(["pass"]);
+  });
+
+  it("passes over a branch that names itself nowhere", () => {
+    expect(
+      variantsAt(
+        '{"V": {"oneOf": [{"type": "string"}, {"const": "one"}]}}',
+        "V",
+      ),
+    ).toEqual(["one"]);
+  });
+
+  it("reads nothing out of a path that leads to no schema", () => {
+    expect(variantsAt('{"a": 1}', "a")).toEqual([]);
+  });
+
+  it("reads nothing out of a schema that is not a choice", () => {
+    expect(variantsAt('{"a": {"type": "string"}}', "a")).toEqual([]);
+  });
+});
+
+describe("tablesUnder", () => {
+  const page = [
+    "Some prose.",
+    "",
+    "| Panel | What it carries |",
+    "| ----- | --------------- |",
+    "| VPN   | The tunnel      |",
+    "| Stuck | What stopped    |",
+    "",
+    "More prose.",
+    "",
+    "| Panel  | Also a panel table |",
+    "| ------ | ------------------ |",
+    "| Alerts | What was raised    |",
+    "",
+    "| Key | Not a panel table |",
+    "| --- | ----------------- |",
+    "| q   | Quits             |",
+    "",
+  ].join("\n");
+
+  it("keeps each table headed the same apart", () => {
+    expect(tablesUnder(page, "Panel")).toEqual([["VPN", "Stuck"], ["Alerts"]]);
+  });
+
+  it("leaves the tables headed something else alone", () => {
+    expect(tablesUnder(page, "Key")).toEqual([["q"]]);
+  });
+
+  it("reads the backticks off a cell", () => {
+    expect(tablesUnder("| Form |\n| ---- |\n| `tv` |\n", "Form")).toEqual([
+      ["tv"],
+    ]);
+  });
+
+  it("stops at a row it cannot read as a row", () => {
+    expect(
+      tablesUnder("| Form |\n| ---- |\n| tv\n| `hunt` |\n", "Form"),
+    ).toEqual([[]]);
+  });
+
+  it("gathers every one of them across the tables", () => {
+    expect(columnUnder(page, "Panel")).toEqual(["VPN", "Stuck", "Alerts"]);
+  });
+
+  it("takes only the first, where a later table lists something else", () => {
+    expect(firstColumnUnder(page, "Panel")).toEqual(["VPN", "Stuck"]);
+  });
+
+  it("takes none where there is no such table", () => {
+    expect(firstColumnUnder(page, "Nothing")).toEqual([]);
+  });
+});

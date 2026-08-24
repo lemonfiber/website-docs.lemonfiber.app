@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import { codesInArtefact, codesOnPage, codeViolations } from "./codes.ts";
+import {
+  codesInArtefact,
+  codesOnPage,
+  codeViolations,
+  familySizes,
+  familyViolations,
+} from "./codes.ts";
+import type { Page } from "./counts.ts";
 
 /** The generated reference: a heading, a sentence, then one bullet per code. */
 const artefact = (...codes: string[]): string =>
@@ -136,5 +143,69 @@ describe("codeViolations", () => {
 
   it("refuses an empty reference even when the page is empty too", () => {
     expect(codeViolations("", "")).toHaveLength(1);
+  });
+});
+
+/** A page that sends the reader to the code page for one family. */
+const sends = (text: string): Page[] => [
+  { path: "src/content/docs/fixing/a-page.md", text },
+];
+
+describe("familySizes", () => {
+  it("counts the codes in each family the reference declares", () => {
+    expect([
+      ...familySizes(artefact("VPN-1", "VPN-2", "STORAGE-1")).entries(),
+    ]).toEqual([
+      ["VPN", 2],
+      ["STORAGE", 1],
+    ]);
+  });
+});
+
+describe("familyViolations", () => {
+  it("finds nothing when the sentence and the reference agree", () => {
+    expect(
+      familyViolations(
+        artefact("VPN-1", "VPN-2"),
+        sends("See the two `VPN` codes, side by side."),
+      ),
+    ).toEqual([]);
+  });
+
+  it("names the page, the line and both numbers when they disagree", () => {
+    const [found, ...rest] = familyViolations(
+      artefact("VPN-1", "VPN-2", "VPN-3"),
+      sends("A heading\n\nSee the two `VPN` codes, side by side.\n"),
+    );
+    expect(rest).toEqual([]);
+    expect(found?.where).toBe("src/content/docs/fixing/a-page.md");
+    expect(found?.line).toBe(3);
+    expect(found?.message).toContain("says two `VPN` codes");
+    expect(found?.message).toContain("three");
+  });
+
+  it("leaves a family the reference does not declare alone", () => {
+    expect(
+      familyViolations(
+        artefact("VPN-1", "VPN-2"),
+        sends("See the two `VPN` codes, and the four `HTTP` codes."),
+      ),
+    ).toEqual([]);
+  });
+
+  it("refuses a reference with no codes in it", () => {
+    const [found, ...rest] = familyViolations("", sends("the two `VPN` codes"));
+    expect(rest).toEqual([]);
+    expect(found?.where).toBe("vendor/lemonfiber/reference/error-codes.md");
+    expect(found?.message).toContain("no error codes found");
+  });
+
+  it("refuses a site where no sentence says how big a family is", () => {
+    const [found, ...rest] = familyViolations(
+      artefact("VPN-1"),
+      sends("The VPN checks are over here."),
+    );
+    expect(rest).toEqual([]);
+    expect(found?.message).toContain("no sentence says how many codes");
   });
 });

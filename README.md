@@ -112,6 +112,34 @@ check against. A tree mirror's own root route is the one place an owned page may
 sit beside a mirror: it is the section landing page, and nothing upstream
 renders there.
 
+### Counts, against what is counted
+
+This site's pages state numbers about the trees under `vendor/`: nineteen
+services, twenty-five payload kinds, sixty-eight features. Each one is a
+transcription of something machine-readable, and goes false when a pin moves.
+
+`src/lib/inventories.ts` names, for each such set, the tree it is declared in,
+how to read the members out of it, and the sentence shapes the prose states the
+number in. `src/lib/counts.ts` derives the number on every run and compares.
+**No number is written down in either file** — a check that carried its own copy
+of the answer would be one more transcription to go stale.
+
+Where a page sets the members out in a table rather than only counting them, the
+table is compared against the source in both directions, as the error-code page
+is. Three failures are reported, not one:
+
+- a sentence whose number is not the number the source has;
+- a table with a member the source does not have, or without one it does;
+- **a claim no sentence states any more.** A rewording would otherwise leave a
+  check matching nothing and reporting success, which is the unchecked number it
+  replaced.
+
+Some numbers on this site are not derivable from anything vendored and are not
+checked: the four codes raised as `critical` and the code-to-exit-code mapping
+on `fixing/every-error-by-code`, because no artefact says which severity or
+which exit any one code carries; and the eleven repositories in the org, which
+no tree here enumerates. Those stay hand-held.
+
 ## How a mirrored page is built
 
 `src/lib/mirror.ts` holds the rules as pure functions; `src/lib/mirror-source.ts`
