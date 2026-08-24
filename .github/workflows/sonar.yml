@@ -22,6 +22,6 @@ jobs:
   gate:
     uses: lemonfiber/spec/.github/workflows/sonar-gate.yml@93bf49c96ae5b12e49daea523b1d66ae294babb0 # main
     with:
-      allowed-open: 11
+      allowed-open: 1
     secrets:
       sonar-token: ${{ secrets.SONAR_TOKEN }}
