@@ -236,6 +236,28 @@ describe("rewriteLinks", () => {
   const at = (body: string, from = "00-overview/roadmap.md"): string =>
     rewriteLinks(body, tree, revision, from, routes);
 
+  it("leaves a link inside a fenced example exactly as it was written", () => {
+    const body = [
+      "See [a](AGENTS.md).",
+      "",
+      "```md",
+      "[a](AGENTS.md)",
+      "```",
+    ].join("\n");
+
+    const written = rewriteLinks(body, one, revision, "", new Map());
+
+    // The prose link is rewritten; the one being demonstrated is not.
+    expect(written).toContain(`See [a](${FORGE}/`);
+    expect(written).toContain("```md\n[a](AGENTS.md)\n```");
+  });
+
+  it("takes the rest of the document with an unclosed fence, as a renderer does", () => {
+    const body = ["```", "[a](AGENTS.md)"].join("\n");
+
+    expect(rewriteLinks(body, one, revision, "", new Map())).toBe(body);
+  });
+
   it("sends a link out of a mirrored file from beside it, not through it", () => {
     // `one` mirrors a single README, so its `path` is the file itself. Resolving
     // a sibling against it produced `README.md/AGENTS.md`, which 404s upstream.
