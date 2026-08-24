@@ -54,7 +54,8 @@ the other — both answer to the contract.
 **`lemonfiber-web` consumes `sdk-ts` and `brand`**, and is itself embedded into
 the binary as a pinned submodule at build time.
 
-**Every repository feeds this site.** Each one's own documentation arrives as a
+**Nine repositories feed this site** — every one but the two websites, which
+render rather than being rendered. Each one's own documentation arrives as a
 git submodule pinned to an exact revision and is rendered rather than copied.
 Nothing is fetched during a build. The specification arrives the same way and is
 rendered here, at [`/spec/`](/spec/) — it is the largest body of prose the org has,

@@ -9,6 +9,7 @@
  * Pure functions over text. Reading the tree is `scripts/guards.ts`.
  */
 
+import { asNumber, inWords, matches, SAID, type Page } from "./counts.ts";
 import type { Violation } from "./guards";
 // Extension named: `scripts/guards.ts` loads this module in node directly,
 // which resolves no extension of its own.
@@ -22,12 +23,6 @@ const BULLET = /^- `([^`]+)`$/gm;
 
 /** The first cell of a table row on the page: `` | `VPN-1` | … ``. */
 const FIRST_CELL = /^\|\s*`([^`]+)`\s*\|/gm;
-
-const matches = (pattern: RegExp, text: string): string[] => {
-  const found: string[] = [];
-  for (const match of text.matchAll(pattern)) found.push(captured(match, 1));
-  return found;
-};
 
 /** Every code the generated reference lists. */
 export function codesInArtefact(text: string): string[] {
@@ -52,7 +47,7 @@ const at = (where: string, message: string): Violation => ({
 });
 
 const PAGE = "src/content/docs/fixing/every-error-by-code.md";
-const ARTEFACT = "vendor/lemonfiber/reference/error-codes.md";
+export const ARTEFACT = "vendor/lemonfiber/reference/error-codes.md";
 
 const listed = (codes: readonly string[]): string =>
   [...codes].sort((a, b) => a.localeCompare(b)).join(", ");
@@ -96,6 +91,71 @@ export function codeViolations(artefact: string, page: string): Violation[] {
       at(
         PAGE,
         `the page documents these and lemonfiber cannot raise them: ${listed(unraisable)}`,
+      ),
+    );
+
+  return found;
+}
+
+/** A family and how many codes are in it: `` the eight `VPN` codes ``. */
+const FAMILY_SIZE = new RegExp(
+  `\\b(${SAID})\\s+\`([A-Z][A-Z0-9]*)\`\\s+codes\\b`,
+  "gi",
+);
+
+/** How many codes each family the reference declares has. */
+export function familySizes(artefact: string): Map<string, number> {
+  const sizes = new Map<string, number>();
+  for (const family of matches(/^- `([A-Z][A-Z0-9]*)-\d+`$/gm, artefact))
+    sizes.set(family, (sizes.get(family) ?? 0) + 1);
+  return sizes;
+}
+
+/**
+ * Every sentence naming a family beside how many codes it has.
+ *
+ * The pages that walk one family — the VPN checks, the storage checks, the
+ * support bundle — each send the reader to the code page for "the eight `VPN`
+ * codes". A code added to a family upstream reaches the code page through the
+ * guard above and leaves those sentences behind, so the number is read out of
+ * the reference rather than kept by hand.
+ */
+export function familyViolations(
+  artefact: string,
+  pages: readonly Page[],
+): Violation[] {
+  const sizes = familySizes(artefact);
+  if (sizes.size === 0)
+    return [
+      at(
+        ARTEFACT,
+        "no error codes found — the reference is missing or unreadable",
+      ),
+    ];
+
+  const found: Violation[] = [];
+  let stated = 0;
+
+  for (const page of pages)
+    for (const match of page.text.matchAll(FAMILY_SIZE)) {
+      const said = captured(match, 1);
+      const family = captured(match, 2);
+      const size = sizes.get(family);
+      if (size === undefined) continue;
+      stated += 1;
+      if (asNumber(said) === size) continue;
+      found.push({
+        where: page.path,
+        line: page.text.slice(0, match.index).split("\n").length,
+        message: `says ${said} \`${family}\` codes where ${ARTEFACT} declares ${inWords(size)}`,
+      });
+    }
+
+  if (stated === 0)
+    found.push(
+      at(
+        ARTEFACT,
+        "no sentence says how many codes a family has — a rewording left this watching nothing",
       ),
     );
 

@@ -3,7 +3,9 @@
 import { readdir, readFile, realpath } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
 
-import { codeViolations } from "../src/lib/codes.ts";
+import { codeViolations, familyViolations } from "../src/lib/codes.ts";
+import { countViolations, type Page } from "../src/lib/counts.ts";
+import { INVENTORIES } from "../src/lib/inventories.ts";
 import {
   collisionViolations,
   fileViolations,
@@ -96,11 +98,41 @@ const text = async (path: string): Promise<string> => {
     return "";
   }
 };
+const errorCodes = await text("vendor/lemonfiber/reference/error-codes.md");
 found.push(
   ...codeViolations(
-    await text("vendor/lemonfiber/reference/error-codes.md"),
+    errorCodes,
     await text("src/content/docs/fixing/every-error-by-code.md"),
   ),
+);
+
+// Every number the site states about a tree it does not own. The pages are
+// this site's own prose only: a mirrored page is a symlink, and belongs to
+// the repository it came from.
+const prose: Page[] = [];
+for (const path of kept.filter(
+  (p) => p.startsWith(CONTENT + sep) && /\.(md|mdx)$/.test(p),
+))
+  prose.push({ path: rel(path), text: await readFile(path, "utf8") });
+
+const specPaths: string[] = [];
+const specLinks: string[] = [];
+await walk(join(ROOT, "vendor", "spec"), specPaths, specLinks);
+
+found.push(
+  ...countViolations(
+    INVENTORIES,
+    {
+      stack: await text("vendor/lemonfiber-media-stack/stack.toml"),
+      contract: await text("vendor/lemonfiber/contract/web-api.contract.json"),
+      commands: await text("vendor/lemonfiber/reference/commands.md"),
+      webApi: await text("vendor/spec/20-architecture/contracts/web-api.md"),
+      mirrors: await text("mirrors.json"),
+      spec: specPaths.map(rel),
+    },
+    prose,
+  ),
+  ...familyViolations(errorCodes, prose),
 );
 
 if (found.length > 0) {
@@ -109,5 +141,5 @@ if (found.length > 0) {
   process.exit(1);
 }
 console.log(
-  `guards: clean (${String(authored.length)} authored, ${String(state.length)} mirror(s))`,
+  `guards: clean (${String(authored.length)} authored, ${String(state.length)} mirror(s), ${String(prose.length)} page(s))`,
 );
