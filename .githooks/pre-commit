@@ -1,0 +1,23 @@
+#!/bin/sh
+# The fast checks CI runs, before the commit rather than after the push.
+#
+# Fast only: the slow gates stay in this repository’s own `ci`, because a hook
+# that takes a minute is a hook people turn off, and one that is off enforces
+# nothing (OPS-R51, Q-R57).
+#
+# Each check is skipped where its tool is absent, so a contributor without it
+# gets CI’s answer rather than a hook that cannot run.
+
+set -eu
+
+staged=$(git diff --cached --name-only --diff-filter=ACM)
+[ -n "$staged" ] || exit 0
+[ -x node_modules/.bin/prettier ] || exit 0
+
+# shellcheck disable=SC2086
+node_modules/.bin/prettier --check --ignore-unknown $staged || {
+	echo "pre-commit: prettier would change a staged file. Run \`npx prettier --write .\`." >&2
+	exit 1
+}
+
+exit 0
