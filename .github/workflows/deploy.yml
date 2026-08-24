@@ -21,7 +21,12 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-          submodules: recursive
+          # The nine repositories under `vendor/`, and not the submodules
+          # they carry themselves. `lemonfiber` embeds
+          # `lemonfiber-media-stack`; this site renders the stack from its
+          # own pin at `vendor/lemonfiber-media-stack`, and reads that copy
+          # for the page's revision stamp, so the nested one is never read.
+          submodules: true
 
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
