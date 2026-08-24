@@ -1,0 +1,59 @@
+# The addresses this site sends a reader to, fetched.
+#
+# `npm run links` runs on every pull request and proves the addresses this build
+# generates name bytes the checkout holds. It never opens a socket, so it cannot
+# see a repository that was made private, a page that was retired, or a host
+# that stopped answering. This does, and it runs on a schedule rather than per
+# pull request: the built site carries well over a thousand addresses, most of
+# them at one forge, and a per-PR run of that would be slow, rate-limited, and
+# red for reasons no author of the branch caused. A gate people learn to re-run
+# is worse than one that never claimed to be a gate.
+#
+# A red run here is about the world, not about a commit, and it is read as such.
+# `workflow_dispatch` is for when a pin moves and the reviewer wants the answer
+# before merging rather than the next morning.
+name: links
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Daily, off the hour.
+    - cron: "25 5 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  outward:
+    name: outward
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          # The nine repositories under `vendor/`, and not the submodules they
+          # carry themselves, exactly as the gate takes them.
+          submodules: true
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install exactly what the lockfile says
+        run: npm ci --ignore-scripts
+
+      - name: Build the site a reader gets
+        run: |
+          npm run messages
+          npm run build
+
+      - name: Every address that leaves the site
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          args: >-
+            --no-progress
+            --config lychee-site.toml
+            --root-dir ${{ github.workspace }}/dist
+            dist/**/*.html
+          fail: true

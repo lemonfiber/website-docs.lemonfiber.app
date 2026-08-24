@@ -12,9 +12,10 @@ module.exports = {
       name: "rules-know-nothing-of-the-filesystem",
       severity: "error",
       comment:
-        "src/lib/guards.ts states the rules; scripts/ reads the tree and applies " +
-        "them. A dependency the other way makes the rules untestable.",
-      from: { path: "^src/lib/guards\\.ts$" },
+        "src/lib/guards.ts and src/lib/links.ts state the rules; scripts/ reads " +
+        "the tree and applies them. A dependency the other way makes the rules " +
+        "untestable.",
+      from: { path: "^src/lib/(guards|links)\\.ts$" },
       to: { path: "^(scripts|node_modules/(node:)?fs)" },
     },
     {
@@ -37,6 +38,7 @@ module.exports = {
           "^src/app\\.css$",
           "^src/content\\.config\\.ts$",
           "^scripts/guards\\.ts$",
+          "^scripts/links\\.ts$",
           "^astro\\.config\\.ts$",
         ],
       },

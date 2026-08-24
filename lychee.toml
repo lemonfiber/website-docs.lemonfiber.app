@@ -4,6 +4,12 @@
 # leaves it to starlight-links-validator, which resolves routes against the real
 # route table and fails the build on any that do not. lychee checks what leaves
 # the site.
+#
+# This is the file the org-shared `hygiene` job reads, and that job checks out
+# without submodules, so the scan it configures sees this repository's own
+# markdown and none of the nine repositories rendered from `vendor/`. The scan
+# over the built site, which is where mirrored prose exists, is configured by
+# `lychee-site.toml` and run by the `links` workflow.
 root_dir = "/home/runner/work/website-docs.lemonfiber.app/website-docs.lemonfiber.app"
 exclude = ["^file:"]
 exclude_loopback = true
