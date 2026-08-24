@@ -128,7 +128,10 @@ export function rollup(deliverables: readonly Deliverable[]): Rollup {
   };
 }
 
-const HEADING = /^##\s+(M[\d.]+)\s*—\s*(.+)$/;
+const HEADING = /^##\s+(M[\d.]+)\s*—\s*(\S.*)$/;
+
+/** The ` · mark` a milestone heading ends with. */
+const MARK_TAIL = /·\s*[^\s·]+\s*$/;
 
 /** The first line of a block of text. */
 export function firstLine(text: string): string {
@@ -139,9 +142,7 @@ export function firstLine(text: string): string {
 export function headingOf(line: string): { id: string; title: string } | null {
   const found = HEADING.exec(line);
   if (found === null) return null;
-  const title = captured(found, 2)
-    .replace(/\s*·\s*\S+\s*$/, "")
-    .trim();
+  const title = captured(found, 2).replace(MARK_TAIL, "").trim();
   return { id: captured(found, 1), title: plain(title) };
 }
 

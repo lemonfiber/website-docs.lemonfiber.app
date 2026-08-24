@@ -51,7 +51,7 @@ export function chromeProse(source: string): string[] {
     .replace(/<!--[\s\S]*?-->/g, "")
     .replace(/<(style|script)[\s\S]*?<\/\1>/g, "")
     .replace(/\{[^{}]*\}/g, "")
-    .replace(/<[^>]*>/g, "\n");
+    .replace(/<[^<>]*>/g, "\n");
 
   const found: string[] = [];
   for (const chunk of stripped.split("\n")) {
@@ -204,11 +204,12 @@ export function collisionViolations(
   return found;
 }
 
+/** Where a violation is, carrying the line when it has one. */
+function located(violation: Violation): string {
+  if (violation.line === null) return violation.where;
+  return `${violation.where}:${String(violation.line)}`;
+}
+
 export function format(found: readonly Violation[]): string {
-  return found
-    .map(
-      (v) =>
-        `  ${v.where}${v.line === null ? "" : `:${String(v.line)}`}  ${v.message}`,
-    )
-    .join("\n");
+  return found.map((v) => `  ${located(v)}  ${v.message}`).join("\n");
 }

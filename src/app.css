@@ -50,12 +50,10 @@
 
   /* Lemon is lemon in both themes, so what sits on it does not follow --text. */
   --on-lemon: var(--lf-color-ink);
-}
 
-/* Starlight reads its own scale. Point it at the brand rather than restyling
-   each component. Both themes resolve through the same names, so brand's ink
-   block flips them without a second declaration here. */
-:root {
+  /* Starlight reads its own scale. Point it at the brand rather than restyling
+     each component. Both themes resolve through the same names, so brand's ink
+     block flips them without a second declaration here. */
   --sl-font: var(--sans);
   --sl-font-mono: var(--mono);
 

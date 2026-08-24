@@ -53,7 +53,8 @@ const FRONTMATTER = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/;
 const SCALAR = /^([A-Za-z][A-Za-z0-9_-]*):[ \t]+(\S.*)$/;
 const HEADING = /^#[ \t]+(\S.*)$/m;
 const MARKUP = /[`*_]/g;
-const LINK = /(!?\[[^\]]*\]\()([^)]*)(\))/g;
+/** A markdown link. Its text and its destination each stop at a bracket. */
+const LINK = /(!?\[[^[\]]*\]\()([^[)]*)(\))/g;
 const ABSOLUTE = /^(?:[a-z][a-z0-9+.-]*:|\/\/|#|\/)/i;
 const TAG = /<[a-zA-Z][^>]*>/g;
 const ATTRIBUTE = /(\s)(src|href|srcset)="([^"]*)(")/g;
@@ -294,9 +295,14 @@ export function rewriteLinks(
     return other === undefined ? null : `/${other}/${anchor}`;
   };
 
-  const moved = (target: string, kind: "raw" | "blob"): string | null => {
-    if (!ABSOLUTE.test(target)) return here(target) ?? away(target, kind);
-    return crossRoute(target, cross);
+  /** Where a target points once rewritten; `routed` allows a page of this site. */
+  const moved = (
+    target: string,
+    kind: "raw" | "blob",
+    routed = true,
+  ): string | null => {
+    if (ABSOLUTE.test(target)) return crossRoute(target, cross);
+    return (routed ? here(target) : null) ?? away(target, kind);
   };
 
   const prose = (text: string): string => {
@@ -315,10 +321,8 @@ export function rewriteLinks(
       tag.replace(
         ATTRIBUTE,
         (whole, open: string, name: string, target: string, close: string) => {
-          const kind = name === "href" ? "blob" : "raw";
-          const resolved = ABSOLUTE.test(target)
-            ? crossRoute(target, cross)
-            : ((name === "href" ? here(target) : null) ?? away(target, kind));
+          const link = name === "href";
+          const resolved = moved(target, link ? "blob" : "raw", link);
           if (resolved === null) return whole;
           return `${open}${name}="${resolved}${close}`;
         },
