@@ -1,4 +1,9 @@
 # Hooks mirror CI and enforce nothing CI does not.
+#
+# Not installed. `lefthook install` writes .git/hooks, which git ignores while
+# core.hooksPath points at .githooks — and lefthook 2.x refuses to install
+# against that setting, offering `--reset-hooks-path`, which turns the pre-push
+# guard off. The pre-push slot belongs to .githooks/pre-push.
 pre-commit:
   parallel: true
   commands:
@@ -6,9 +11,4 @@ pre-commit:
       glob: "*.{ts,mjs,astro,css,json,md,mdx,yml,yaml}"
       run: npx prettier --check {staged_files}
     guard:
-      run: node scripts/guards.mjs
-
-pre-push:
-  commands:
-    gate:
-      run: npm run ci
+      run: node scripts/guards.ts
