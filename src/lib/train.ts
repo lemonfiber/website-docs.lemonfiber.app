@@ -185,8 +185,8 @@ export function parseBoard(source: string): Board {
 }
 
 const KEY = "[a-z_][a-z0-9_-]*";
-const SCALAR = new RegExp(`^(${KEY})\\s*=\\s*"([^"]*)"`);
-const LIST_OPEN = new RegExp(`^(${KEY})\\s*=\\s*\\[`);
+const SCALAR = new RegExp(String.raw`^(${KEY})\s*=\s*"([^"]*)"`);
+const LIST_OPEN = new RegExp(String.raw`^(${KEY})\s*=\s*\[`);
 const QUOTED = /"([^"]*)"/g;
 const TABLE = /^\[([a-z_]+)\]/;
 const COMMENT = /^#\s?(.*)$/;
@@ -196,6 +196,50 @@ function quoted(line: string): string[] {
   const found: string[] = [];
   for (const match of line.matchAll(QUOTED)) found.push(captured(match, 1));
   return found;
+}
+
+/** What the lines read so far have said. */
+interface Reading {
+  headline: string;
+  goals: string[];
+  scalars: Record<string, string>;
+  pins: Record<string, string>;
+  table: string;
+  collecting: boolean;
+}
+
+/** A comment. The first one is the release's own sentence. */
+function readComment(into: Reading, line: string): boolean {
+  const comment = COMMENT.exec(line);
+  if (comment === null) return false;
+  if (into.headline === "") into.headline = captured(comment, 1);
+  return true;
+}
+
+/** A line of the goals array, whether it opens the array or continues it. */
+function readGoal(into: Reading, line: string): boolean {
+  const list = LIST_OPEN.exec(line);
+  const opens = list !== null && captured(list, 1) === "goals";
+  if (!into.collecting && !opens) return false;
+  into.goals.push(...quoted(line));
+  into.collecting = !line.includes("]");
+  return true;
+}
+
+/** A table header, which names where the scalars below it belong. */
+function readTable(into: Reading, line: string): boolean {
+  const opened = TABLE.exec(line);
+  if (opened === null) return false;
+  into.table = captured(opened, 1);
+  return true;
+}
+
+/** A quoted scalar, filed under the table it sits in. */
+function readScalar(into: Reading, line: string): void {
+  const scalar = SCALAR.exec(line);
+  if (scalar === null) return;
+  const target = into.table === "pins" ? into.pins : into.scalars;
+  target[captured(scalar, 1)] = captured(scalar, 2);
 }
 
 /**
@@ -208,56 +252,30 @@ function quoted(line: string): string[] {
  * what it has.
  */
 export function parseManifest(source: string): Manifest {
-  const scalars: Record<string, string> = {};
-  const goals: string[] = [];
-  const pins: Record<string, string> = {};
-  let headline = "";
-  let table = "";
-  let collecting = false;
+  const into: Reading = {
+    headline: "",
+    goals: [],
+    scalars: {},
+    pins: {},
+    table: "",
+    collecting: false,
+  };
 
   for (const raw of source.split("\n")) {
     const line = raw.trim();
-
-    const comment = COMMENT.exec(line);
-    if (comment !== null) {
-      if (headline === "") headline = captured(comment, 1);
-      continue;
-    }
-
-    if (collecting) {
-      goals.push(...quoted(line));
-      if (line.includes("]")) collecting = false;
-      continue;
-    }
-
-    const opened = TABLE.exec(line);
-    if (opened !== null) {
-      table = captured(opened, 1);
-      continue;
-    }
-
-    const list = LIST_OPEN.exec(line);
-    if (list !== null && captured(list, 1) === "goals") {
-      goals.push(...quoted(line));
-      collecting = !line.includes("]");
-      continue;
-    }
-
-    const scalar = SCALAR.exec(line);
-    if (scalar === null) continue;
-    const key = captured(scalar, 1);
-    const value = captured(scalar, 2);
-    if (table === "pins") pins[key] = value;
-    else scalars[key] = value;
+    if (readComment(into, line)) continue;
+    if (readGoal(into, line)) continue;
+    if (readTable(into, line)) continue;
+    readScalar(into, line);
   }
 
   return {
-    version: scalars["version"] ?? "",
-    headline: plain(headline),
-    delivers: plain(scalars["delivers"] ?? ""),
-    goals,
-    releasedOn: scalars["released_on"] ?? "",
-    pins,
+    version: into.scalars["version"] ?? "",
+    headline: plain(into.headline),
+    delivers: plain(into.scalars["delivers"] ?? ""),
+    goals: into.goals,
+    releasedOn: into.scalars["released_on"] ?? "",
+    pins: into.pins,
   };
 }
 
