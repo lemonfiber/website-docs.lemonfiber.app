@@ -31,6 +31,12 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: true
+          # Whole histories. The default is a shallow fetch, and a shallow
+          # submodule can only see one commit — so counting what a pin has not
+          # taken gives 1 whatever the truth is, and the age of the oldest
+          # unpinned commit becomes the age of the newest. The measure would
+          # read `0d` on a pin a year behind.
+          fetch-depth: 0
           persist-credentials: false
 
       - name: How long each pin has been behind
