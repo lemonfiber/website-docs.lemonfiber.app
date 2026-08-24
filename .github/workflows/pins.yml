@@ -1,0 +1,100 @@
+# This site renders nine repositories from pinned revisions, which is the design
+# (ADR-0015, REPO-R46): a reader gets a page that agrees with itself, and a
+# revision is bumped deliberately rather than drifting under the build.
+#
+# The cost of that is a gate can be correct and still pass on the wrong input.
+# `every-error-by-code.md` claims to list every error lemonfiber can raise, and a
+# check holds it to the codes the vendored source declares — bidirectional, and
+# it works. It passed while the page was missing two codes, because the pin sat
+# one commit before the code that raises them. Nothing was broken; the artefact
+# was old.
+#
+# So this asks the question no other check asks: how long has a pin been behind?
+# Not how many commits — a pin eleven commits and six hours behind is fine, and
+# one two commits and three months behind is not.
+name: pins
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Weekly. A pin is bumped deliberately, so a daily nag would mostly report
+    # the same considered decision back at whoever made it.
+    - cron: "40 7 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  age:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: true
+          persist-credentials: false
+
+      - name: How long each pin has been behind
+        env:
+          # Days a pin may lag before it is staleness rather than a decision.
+          ALLOWED_DAYS: "21"
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os
+          import re
+          import subprocess
+          import time
+
+          allowed = int(os.environ["ALLOWED_DAYS"]) * 86400
+          now = time.time()
+
+
+          def git(path, *args):
+              done = subprocess.run(
+                  ["git", "-C", path, *args], capture_output=True, text=True
+              )
+              return done.stdout.strip() if done.returncode == 0 else None
+
+
+          listing = subprocess.run(
+              ["git", "submodule", "status"], capture_output=True, text=True
+          ).stdout
+
+          stale = []
+          print(f"{'repository':<26} {'pinned':<9} {'behind':>6}  stale for")
+          for line in listing.splitlines():
+              found = re.match(r"[-+ ]?([0-9a-f]{40})\s+(\S+)", line)
+              if not found:
+                  continue
+              sha, path = found.groups()
+              name = path.split("/")[-1]
+
+              git(path, "fetch", "--quiet", "origin")
+              behind = git(path, "rev-list", "--count", f"{sha}..origin/main")
+              if behind is None:
+                  print(f"{name:<26} {sha[:7]:<9} {'?':>6}  could not be read")
+                  continue
+
+              # The oldest commit this pin has not taken. How long the site has
+              # been rendering without it is what makes a pin stale, not how many
+              # arrived since.
+              oldest = git(path, "log", "--format=%ct", "--reverse", f"{sha}..origin/main")
+              waited = now - int(oldest.splitlines()[0]) if oldest else 0
+              days = int(waited // 86400)
+
+              says = "current" if behind == "0" else f"{days}d"
+              print(f"{name:<26} {sha[:7]:<9} {behind:>6}  {says}")
+              if waited > allowed:
+                  stale.append(f"{name}: {behind} commits, oldest unpinned {days} days old")
+
+          if not stale:
+              print("\nevery pin is within the window.")
+              raise SystemExit(0)
+
+          print("\n" + "\n".join(stale))
+          print(
+              "::error::a pinned revision has been behind for longer than the window. "
+              "Bump it with `git submodule update --remote <path>` and check the pages it renders."
+          )
+          raise SystemExit(1)
+          PY
