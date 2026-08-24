@@ -1,6 +1,6 @@
 ---
 title: Every error by code
-description: Every error code lemonfiber raises, what it means, and what to do about it, read from the crate that raises each one.
+description: Every error code lemonfiber raises, what it means, and what to do about it, read from the crate that raises each one at the revision this site pins.
 sidebar:
   order: 2
 ---
