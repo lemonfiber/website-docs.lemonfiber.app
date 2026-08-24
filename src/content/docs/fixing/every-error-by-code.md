@@ -9,7 +9,7 @@ When lemonfiber refuses to do something, it says so in four parts: a **code**, a
 
 A code looks like `VPN-1`: a family, then a number. The family says which part of the stack raised it. The number identifies the problem within that family. This page lists every one of them.
 
-There is no code on this page that lemonfiber cannot raise, and no code lemonfiber can raise that is missing from it.
+There is no code on this page that lemonfiber cannot raise, and no code it can raise that is missing from it — checked against the revision of lemonfiber this site renders, which is named on the [changelog](/project/changelog/). A code added to lemonfiber after that revision appears here when the revision moves.
 
 ## How to read a row
 
