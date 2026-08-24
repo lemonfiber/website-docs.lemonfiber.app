@@ -7,8 +7,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
-permissions:
-  contents: read
+# Nothing by default, rather than nothing written down: an absent `permissions`
+# key falls back to the repository's setting, which can be wider than this. Each
+# job below asks for exactly what it needs, so neither holds the other's.
+permissions: {}
 
 concurrency:
   group: pages
@@ -17,6 +19,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -33,7 +37,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
-      - run: npm ci
+      - run: npm ci --ignore-scripts
 
       - name: Build the site
         run: npm run messages && npm run build
