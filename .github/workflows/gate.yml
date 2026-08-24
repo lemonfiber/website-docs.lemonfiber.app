@@ -1,6 +1,7 @@
 # This repo's own gate: format, lint, types, structural guards, 100% coverage,
-# and the build. Everything it runs is a script `npm run ci` also runs locally,
-# so a red pipeline is reproducible on a laptop.
+# the build, the addresses the build sends a reader away to, and the
+# accessibility sweep. Everything it runs is a script `npm run ci` also runs
+# locally, so a red pipeline is reproducible on a laptop.
 name: gate
 
 on: [pull_request]

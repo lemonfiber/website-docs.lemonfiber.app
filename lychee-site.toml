@@ -1,0 +1,38 @@
+# The network link check over the built site, read by the `links` workflow.
+#
+# It is a second file rather than an edit to `lychee.toml` because lychee reads
+# that name from whatever directory it runs in, and the org-shared `hygiene`
+# job runs one here over the source tree. The two scans see different trees:
+# hygiene checks out without submodules, so the nine repositories this site
+# renders are absent from it and none of their prose is scanned. This one reads
+# `dist/`, where every mirrored page is rendered and every link in it has been
+# rewritten — the only place all of it exists at once (REPO-R48).
+#
+# What is checked here is what leaves the site. A site route resolves to a file
+# under `dist/`, and `--root-dir` on the command line lets lychee resolve such a
+# link far enough to recognise it as local; the first exclusion then leaves it
+# to starlight-links-validator, which resolves routes against the real route
+# table and fails the build on any that do not.
+exclude = [
+  # A route on this site, checked by the build's own validator.
+  "^file:",
+  # This site's own pages, written as absolute addresses. Fetching them checks
+  # the deployment rather than the link, and the build under test is that site.
+  "^https://docs\\.lemonfiber\\.app",
+  # Resets the connection often enough that the colour of a run would report on
+  # the host rather than on this site. A check people re-run blindly is worse
+  # than one link left unchecked.
+  "^https://no-color\\.org",
+]
+
+exclude_loopback = true
+
+# 429 is a rate limit, not a dead address.
+accept = ["200", "206", "429"]
+
+# The forge holds most of what this site points at, so the run is deliberately
+# unhurried: few connections at a time, and a retry before a verdict.
+max_concurrency = 8
+max_retries = 3
+retry_wait_time = 5
+timeout = 20

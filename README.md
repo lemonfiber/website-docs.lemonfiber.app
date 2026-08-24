@@ -63,6 +63,8 @@ it is `git config core.hooksPath .githooks`, per clone, and git cannot read
 | `arch`         | dependency-cruiser                                            |
 | `coverage`     | Vitest, 100% across statements, branches, functions and lines |
 | `build`        | The site builds, links validate, Pagefind indexes             |
+| `links`        | Every address the built site sends a reader away to           |
+| `a11y`         | axe over the built site, both themes, WCAG 2.1 AA             |
 
 ### On the type gate
 
@@ -158,6 +160,41 @@ wires them into the content collection. For each page it:
   and the exact blob the page came from.
 
 Routes are lower case, and a `README` is the index of the directory holding it.
+
+## The links that leave
+
+Starlight's validator resolves a link that stays on this site against the route
+table, and the build fails on one that does not resolve. It says nothing about a
+link that leaves — and on a mirrored page most links do, because a relative link
+in another repository's prose is rewritten to that repository's file at the
+pinned revision. That address is a claim about bytes already in the checkout, so
+it can be checked without a network.
+
+`scripts/links.ts` reads `dist/` after the build and applies the rules in
+`src/lib/links.ts` to every address that points into a repository this build
+rendered from:
+
+- **The path exists.** `git ls-tree` at the pinned revision answers, so an
+  address into a file that is not there fails the gate. This is what a link
+  resolved against a file rather than against the directory holding it looks
+  like: `blob/<sha>/README.md/AGENTS.md`, a path no revision has ever held.
+- **The revision is this build's.** An address stamped with any other revision
+  is one this build cannot vouch for.
+- **No rewritten address inside a code example.** An example showing
+  `../AGENTS.md` teaches a relative link; rewritten, it shows a hundred-character
+  absolute URL and no longer demonstrates what it was written for. A pinned
+  revision inside a `<pre>` is how one is recognised, since that revision is
+  something only this build knows.
+
+It opens no socket, so it is fast, offline and deterministic, and it runs on
+every pull request as part of `npm run ci`.
+
+What it cannot see is the world: a repository made private, a page retired, a
+host that stopped answering. That is the `links` workflow, which builds the site
+and runs lychee over `dist/` on a schedule, configured by `lychee-site.toml`.
+It is not a pull-request gate — the built site carries well over a thousand
+outward addresses, most of them at one forge, and a per-PR run of that would be
+slow, rate-limited, and red for reasons the branch did not cause.
 
 ## What it consumes
 

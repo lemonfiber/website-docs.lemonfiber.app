@@ -32,5 +32,9 @@ coverage:
 build:
     npm run build
 
+# Every address the built site carries out of itself.
+links:
+    npm run links
+
 dev:
     npm run dev
