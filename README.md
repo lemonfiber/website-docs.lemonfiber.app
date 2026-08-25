@@ -105,6 +105,10 @@ what the tests exercise. They enforce:
 - No prose in the chrome — every word the chrome shows comes from `messages/`.
   This is scoped to `src/**/*.astro`; `src/content/**` is exempt, because on a
   documentation site the prose is the product.
+- **A lockfile that resolves the revision its declaration names.** The one
+  dependency pinned by commit is the brand package. `npm ci` re-resolves a git
+  dependency rather than refusing a lockfile that names a different commit, so
+  the two are read here and compared.
 - **No real file under a mirror.** A mirrored route must be a symlink into
   `vendor/`, never a copy.
 - **No owned page whose slug collides with a mirrored path.** One home per fact.
@@ -141,6 +145,35 @@ checked: the four codes raised as `critical` and the code-to-exit-code mapping
 on `fixing/every-error-by-code`, because no artefact says which severity or
 which exit any one code carries; and the eleven repositories in the org, which
 no tree here enumerates. Those stay hand-held.
+
+### When a source moves under its guard
+
+A guard is only as true as the tree it reads, and every tree under `vendor/` is
+pinned. A recount stays green while the pin sits in front of the commit that
+changed what it counts: `api/the-envelope` named six read endpoints, and the
+listing guard agreed with it in both directions, against a contract upstream had
+already grown.
+
+`.github/workflows/pins.yml` runs weekly and asks two questions.
+
+`age` asks how long each pin has been behind and fails past three weeks. That is
+the measure for a mirror of something abandoned, and it is blind to this: it
+called every pin healthy on the morning the endpoint table was wrong, because
+the pin was two days old.
+
+`sources` asks the other question, and applies no window at all. Has a pin gone
+behind on a file a guard here reads? The paths are the declarations themselves —
+every inventory's `source`, and the artefact the error-code guard holds the
+reference page to — so a new inventory is watched from the day it is declared
+and nothing is written down twice. It names the commits rather than counting
+them: a repository commits far more than this site reads, and the count of
+everything says nothing about whether a page here has gone wrong.
+
+`node scripts/pins.ts` is the whole of that job, and runs here as it runs
+there.
+
+Neither runs on a pull request. A build may not reach the network, so both sit
+on the schedule, where fetching is what they are for.
 
 ## How a mirrored page is built
 
