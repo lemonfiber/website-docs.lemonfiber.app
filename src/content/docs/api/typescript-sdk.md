@@ -17,9 +17,10 @@ disagrees with the contract, the client is wrong.
 
 **Status: unreleased.** Reads, actions, the event stream and the generated types
 are all in; the package is not on npm yet. The surface it talks to is
-`lemonfiber ui` — six read endpoints, `POST /api/actions/<name>` and
-`GET /api/events`, on a loopback socket behind a token minted for that run.
-[The envelope](/api/the-envelope/) has it in more detail.
+`lemonfiber ui` — one read endpoint for each question a command answers,
+`POST /api/actions/<name>` and `GET /api/events`, on a loopback socket behind a
+token minted for that run. [The envelope](/api/the-envelope/) sets the endpoints
+out one by one, and has the rest in more detail.
 
 ## Install
 

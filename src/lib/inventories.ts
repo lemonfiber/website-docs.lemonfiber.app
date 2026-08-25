@@ -21,6 +21,7 @@ const MIRRORS = "mirrors.json";
 const SPEC = "vendor/spec";
 
 const DOCS = "src/content/docs/";
+const ENVELOPE_PAGE = `${DOCS}api/the-envelope.md`;
 const KINDS_PAGE = `${DOCS}api/kinds.md`;
 const TUI_PAGE = `${DOCS}commands/the-tui.md`;
 const CODES_PAGE = `${DOCS}fixing/every-error-by-code.md`;
@@ -186,6 +187,10 @@ const presets = (commands: string): string[] => {
 /** The endpoints the web-API contract sets out under reading, not streaming. */
 const readEndpoints = (webApi: string): string[] =>
   matches(/GET \/api\/([a-z]+)/g, section(webApi, "Reading"));
+
+/** The endpoints a page sets out one per row, named the way the contract names them. */
+const endpointsListed = (text: string): string[] =>
+  matches(/^GET \/api\/([a-z]+)/gm, columnUnder(text, "Endpoint").join("\n"));
 
 const FEATURE =
   /^vendor\/spec\/10-functional\/features\/[a-z]-[a-z-]+\/[a-z]\d+-[a-z0-9-]+\.md$/;
@@ -397,10 +402,11 @@ export const INVENTORIES: readonly Inventory[] = [
     what: "read endpoints",
     source: WEB_API,
     members: (sources) => readEndpoints(sources.webApi),
-    claims: [
-      { says: "%N% read endpoints" },
-      { says: "%N% endpoints answer a question" },
-    ],
+    claims: [{ says: "%N% endpoints answer a question" }],
+    listing: {
+      page: ENVELOPE_PAGE,
+      members: endpointsListed,
+    },
   },
   {
     what: "subcommands",

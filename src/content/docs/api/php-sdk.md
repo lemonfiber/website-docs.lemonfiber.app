@@ -12,9 +12,10 @@ specification, and neither defines it. Where this client disagrees with
 
 **Not yet published.** Nothing consumes it, so it stays unreleased until there is
 a stable major worth pinning; registration on Packagist happens then rather than
-now. The surface it talks to is `lemonfiber ui` — six read endpoints,
-`POST /api/actions/<name>` and `GET /api/events`, on a loopback socket behind a
-token minted for that run.
+now. The surface it talks to is `lemonfiber ui` — one read endpoint for each
+question a command answers, `POST /api/actions/<name>` and `GET /api/events`, on
+a loopback socket behind a token minted for that run.
+[The envelope](/api/the-envelope/) sets the endpoints out one by one.
 
 ## Install
 
