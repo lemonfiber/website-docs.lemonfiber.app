@@ -46,20 +46,26 @@ address together with a token minted for that run. Nothing is installed, nothing
 keeps running afterwards, and the connection is not encrypted, which it says as it
 starts.
 
-Six endpoints answer a question and close. Each one is a command a person could
+Twelve endpoints answer a question and close. Each one is a command a person could
 have typed, dispatched through the same entry point the command line uses, so the
 two surfaces cannot say different things about the same stack.
 
-| Endpoint            | What it answers                                                                 |
-| ------------------- | ------------------------------------------------------------------------------- |
-| `GET /api/status`   | What the whole stack is doing                                                   |
-| `GET /api/services` | The same reading, narrowed to the forms named in `?form=`                       |
-| `GET /api/checks`   | What the diagnostic checks found, or the one group named in `?only=`            |
-| `GET /api/storage`  | The checks about the disk                                                       |
-| `GET /api/logs`     | The scrollback, one envelope per line; takes `?form=`, `?service=` and `?tail=` |
-| `GET /api/requests` | What the household has asked for, narrowed to `?member=`                        |
+| Endpoint            | What it answers                                                                         |
+| ------------------- | --------------------------------------------------------------------------------------- |
+| `GET /api/status`   | What the whole stack is doing                                                           |
+| `GET /api/services` | The same reading, narrowed to the forms named in `?form=`                               |
+| `GET /api/forms`    | Every form the stack declares, or what the ones named in `?form=` would come to         |
+| `GET /api/checks`   | What the diagnostic checks found, or the one group named in `?only=`                    |
+| `GET /api/storage`  | The checks about the disk                                                               |
+| `GET /api/logs`     | The scrollback, one envelope per line; takes `?form=`, `?service=` and `?tail=`         |
+| `GET /api/requests` | What the household has asked for, narrowed to `?member=`                                |
+| `GET /api/trace`    | Where one item got to; `?term=` names it as you would say it, `?season=` narrows to one |
+| `GET /api/stuck`    | The items whose downloads have stopped, each named the way `?term=` asks for one        |
+| `GET /api/config`   | Every setting, credentials withheld, or the one named in `?key=`                        |
+| `GET /api/quality`  | The preset in force, what each preset means, and what it costs                          |
+| `GET /api/version`  | The versions in play: lemonfiber, the stack it operates, and the container engine       |
 
-Query parameters are the commands' own flags, and only the flags that read. A read
+Query parameters are what the commands themselves take, and only what reads. A read
 looks and does not touch: narrowing a diagnosis is a parameter here, while
 accepting a warning or running the checks that disturb a running stack changes
 something and belongs where changes are asked for.
