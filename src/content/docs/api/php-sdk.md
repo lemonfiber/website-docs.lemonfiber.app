@@ -113,15 +113,16 @@ is stated once rather than repeated by hand.
 
 Everything else in `src/` is behaviour no schema expresses.
 
-| Written by hand           | What it holds to                                                                                     |
-| ------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `Http\RunToken`           | The per-run token travels in a header, never in an address                                           |
-| `Http\BaseUrl`            | Loopback only; any other host is refused before anything is sent                                     |
-| `Envelope\EnvelopeReader` | A version mismatch is refused plainly, naming both versions, rather than rendering part of an answer |
-| `Envelope\Payload`        | An envelope is read as the kind it carries, or not at all                                            |
-| `Events\EventStream`      | A stream that goes quiet longer than the agreed heartbeat is reported as broken, not as calm         |
-| `Events\HeldValues`       | Values gathered before a reconnection gap are marked out of date                                     |
-| `Exception\*`             | The error model, in plain language                                                                   |
+| Written by hand           | What it holds to                                                                                                                                       |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Http\RunToken`           | The per-run token travels in a header, never in an address                                                                                             |
+| `Http\BaseUrl`            | Loopback only; any other host is refused before anything is sent                                                                                       |
+| `Envelope\EnvelopeReader` | A version mismatch is refused plainly, naming both versions, rather than rendering part of an answer                                                   |
+| `Envelope\Payload`        | An envelope is read as the kind it carries, or not at all                                                                                              |
+| `Events\EventStream`      | A stream that goes quiet longer than the agreed heartbeat is reported as broken, not as calm                                                           |
+| `Events\HeldValues`       | Values gathered before a reconnection gap are marked out of date                                                                                       |
+| `Exception\RequestFailed` | A refusal carries the sentence lemonfiber answered with, read back through `said()`; an answer carrying none names the endpoint and the status instead |
+| `Exception\*`             | The error model, in plain language                                                                                                                     |
 
 ## The bar it is held to
 
