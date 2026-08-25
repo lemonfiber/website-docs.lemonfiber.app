@@ -12,11 +12,12 @@ in one wrapper — `api_version`, `kind`, `data` — and that wrapper is a stabl
 versioned interface rather than output that happens to be parsable.
 
 It reaches you two ways. [`--json`](/commands/global-flags/) on the command line
-prints it. `lemonfiber ui` serves it over local HTTP: six read endpoints,
-`POST /api/actions/<name>` for anything that changes something, and
-`GET /api/events` as a live stream — all of it behind a token minted for that run,
-on a socket bound to this machine. Both surfaces dispatch through the same entry
-point, so neither can say something about your stack that the other would not.
+prints it. `lemonfiber ui` serves it over local HTTP: one read endpoint for each
+question a command answers, `POST /api/actions/<name>` for anything that changes
+something, and `GET /api/events` as a live stream — all of it behind a token
+minted for that run, on a socket bound to this machine. Both surfaces dispatch
+through the same entry point, so neither can say something about your stack that
+the other would not.
 
 What the binary does **not** yet carry is the web app itself, so `lemonfiber ui`
 today serves the API and no interface unless `--assets` points it at a build. The

@@ -117,6 +117,65 @@ describe("a generated reference with one section and no more", () => {
   });
 });
 
+describe("a contract that has gained a read endpoint", () => {
+  const ENVELOPE = "src/content/docs/api/the-envelope.md";
+
+  const webApi = [
+    "# The web API",
+    "",
+    "## Reading",
+    "",
+    "```",
+    "GET /api/status        GET /api/version",
+    "```",
+    "",
+    "## Live state",
+    "",
+  ].join("\n");
+
+  const page = (rows: readonly string[]): Page => ({
+    path: ENVELOPE,
+    text: [
+      "Two endpoints answer a question and close.",
+      "",
+      "| Endpoint | What it answers |",
+      "| -------- | --------------- |",
+      ...rows,
+      "",
+    ].join("\n"),
+  });
+
+  const about = (rows: readonly string[]): string[] =>
+    countViolations(INVENTORIES, { ...nothing, webApi }, [page(rows)])
+      .filter((one) => one.where === ENVELOPE)
+      .map((one) => one.message);
+
+  it("names the endpoint the page has not caught up with", () => {
+    expect(about(["| `GET /api/status` | What the stack is doing |"])).toEqual([
+      expect.stringContaining("has these and the page does not: version"),
+    ]);
+  });
+
+  it("names one the page sets out that the contract does not", () => {
+    expect(
+      about([
+        "| `GET /api/status` | What the stack is doing |",
+        "| `GET /api/version` | The versions in play |",
+        "| `GET /api/rumour` | Something nothing serves |",
+      ]),
+    ).toEqual([expect.stringContaining("the page has these and")]);
+  });
+
+  it("says nothing where the page sets out exactly what the contract does", () => {
+    expect(
+      about([
+        "| `GET /api/status` | What the stack is doing |",
+        "| `GET /api/version` | The versions in play |",
+      ]),
+    ).toEqual([]);
+  });
+});
+
 describe("a manifest that is not what it should be", () => {
   const repos = (mirrors: string): number =>
     countViolations(INVENTORIES, { ...nothing, mirrors }, []).filter((one) =>
