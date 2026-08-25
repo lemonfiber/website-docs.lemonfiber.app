@@ -24,14 +24,15 @@ Two things are worth knowing before you start:
 
 Raised while setup is gathering answers, applying them, or reversing an interrupted attempt.
 
-| Code      | What it means                                                                                                                    | What to do                                                              |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| `SETUP-1` | Setup was asked to apply before its answers were reviewed. Nothing has been written.                                             | Answer every question, then confirm the review before applying.         |
-| `SETUP-2` | The data directory you chose could not be created. Setup stopped; the next run recovers it.                                      | Check the location is on a writable disk, then try again.               |
-| `SETUP-3` | A directory left by an interrupted setup could not be removed. The rest was reversed; this one directory holds nothing.          | Remove it by hand, or leave it where it is.                             |
-| `SETUP-4` | Reversing a change needs the service that made it. Settings and directories were reversed; a resource a service created was not. | Reverse it from the service itself, once that service is reachable.     |
-| `SETUP-5` | An answer is not meaningful on the platform setup is running on. Nothing has been applied.                                       | Answer with a choice this platform offers.                              |
-| `SETUP-6` | Setup is past the point of gathering answers — it has been reviewed, is applying, or is finished. Nothing has been changed.      | Resume or recover the setup in progress, or reconfigure a finished one. |
+| Code      | What it means                                                                                                                                                                   | What to do                                                                         |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `SETUP-1` | Setup was asked to apply before its answers were reviewed. Nothing has been written.                                                                                            | Answer every question, then confirm the review before applying.                    |
+| `SETUP-2` | The data directory you chose could not be created. Setup stopped; the next run recovers it.                                                                                     | Check the location is on a writable disk, then try again.                          |
+| `SETUP-3` | A directory left by an interrupted setup could not be removed. The rest was reversed; this one directory holds nothing.                                                         | Remove it by hand, or leave it where it is.                                        |
+| `SETUP-4` | Reversing a change needs the service that made it. Settings and directories were reversed; a resource a service created was not.                                                | Reverse it from the service itself, once that service is reachable.                |
+| `SETUP-5` | An answer is not meaningful on the platform setup is running on. Nothing has been applied.                                                                                      | Answer with a choice this platform offers.                                         |
+| `SETUP-6` | Setup is past the point of gathering answers — it has been reviewed, is applying, or is finished. Nothing has been changed.                                                     | Resume or recover the setup in progress, or reconfigure a finished one.            |
+| `SETUP-7` | This machine already holds configuration, so setup is not what it needs. Answering setup again would walk a working stack back to its first question. Nothing has been changed. | Change the setting you came to change, with `lemonfiber config set <key> <value>`. |
 
 ## CONFIG — your settings
 
@@ -231,6 +232,14 @@ Raised by `lemonfiber watch`, which stops the forms you name if the data locatio
 | --------- | -------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
 | `WATCH-1` | No data location is configured, so there is nothing for a watch to guard.                                                              | Run `lemonfiber setup` to choose a data location, then start the watch again. |
 | `WATCH-2` | The data location is already gone when the watch was asked to start. A watch can only guard a location that is present when it begins. | Connect the drive or mount holding the data location, then start the watch.   |
+
+## DIAG — narrowing a diagnosis
+
+Raised by `lemonfiber doctor --only`, which runs one category of check, or one check by the name a finding gives it.
+
+| Code     | What it means                                                                                                                                                                                                                         | What to do                                                                        |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `DIAG-1` | Nothing on this stack reports under the name you narrowed the run to. A check is named by the identifier its finding carries, and no finding here carries that one. Answering with an empty report would read as nothing being wrong. | Run the checks with `lemonfiber doctor`, and narrow to a name this stack reports. |
 
 ## ACK — answering a warning
 
