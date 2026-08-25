@@ -36,6 +36,21 @@ updates:
       # First match wins, so the shared gates are claimed before the wildcard.
       shared-workflows:
         patterns: ["lemonfiber/spec*"]
+      # The three that publish the site are one pipeline: one configures it, one
+      # produces the artefact, one deploys that artefact. `upload-pages-artifact`
+      # v5 moved to `upload-artifact` v7, which changes what the deploy consumes,
+      # so a partial upgrade is a state nobody chose — and the deploy runs only on
+      # `main`, where a green check on a pull request cannot have said otherwise.
+      #
+      # Majors are grouped here and nowhere else. The judgement is still a
+      # judgement; it is one about the pipeline rather than three that have to be
+      # made the same way and in the right order.
+      pages:
+        patterns:
+          - "actions/configure-pages"
+          - "actions/upload-pages-artifact"
+          - "actions/deploy-pages"
+        update-types: ["major", "minor", "patch"]
       actions:
         patterns: ["*"]
         exclude-patterns: ["lemonfiber/spec*"]
