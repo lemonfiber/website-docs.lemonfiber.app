@@ -89,22 +89,51 @@ for await (const arrival of follow({
 Three arrival states rather than two, because a stream that has gone quiet is not
 the same as one that has ended, and neither is the same as one carrying fresh
 values. The heartbeat interval, the silence a client tolerates, the reconnection
-allowance and the token header are all exported as constants — `HEARTBEAT_MS`,
-`SILENCE_ALLOWED_MS`, `RECONNECTS_ALLOWED` and `TOKEN_HEADER` — so a consumer can
+allowance and the token header are all exported as constants, so a consumer can
 assert on the same numbers the client holds itself to.
+
+## Which refusal it was
+
+`problem.kind` says which sort of refusal came back, so a caller need not read the
+sentence to know what to do with it:
+
+| `kind`        | What it means                                              |
+| ------------- | ---------------------------------------------------------- |
+| `missing`     | lemonfiber has nothing by the name the request gave        |
+| `misasked`    | It could not answer the request as it was asked            |
+| `failed`      | It understood the request and its own answering failed     |
+| `refused`     | The key this page is using is not the one this run expects |
+| `unreachable` | Nothing lemonfiber wrote came back at all                  |
+
+`refused` is the key and nothing else. That is what makes it worth reading: a
+console meeting it may ask for a new key without reading the sentence, and a
+console meeting `failed` may not, because what failed is behind the answer rather
+than in front of it. A stopped container engine is `failed`, and the same request
+succeeds once it is running again.
+
+`missing`, `misasked` and `failed` always carry lemonfiber's own sentence. A body
+the package cannot read is `unreachable` whatever status carried it, so a page
+from something standing in front of lemonfiber is never passed off as lemonfiber's
+account of itself.
 
 ## What the package exports
 
-| Export                                                                                                                        | What it is for                                                           |
-| ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| `Client`, `Opened`, `Talking`, `Query`, `Sending`                                                                             | Opening a client and asking it things                                    |
-| `follow`, `Arrival`, `Following`, `Fetching`                                                                                  | The event stream, and what an arrival can be                             |
-| `Ledger`, `Held`                                                                                                              | The values held across a reconnection, and whether each is still current |
-| `Envelope`, `Reading`, `parse`, `read`, `isKind`, `API_VERSION`                                                               | The envelope, and reading one safely                                     |
-| `Kind`, `ByKind`, `CONTRACT_API_VERSION`                                                                                      | The generated kinds, and the wire version these types were generated for |
-| `Problem`, `ProblemKind`, and the constructors `problem`, `refused`, `unreachable`, `malformed`, `wrongVersion`, `streamLost` | The typed error                                                          |
-| `address`, `Address`                                                                                                          | The loopback rule, on its own                                            |
-| `SseParser`, `SseEvent`                                                                                                       | The event-stream parser, for a consumer that needs it directly           |
+Every name below is checked against the package's own entry point on each build,
+so a name added there and not here fails rather than merely going unmentioned.
+
+| Export                                                                                                          | What it is for                                                            |
+| --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `Client`, `Opened`, `Talking`, `Query`, `Sending`                                                               | Opening a client and asking it things                                     |
+| `follow`, `Arrival`, `Following`, `Fetching`                                                                    | The event stream, and what an arrival can be                              |
+| `HEARTBEAT_MS`, `SILENCE_ALLOWED_MS`, `RECONNECTS_ALLOWED`, `TOKEN_HEADER`                                      | The numbers and the header a client holds itself to                       |
+| `Ledger`, `Held`                                                                                                | The values held across a reconnection, and whether each is still current  |
+| `Envelope`, `Reading`, `parse`, `read`, `isKind`, `API_VERSION`                                                 | The envelope, and reading one safely                                      |
+| `Kind`, `ByKind`, `CONTRACT_API_VERSION`                                                                        | The generated kinds, and the wire version these types were generated for  |
+| `Problem`, `ProblemKind`                                                                                        | The typed error                                                           |
+| `problem`, `refused`, `unreachable`, `missing`, `misasked`, `failed`, `malformed`, `wrongVersion`, `streamLost` | The constructors that build one                                           |
+| `refusalIn`                                                                                                     | Which of those an unsuccessful answer is, for a caller reading its status |
+| `address`, `Address`                                                                                            | The loopback rule, on its own                                             |
+| `SseParser`, `SseEvent`                                                                                         | The event-stream parser, for a consumer that needs it directly            |
 
 ## `src/generated/` is not yours to edit
 

@@ -2,14 +2,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import { countViolations, type Page, type Sources } from "./counts.ts";
-import {
-  columnUnder,
-  firstColumnUnder,
-  INVENTORIES,
-  keysAt,
-  tablesUnder,
-  variantsAt,
-} from "./inventories.ts";
+import { exportedBy, INVENTORIES, keysAt, variantsAt } from "./inventories.ts";
 
 /** Every real file under a directory, symlinked trees left where they are. */
 const walk = (dir: string, keep: (path: string) => boolean): string[] => {
@@ -32,6 +25,7 @@ const theTree = (): { sources: Sources; pages: Page[] } => ({
     commands: read("vendor/lemonfiber/reference/commands.md"),
     webApi: read("vendor/spec/20-architecture/contracts/web-api.md"),
     mirrors: read("mirrors.json"),
+    clientIndex: read("vendor/sdk-ts/src/index.ts"),
     spec: walk("vendor/spec", () => true),
   },
   pages: walk("src/content/docs", (path) => /\.(md|mdx)$/.test(path)).map(
@@ -45,6 +39,7 @@ const nothing: Sources = {
   commands: "",
   webApi: "",
   mirrors: "",
+  clientIndex: "",
   spec: [],
 };
 
@@ -255,56 +250,33 @@ describe("variantsAt", () => {
   });
 });
 
-describe("tablesUnder", () => {
-  const page = [
-    "Some prose.",
-    "",
-    "| Panel | What it carries |",
-    "| ----- | --------------- |",
-    "| VPN   | The tunnel      |",
-    "| Stuck | What stopped    |",
-    "",
-    "More prose.",
-    "",
-    "| Panel  | Also a panel table |",
-    "| ------ | ------------------ |",
-    "| Alerts | What was raised    |",
-    "",
-    "| Key | Not a panel table |",
-    "| --- | ----------------- |",
-    "| q   | Quits             |",
-    "",
+describe("exportedBy", () => {
+  const index = [
+    'export { address, type Address } from "./address.js";',
+    "export {",
+    "  Client,",
+    "  refusalIn,",
+    "  type Opened,",
+    '} from "./client.js";',
   ].join("\n");
 
-  it("keeps each table headed the same apart", () => {
-    expect(tablesUnder(page, "Panel")).toEqual([["VPN", "Stuck"], ["Alerts"]]);
-  });
-
-  it("leaves the tables headed something else alone", () => {
-    expect(tablesUnder(page, "Key")).toEqual([["q"]]);
-  });
-
-  it("reads the backticks off a cell", () => {
-    expect(tablesUnder("| Form |\n| ---- |\n| `tv` |\n", "Form")).toEqual([
-      ["tv"],
+  it("names every export, whichever line it is written on", () => {
+    expect(exportedBy(index)).toEqual([
+      "address",
+      "Address",
+      "Client",
+      "refusalIn",
+      "Opened",
     ]);
   });
 
-  it("stops at a row it cannot read as a row", () => {
-    expect(
-      tablesUnder("| Form |\n| ---- |\n| tv\n| `hunt` |\n", "Form"),
-    ).toEqual([[]]);
+  // A type and a value are both something a consumer imports by name, and the
+  // page lists them in one column.
+  it("does not keep the word saying a name is a type", () => {
+    expect(exportedBy(index)).not.toContain("type Address");
   });
 
-  it("gathers every one of them across the tables", () => {
-    expect(columnUnder(page, "Panel")).toEqual(["VPN", "Stuck", "Alerts"]);
-  });
-
-  it("takes only the first, where a later table lists something else", () => {
-    expect(firstColumnUnder(page, "Panel")).toEqual(["VPN", "Stuck"]);
-  });
-
-  it("takes none where there is no such table", () => {
-    expect(firstColumnUnder(page, "Nothing")).toEqual([]);
+  it("names nothing where an entry point re-exports nothing", () => {
+    expect(exportedBy('export * from "./everything.js";')).toEqual([]);
   });
 });

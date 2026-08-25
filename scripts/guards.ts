@@ -137,6 +137,7 @@ found.push(
       commands: await text("vendor/lemonfiber/reference/commands.md"),
       webApi: await text("vendor/spec/20-architecture/contracts/web-api.md"),
       mirrors: await text("mirrors.json"),
+      clientIndex: await text("vendor/sdk-ts/src/index.ts"),
       spec: specPaths.map(rel),
     },
     prose,
