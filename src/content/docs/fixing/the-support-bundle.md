@@ -86,13 +86,14 @@ Two of those are worth a note.
 
 ## When it will not write
 
-| Code                                                                  | Why                                                                      |
-| --------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| [`BUNDLE-1`](/fixing/every-error-by-code/#bundle--the-support-bundle) | The finished bundle still held something that reads as a credential      |
-| [`BUNDLE-2`](/fixing/every-error-by-code/#bundle--the-support-bundle) | Not enough room, with space left over for the machine to keep working in |
-| [`BUNDLE-3`](/fixing/every-error-by-code/#bundle--the-support-bundle) | The archive could not be written. Nothing partial is left behind         |
-| [`BUNDLE-4`](/fixing/every-error-by-code/#bundle--the-support-bundle) | A `--reveal` was asked for without `--confirm`                           |
-| [`BUNDLE-5`](/fixing/every-error-by-code/#bundle--the-support-bundle) | The machine could offer no randomness to derive stand-ins from           |
+| Code                                                                  | Why                                                                                             |
+| --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| [`BUNDLE-1`](/fixing/every-error-by-code/#bundle--the-support-bundle) | The finished bundle still held something that reads as a credential                             |
+| [`BUNDLE-2`](/fixing/every-error-by-code/#bundle--the-support-bundle) | Not enough room, with space left over for the machine to keep working in                        |
+| [`BUNDLE-3`](/fixing/every-error-by-code/#bundle--the-support-bundle) | The archive could not be written. Nothing partial is left behind                                |
+| [`BUNDLE-4`](/fixing/every-error-by-code/#bundle--the-support-bundle) | A `--reveal` was asked for without `--confirm`                                                  |
+| [`BUNDLE-5`](/fixing/every-error-by-code/#bundle--the-support-bundle) | The machine could offer no randomness to derive stand-ins from                                  |
+| [`BUNDLE-6`](/fixing/every-error-by-code/#bundle--the-support-bundle) | This run has neither a directory of its own to keep an archive in nor anything to pack one with |
 
 Two codes elsewhere on the site point you here rather than offering advice: [`STACK-3`](/fixing/every-error-by-code/#stack--the-stack-description) and [`SEED-3`](/fixing/every-error-by-code/#seed--wiring-the-services-together). Both mean lemonfiber does not recognise what happened and will not guess. Admitting that costs you a bundle; a confident wrong guess would cost you an afternoon.
 
@@ -105,5 +106,5 @@ Then take it to [where to ask](/contributing/where-to-ask/), which lists the pla
 ## Related
 
 - [Run the doctor](/fixing/run-the-doctor/) — the diagnosis the bundle carries
-- [Every error by code](/fixing/every-error-by-code/) — the five `BUNDLE` codes, side by side
+- [Every error by code](/fixing/every-error-by-code/) — the six `BUNDLE` codes, side by side
 - [C4, the support bundle](/spec/10-functional/features/c-trust/c4-support-bundle/) — the requirement this is written against
