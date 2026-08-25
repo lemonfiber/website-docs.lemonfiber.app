@@ -6,6 +6,7 @@ import { join, relative, sep } from "node:path";
 import { codeViolations, familyViolations } from "../src/lib/codes.ts";
 import { countViolations, type Page } from "../src/lib/counts.ts";
 import { INVENTORIES } from "../src/lib/inventories.ts";
+import { lockViolations } from "../src/lib/lockfile.ts";
 import {
   collisionViolations,
   fileViolations,
@@ -99,11 +100,19 @@ const text = async (path: string): Promise<string> => {
   }
 };
 const errorCodes = await text("vendor/lemonfiber/reference/error-codes.md");
+
+// The one dependency this repository pins to an exact revision, and the
+// revision its lockfile resolved. `npm ci` re-resolves a git dependency rather
+// than refusing the disagreement, so nothing else here would notice.
+const declaredPin = await text("package.json");
+const resolvedPin = await text("package-lock.json");
+
 found.push(
   ...codeViolations(
     errorCodes,
     await text("src/content/docs/fixing/every-error-by-code.md"),
   ),
+  ...lockViolations(declaredPin, resolvedPin),
 );
 
 // Every number the site states about a tree it does not own. The pages are

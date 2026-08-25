@@ -9,9 +9,18 @@
 # one commit before the code that raises them. Nothing was broken; the artefact
 # was old.
 #
-# So this asks the question no other check asks: how long has a pin been behind?
-# Not how many commits — a pin eleven commits and six hours behind is fine, and
-# one two commits and three months behind is not.
+# So `age` asks the question no other check asked: how long has a pin been
+# behind? Not how many commits — a pin eleven commits and six hours behind is
+# fine, and one two commits and three months behind is not.
+#
+# Duration answers abandonment, and only abandonment. It happened again on the
+# read-endpoint table: `api/the-envelope` named six endpoints and the listing
+# guard agreed with it in both directions, out of a contract upstream had
+# already grown. The pin was two days behind, and `age` called every pin
+# healthy. So `sources` asks the other half — has a pin gone behind on a file a
+# guard here reads? — with no window at all. It names the commits rather than
+# counting them: most of what a repository commits touches nothing this site
+# reads.
 name: pins
 
 on:
@@ -91,7 +100,13 @@ jobs:
               says = "current" if behind == "0" else f"{days}d"
               print(f"{name:<26} {sha[:7]:<9} {behind:>6}  {says}")
               if waited > allowed:
-                  stale.append(f"{name}: {behind} commits, oldest unpinned {days} days old")
+                  # Named, not counted: what a bump would take is the decision,
+                  # and a number does not put it in front of anyone (Q-R68).
+                  taken = git(path, "log", "--format=%h %cs %s", f"{sha}..origin/main") or ""
+                  listed = "\n".join(f"  {one}" for one in taken.splitlines())
+                  stale.append(
+                      f"{name}: {behind} commits not taken, oldest {days} days old\n{listed}"
+                  )
 
           if not stale:
               print("\nevery pin is within the window.")
@@ -104,3 +119,24 @@ jobs:
           )
           raise SystemExit(1)
           PY
+
+  sources:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: true
+          # Whole histories, for the reason `age` needs them: a shallow
+          # submodule cannot be asked what it has not taken.
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+
+      # No install step. The check imports the declarations themselves and
+      # nothing from `node_modules`, so the node this repository declares is
+      # the whole of what it needs.
+      - name: Which pins have gone behind on a source a guard reads
+        run: node scripts/pins.ts
