@@ -46,9 +46,9 @@ address together with a token minted for that run. Nothing is installed, nothing
 keeps running afterwards, and the connection is not encrypted, which it says as it
 starts.
 
-Twelve endpoints answer a question and close. Each one is a command a person could
-have typed, dispatched through the same entry point the command line uses, so the
-two surfaces cannot say different things about the same stack.
+Thirteen endpoints answer a question and close. Each one is a command a person
+could have typed, dispatched through the same entry point the command line uses,
+so the two surfaces cannot say different things about the same stack.
 
 | Endpoint            | What it answers                                                                         |
 | ------------------- | --------------------------------------------------------------------------------------- |
@@ -64,6 +64,7 @@ two surfaces cannot say different things about the same stack.
 | `GET /api/config`   | Every setting, credentials withheld, or the one named in `?key=`                        |
 | `GET /api/quality`  | The preset in force, what each preset means, and what it costs                          |
 | `GET /api/version`  | The versions in play: lemonfiber, the stack it operates, and the container engine       |
+| `GET /api/explain`  | Every word this product explains, or what the one named in `?word=` means               |
 
 Query parameters are what the commands themselves take, and only what reads. A read
 looks and does not touch: narrowing a diagnosis is a parameter here, while
