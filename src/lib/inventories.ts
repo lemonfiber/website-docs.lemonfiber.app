@@ -12,12 +12,14 @@
 
 import { matches, type Inventory, type Page, type Sources } from "./counts.ts";
 import { captured } from "./mirror.ts";
+import { columnUnder, firstColumnUnder, namesUnder } from "./tables.ts";
 
 const STACK = "vendor/lemonfiber-media-stack/stack.toml";
 const CONTRACT = "vendor/lemonfiber/contract/web-api.contract.json";
 const COMMANDS = "vendor/lemonfiber/reference/commands.md";
 const WEB_API = "vendor/spec/20-architecture/contracts/web-api.md";
 const MIRRORS = "mirrors.json";
+const CLIENT_INDEX = "vendor/sdk-ts/src/index.ts";
 const SPEC = "vendor/spec";
 
 const DOCS = "src/content/docs/";
@@ -25,50 +27,11 @@ const ENVELOPE_PAGE = `${DOCS}api/the-envelope.md`;
 const KINDS_PAGE = `${DOCS}api/kinds.md`;
 const TUI_PAGE = `${DOCS}commands/the-tui.md`;
 const CODES_PAGE = `${DOCS}fixing/every-error-by-code.md`;
+const CLIENT_PAGE = `${DOCS}api/typescript-sdk.md`;
 
 /** One page's prose, or none when the page is not in the tree. */
 const prose = (pages: readonly Page[], path: string): string =>
   pages.find((page) => page.path === path)?.text ?? "";
-
-/**
- * The first cell of every body row of the tables headed `header`.
- *
- * A page carries tables that are not this table — fields, keys, grades — so
- * the header names which. Backticks come off: a manifest declares `search`,
- * and the page writes it as code.
- */
-export function tablesUnder(text: string, header: string): string[][] {
-  const tables: string[][] = [];
-  let current: string[] | null = null;
-
-  for (const line of text.split("\n")) {
-    const row = /^\|([^|]*)\|/.exec(line);
-    if (row === null) {
-      current = null;
-      continue;
-    }
-    const cell = captured(row, 1).trim().replaceAll("`", "");
-    if (cell === header) {
-      current = [];
-      tables.push(current);
-      continue;
-    }
-    if (current === null) continue;
-    if (/^-+$/.test(cell)) continue;
-    current.push(cell);
-  }
-
-  return tables;
-}
-
-/** Every one of them, however many tables they are spread across. */
-export const columnUnder = (text: string, header: string): string[] => [
-  ...new Set(tablesUnder(text, header).flat()),
-];
-
-/** Only the first such table, where a later one lists something else. */
-export const firstColumnUnder = (text: string, header: string): string[] =>
-  tablesUnder(text, header)[0] ?? [];
 
 /** The `id` of every `[[table]]` the stack manifest declares. */
 const ids = (stack: string, table: string): string[] =>
@@ -212,6 +175,29 @@ const specSections = (paths: readonly string[]): string[] => {
   }
   return [...found];
 };
+
+/** One `export { … } from "…";` of a package's entry point. */
+const RE_EXPORTED = /export\s*\{([^}]*)\}\s*from\s*"[^"]*";/g;
+
+/** A leading `type`, which says how a name is exported rather than which name. */
+const AS_A_TYPE = /^type\s+/;
+
+/**
+ * Every name the client package's entry point puts on its public surface.
+ *
+ * Read from the entry point rather than from the modules behind it: what a
+ * package exports is what its entry point re-exports, and a name a module
+ * exports and the entry point does not is not something a consumer can reach.
+ * A type and a value are one list here, because the page lists them as one.
+ */
+export function exportedBy(index: string): string[] {
+  const found = new Set<string>();
+  for (const block of index.matchAll(RE_EXPORTED))
+    for (const one of captured(block, 1).split(","))
+      found.add(one.trim().replace(AS_A_TYPE, ""));
+  found.delete("");
+  return [...found];
+}
 
 /** Every repository this site renders, each counted once however many mirrors. */
 const mirrored = (manifest: string): string[] => {
@@ -475,6 +461,16 @@ export const INVENTORIES: readonly Inventory[] = [
     source: SPEC,
     members: (sources) => specSections(sources.spec),
     claims: [{ says: "the %N% sections" }],
+  },
+  {
+    what: "exports the client package declares",
+    source: CLIENT_INDEX,
+    members: (sources) => exportedBy(sources.clientIndex),
+    claims: [],
+    listing: {
+      page: CLIENT_PAGE,
+      members: (text) => namesUnder(text, "Export"),
+    },
   },
   {
     what: "repositories this site renders",

@@ -32,6 +32,8 @@ export interface Sources {
   readonly webApi: string;
   /** `mirrors.json`. */
   readonly mirrors: string;
+  /** `vendor/sdk-ts/src/index.ts`, the client package's entry point. */
+  readonly clientIndex: string;
   /** Every path under `vendor/spec`, repository-relative. */
   readonly spec: readonly string[];
 }
