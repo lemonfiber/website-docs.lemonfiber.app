@@ -126,11 +126,15 @@ Everything else in `src/` is behaviour no schema expresses.
 
 ## The bar it is held to
 
-Every gate is a merge gate, and `composer ci` runs all of them: Pint with the
+Every gate is a merge gate. `composer ci` runs all but one of them: Pint with the
 `per` preset and strict rules on top, PHPStan at level max with 100% type
 coverage, a Rector dry run with zero changes, dependency checks, contract
-regeneration with no diff, 100% line coverage, a 100% mutation score, and a
-backward-compatibility check against the last released tag.
+regeneration with no diff, 100% line coverage and a 100% mutation score.
+
+The one it leaves out is the backward-compatibility check against the last
+released tag. That is `composer bc`, a script of its own and a CI job of its own,
+and it is skipped entirely while this package has no released tag to compare
+against — the job says so rather than reporting a success it did not earn.
 
 There is no PHPStan baseline and no ignored errors. `@phpstan-ignore`,
 `@codeCoverageIgnore`, `@SuppressWarnings` and their relatives are rejected by a
