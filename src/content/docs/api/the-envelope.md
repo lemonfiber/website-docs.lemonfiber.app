@@ -82,6 +82,29 @@ browser tab closed mid-repair takes nothing with it.
 [what a client keeps](#what-a-client-keeps-that-the-schema-cannot-say) below. Each
 event's name is the envelope's `kind`.
 
+### When a read is refused
+
+However a read is refused, it answers with the error envelope — the same document
+`--json` writes — so the status is the only thing that tells one refusal from
+another.
+
+| Refused because                                                       | Status |
+| --------------------------------------------------------------------- | ------ |
+| What the request named is not one of the things there are             | `404`  |
+| The request could not be answered as it was asked                     | `400`  |
+| Nothing about the request was wrong; this machine could not answer it | `500`  |
+
+The line between the first two is what the request was _for_. A word this product
+does not explain is absent — the word is the whole of what `/api/explain` was asked
+for, and there is no entry — while a parameter left out, given twice, or given a
+value the surface does not offer is a request that could never have been answered
+as it stands.
+
+`500` is reserved rather than incidental. A client told the machine failed will try
+again, and a client told that about a word with no entry will try forever. Which of
+the three applies is decided where the refusal is raised, and it reaches a client as
+the status alone: the envelope carries no field for it.
+
 ## What a request has to carry
 
 Every request meets the same guard, applied over the whole route tree rather than

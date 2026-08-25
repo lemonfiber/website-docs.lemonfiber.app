@@ -1,13 +1,13 @@
 ---
 title: Every payload kind
-description: The twenty-seven payload kinds the contract artefact describes, and every field the six most-used ones carry.
+description: The thirty payload kinds the contract artefact describes, and every field the six most-used ones carry.
 sidebar:
   order: 2
 ---
 
 `kind` says which payload an [envelope](/api/the-envelope/) carries, so a
 consumer can branch before parsing `data`. The contract artefact describes
-twenty-seven of them, and each entry is the whole envelope with that kind's
+thirty of them, and each entry is the whole envelope with that kind's
 payload in place rather than the payload alone — a generator wants the shape it
 will actually parse.
 
@@ -18,6 +18,8 @@ kind nobody emits, fails the build rather than reaching a client.
 
 | Kind          | `data` carries         | In one line                                                                         |
 | ------------- | ---------------------- | ----------------------------------------------------------------------------------- |
+| `backup`      | A capture report       | Where the archive went, what it covers, and which older ones retention pruned       |
+| `bundle`      | A bundle description   | What a support bundle holds, how large it is, and where it is if it was written     |
 | `config`      | A configuration answer | The settings asked about, and what a change did to them                             |
 | `dashboard`   | A dashboard snapshot   | One moment of what the stack is doing, as the dashboard assembles it                |
 | `doctor`      | A diagnosis            | What the diagnostic checks found                                                    |
@@ -33,6 +35,7 @@ kind nobody emits, fails the build rather than reaching a client.
 | `pull`        | A line of text         | One line the container engine wrote while pulling images                            |
 | `quality`     | A quality report       | The quality choice, what it means, and what a command did with it                   |
 | `reset`       | A reset report         | What a full reset did, or would do                                                  |
+| `restore`     | A restoration          | What restoring an archive would overwrite, and whether it did                       |
 | `seed`        | A seeding report       | What seeding wired, and what it left for a re-run                                   |
 | `setup`       | A setup report         | What setup settled on                                                               |
 | `start`       | A line of text         | One line the container engine wrote while starting services                         |
@@ -51,7 +54,7 @@ string: one line the container engine wrote, emitted as it was written, because 
 pull that takes ten minutes has to say something before it ends.
 
 Six of them are set out field by field below — the ones a client meets first, and
-the ones whose payloads are small enough to read as a table. The other twenty-one
+the ones whose payloads are small enough to read as a table. The other twenty-four
 are in the artefact in full, and both SDKs generate a type per kind from it, so
 nothing here is the only place their shapes are written down. Everything below is
 generated from the types that serialise the reply, so a field here is a field on
@@ -280,10 +283,10 @@ A word this product uses, and what somebody meeting it needs to know.
 moving between their screens should not have to work out that two of them are
 one.
 
-## The other twenty-one
+## The other twenty-four
 
 Every kind in the table above is in the contract artefact with its full schema,
-including the twenty-one not expanded here. Their payloads are larger — a
+including the twenty-four not expanded here. Their payloads are larger — a
 `dashboard` carries nine panels, each with its own shape; a `lifecycle` report
 carries ten fields — and transcribing them into this page would create a second
 place their shapes are written down, which is the one thing the artefact exists to
