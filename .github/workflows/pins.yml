@@ -21,6 +21,18 @@
 # guard here reads? — with no window at all. It names the commits rather than
 # counting them: most of what a repository commits touches nothing this site
 # reads.
+#
+# Both report rather than gate, which is what `Q-R68` asks of them. A pin is
+# meant to lag: bumping one is a decision about the pages it re-renders, so
+# running these on pull requests would refuse every unrelated change for the
+# whole stretch between a repository moving and this site taking it. A red run
+# here is news about a repository this site renders, not a fault in whichever
+# commit happened to be last.
+#
+# So each run says which of those it is. A check nobody is required to pass,
+# that has been red for days, is otherwise indistinguishable from a check that
+# is broken, and the only reader who can tell them apart is one who already
+# knew.
 name: pins
 
 on:
@@ -56,12 +68,40 @@ jobs:
           set -euo pipefail
           python3 - <<'PY'
           import os
+          import pathlib
           import re
           import subprocess
+          import sys
           import time
 
-          allowed = int(os.environ["ALLOWED_DAYS"]) * 86400
+          window = os.environ["ALLOWED_DAYS"]
+          allowed = int(window) * 86400
           now = time.time()
+
+          # What the run page shows above the log. The verdict is written there
+          # as well as printed, so what this check found and what it is for are
+          # read together — the reader who has to be told it reports rather than
+          # gates is the one who did not go looking for the workflow file.
+          summary = os.environ.get("GITHUB_STEP_SUMMARY")
+          said = []
+
+
+          def say(line=""):
+              print(line)
+              said.append(line)
+
+
+          def leave(code):
+              if summary is not None:
+                  pathlib.Path(summary).write_text("\n".join(said) + "\n")
+              sys.exit(code)
+
+
+          def fenced(lines):
+              say("```")
+              for one in lines:
+                  say(one)
+              say("```")
 
 
           def git(path, *args):
@@ -75,8 +115,9 @@ jobs:
               ["git", "submodule", "status"], capture_output=True, text=True
           ).stdout
 
+          rows = [f"{'repository':<26} {'pinned':<9} {'behind':>6}  stale for"]
           stale = []
-          print(f"{'repository':<26} {'pinned':<9} {'behind':>6}  stale for")
+          unread = []
           for line in listing.splitlines():
               found = re.match(r"[-+ ]?([0-9a-f]{40})\s+(\S+)", line)
               if not found:
@@ -87,7 +128,11 @@ jobs:
               git(path, "fetch", "--quiet", "origin")
               behind = git(path, "rev-list", "--count", f"{sha}..origin/main")
               if behind is None:
-                  print(f"{name:<26} {sha[:7]:<9} {'?':>6}  could not be read")
+                  # Not a pin that is behind: a comparison that did not happen.
+                  # Passing this over would let the one repository nothing could
+                  # be learned about read exactly like the ones that are current.
+                  rows.append(f"{name:<26} {sha[:7]:<9} {'?':>6}  could not be read")
+                  unread.append(f"{name}, pinned at {sha[:7]}")
                   continue
 
               # The oldest commit this pin has not taken. How long the site has
@@ -98,26 +143,73 @@ jobs:
               days = int(waited // 86400)
 
               says = "current" if behind == "0" else f"{days}d"
-              print(f"{name:<26} {sha[:7]:<9} {behind:>6}  {says}")
+              rows.append(f"{name:<26} {sha[:7]:<9} {behind:>6}  {says}")
               if waited > allowed:
                   # Named, not counted: what a bump would take is the decision,
                   # and a number does not put it in front of anyone (Q-R68).
                   taken = git(path, "log", "--format=%h %cs %s", f"{sha}..origin/main") or ""
-                  listed = "\n".join(f"  {one}" for one in taken.splitlines())
+                  listed = [f"  {one}" for one in taken.splitlines()]
                   stale.append(
-                      f"{name}: {behind} commits not taken, oldest {days} days old\n{listed}"
+                      [f"{name}: {behind} commits not taken, oldest {days} days old", *listed]
                   )
 
-          if not stale:
-              print("\nevery pin is within the window.")
-              raise SystemExit(0)
+          if stale:
+              say("## A pin has been behind for longer than the window")
+              say()
+              say("**This check reports; it gates nothing.** Being behind is the design:")
+              say("this site renders each repository from a revision bumped deliberately")
+              say("(ADR-0015, REPO-R46), so a pin that lags is a decision somebody made.")
+              say(f"What is reported here is how long: past the {window}-day window a")
+              say("lag reads as abandonment rather than a decision. It does not mean")
+              say("this check is broken, and it is not failing any pull request.")
+          elif unread:
+              say("## A pin could not be compared with its repository")
+              say()
+              say("**This check reports; it gates nothing.** This is not a pin that is")
+              say("behind, and it is not news about the repository it names: the")
+              say("comparison did not happen, so how long that pin has lagged is unknown")
+              say("rather than inside the window.")
+          else:
+              say("## Every pin is within the window")
+              say()
+              say("A pin behind is the design — each repository is rendered from a")
+              say("revision bumped deliberately (ADR-0015, REPO-R46). What is asked here")
+              say(f"is only how long, and no pin has waited out the {window}-day window")
+              say("on a commit it has not taken.")
 
-          print("\n" + "\n".join(stale))
-          print(
-              "::error::a pinned revision has been behind for longer than the window. "
-              "Bump it with `git submodule update --remote <path>` and check the pages it renders."
-          )
-          raise SystemExit(1)
+          say()
+          fenced(rows)
+
+          if stale:
+              say()
+              say(f"Behind for longer than the {window}-day window:")
+              say()
+              fenced([one for block in stale for one in block])
+              say()
+              say("To catch up: `git submodule update --remote <path>`, then check the")
+              say("pages it renders.")
+
+          if unread:
+              say()
+              say("Could not be compared with `origin/main`:")
+              say()
+              fenced(unread)
+              say()
+              say("The submodule's remote did not answer, or it no longer holds the")
+              say("revision pinned here. Either way this run says nothing about it.")
+
+          if stale:
+              print(
+                  "::error::a pinned revision has been behind for longer than the window "
+                  "— this check reports it and gates nothing"
+              )
+          if unread:
+              print(
+                  "::error::a pinned repository could not be compared with its default "
+                  "branch — this check reports it and gates nothing"
+              )
+
+          leave(1 if stale or unread else 0)
           PY
 
   sources:
