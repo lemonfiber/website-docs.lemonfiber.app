@@ -56,11 +56,17 @@ jobs:
         id: fetch
         uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
         with:
+          # The quotes are load-bearing. The action evaluates this line in
+          # bash, which expands a glob before lychee is reached, and `**` in
+          # bash without `globstar` is `*` — so this read `dist/*/*.html`, the
+          # section index pages and nothing else. Every page one directory
+          # deeper, and `dist/index.html` above them, went unfetched. Quoted,
+          # the pattern arrives at lychee, whose `**` is every depth.
           args: >-
             --no-progress
             --config lychee-site.toml
             --root-dir ${{ github.workspace }}/dist
-            dist/**/*.html
+            'dist/**/*.html'
           output: lychee/out.md
           # The verdict is composed by the step below instead, so that what this
           # check found and what it is for are read together. `fail` would end
