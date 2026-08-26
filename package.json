@@ -51,7 +51,7 @@
     "prettier-plugin-astro": "^0.14.1",
     "starlight-links-validator": "^0.25.3",
     "starlight-versions": "^0.10.0",
-    "typescript": "^6.0.3",
+    "typescript": "^7.0.2",
     "typescript-eslint": "^8.67.0",
     "vitest": "^4.1.11",
     "@axe-core/playwright": "^4.13.0",
