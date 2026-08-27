@@ -8,6 +8,12 @@ import { countViolations, type Page } from "../src/lib/counts.ts";
 import { INVENTORIES } from "../src/lib/inventories.ts";
 import { lockViolations } from "../src/lib/lockfile.ts";
 import {
+  INSTALLED,
+  STYLESHEET,
+  TOKENS,
+  tokenViolations,
+} from "../src/lib/tokens.ts";
+import {
   collisionViolations,
   fileViolations,
   format,
@@ -107,7 +113,15 @@ const errorCodes = await text("vendor/lemonfiber/reference/error-codes.md");
 const declaredPin = await text("package.json");
 const resolvedPin = await text("package-lock.json");
 
+// The stylesheet against the brand tokens it renames. Brand arrives twice —
+// the submodule the brand pages are rendered from, and the package the
+// stylesheet imports — and the two are compared with each other as well.
 found.push(
+  ...tokenViolations(
+    await text(TOKENS),
+    await text(INSTALLED),
+    await text(STYLESHEET),
+  ),
   ...codeViolations(
     errorCodes,
     await text("src/content/docs/fixing/every-error-by-code.md"),

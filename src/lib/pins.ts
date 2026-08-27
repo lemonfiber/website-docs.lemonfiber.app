@@ -14,6 +14,7 @@
 
 import { ARTEFACT } from "./codes.ts";
 import { INVENTORIES } from "./inventories.ts";
+import { TOKENS } from "./tokens.ts";
 import { captured } from "./mirror.ts";
 
 const VENDOR = "vendor/";
@@ -52,15 +53,23 @@ export interface Behind extends Watched {
 }
 
 /**
+ * The sources of the guards that are not inventories.
+ *
+ * Each names its own, so a guard added here is watched from the day it is
+ * declared and no path is written down twice.
+ */
+const ARTEFACTS: readonly string[] = [ARTEFACT, TOKENS];
+
+/**
  * Every path a guard in this repository reads to hold a page to.
  *
  * Taken from the declarations themselves rather than listed again here: an
- * inventory names the tree its members come from, and the error-code guard
- * names the artefact it holds the reference page to. A path outside `vendor/`
- * is one this repository owns and no pin stands in front of.
+ * inventory names the tree its members come from, and each guard that is not
+ * one names the artefact it holds a page to. A path outside `vendor/` is one
+ * this repository owns and no pin stands in front of.
  */
 export const GUARDED: readonly string[] = [
-  ...new Set([ARTEFACT, ...INVENTORIES.map((one) => one.source)]),
+  ...new Set([...ARTEFACTS, ...INVENTORIES.map((one) => one.source)]),
 ].sort((a, b) => a.localeCompare(b));
 
 /**

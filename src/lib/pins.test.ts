@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { ARTEFACT } from "./codes.ts";
 import { INVENTORIES } from "./inventories.ts";
+import { TOKENS } from "./tokens.ts";
 import {
   declaredBranches,
   GUARDED,
@@ -32,10 +33,18 @@ describe("what a guard reads", () => {
     expect(new Set(GUARDED).size).toBe(GUARDED.length);
   });
 
-  it("holds the reference the error-code guard reads, which no inventory names", () => {
+  it("holds what the guards that are not inventories read", () => {
     const sources = INVENTORIES.map((one) => one.source);
-    expect(sources).not.toContain(ARTEFACT);
-    expect(GUARDED).toContain(ARTEFACT);
+    for (const artefact of [ARTEFACT, TOKENS]) {
+      expect(sources).not.toContain(artefact);
+      expect(GUARDED).toContain(artefact);
+    }
+  });
+
+  it("reaches into brand, which held no guarded path before", () => {
+    expect(watched(GUARDED, ["vendor/brand"])).toEqual([
+      { module: "vendor/brand", path: "tokens/tokens.css" },
+    ]);
   });
 
   it("reaches into the web surface, which held no guarded path before", () => {

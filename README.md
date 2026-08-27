@@ -112,6 +112,13 @@ what the tests exercise. They enforce:
 - **No real file under a mirror.** A mirrored route must be a symlink into
   `vendor/`, never a copy.
 - **No owned page whose slug collides with a mirrored path.** One home per fact.
+- **The stylesheet against the brand tokens it renames.** `src/app.css` defines
+  no colour, radius or step of its own. A name it reads that brand does not
+  declare falls back to the inherited value rather than failing, so the page
+  renders in the wrong colours and nothing says so. Brand arrives here twice —
+  the submodule the brand pages are rendered from, and the npm package the
+  stylesheet imports — and the two are compared with each other as well, which
+  is the disagreement the lockfile rule cannot see.
 
 The mirrors are declared in `mirrors.json`, which is what the last two rules
 check against. A tree mirror's own root route is the one place an owned page may
@@ -171,8 +178,8 @@ the pin was two days old.
 
 `sources` asks the other question, and applies no window at all. Has a pin gone
 behind on a file a guard here reads? The paths are the declarations themselves —
-every inventory's `source`, and the artefact the error-code guard holds the
-reference page to — so a new inventory is watched from the day it is declared
+every inventory's `source`, and the artefact each guard that is not one holds
+a page to — so a new inventory is watched from the day it is declared
 and nothing is written down twice. It names the commits rather than counting
 them: a repository commits far more than this site reads, and the count of
 everything says nothing about whether a page here has gone wrong.
