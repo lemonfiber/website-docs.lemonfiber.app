@@ -42,9 +42,10 @@ corrupt the one thing that answer exists to be.
 
 `lemonfiber ui` serves the same envelope over local HTTP. It takes a loopback
 socket — whichever port is free, unless `--port` names one — and prints the whole
-address together with a token minted for that run. Nothing is installed, nothing
-keeps running afterwards, and the connection is not encrypted, which it says as it
-starts.
+address together with a token minted for that run. `--lan` offers it to your
+network instead, and is refused until a password has been set with
+`--set-password`. Nothing is installed, nothing keeps running afterwards, and the
+connection is not encrypted, which it says as it starts.
 
 Thirteen endpoints answer a question and close. Each one is a command a person
 could have typed, dispatched through the same entry point the command line uses,

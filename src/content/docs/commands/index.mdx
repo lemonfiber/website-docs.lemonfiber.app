@@ -62,13 +62,14 @@ binary at the revision this site pins, which that page names at its foot.
 
 ## Seeing what is happening
 
-| Command     | What it does                                                      | Reach for it when                                                                   |
-| ----------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `ps`        | Reports what each service is actually doing                       | You want the state of the stack in one screen                                       |
-| `logs`      | Shows what services are saying                                    | You want the lines. `--follow` keeps reading; `--watch` opens the scrollable viewer |
-| `trace`     | Follows one show or film across the services                      | You are asking "where is my show?" and want the answer step by step                 |
-| `household` | Shows what the household asked for, and where each request stands | You want the queue grouped by whoever asked for it                                  |
-| `stuck`     | Lists the items whose downloads are stuck                         | Something reported a count of stuck items and you want them named                   |
+| Command      | What it does                                                      | Reach for it when                                                                           |
+| ------------ | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `ps`         | Reports what each service is actually doing                       | You want the state of the stack in one screen                                               |
+| `logs`       | Shows what services are saying                                    | You want the lines. `--follow` keeps reading; `--watch` opens the scrollable viewer         |
+| `trace`      | Follows one show or film across the services                      | You are asking "where is my show?" and want the answer step by step                         |
+| `household`  | Shows what the household asked for, and where each request stands | You want the queue grouped by whoever asked for it                                          |
+| `stuck`      | Lists the items whose downloads are stuck                         | Something reported a count of stuck items and you want them named                           |
+| `front-door` | Names the one address to send somebody who lives here             | Somebody in the house asks where to go, and you want one answer rather than a list of ports |
 
 ## Settings and quality
 
@@ -106,11 +107,19 @@ binary at the revision this site pins, which that page names at its foot.
 | `restore` | Restores your configuration from a backup archive         | You are putting a stack back, here or on another machine. A different data root needs `--repoint`             |
 | `support` | Gathers what a person helping you would ask for, redacted | You are asking for help. A bare run writes nothing and says what the bundle would hold; `--write` produces it |
 
+## What this machine keeps, and what leaves it
+
+| Command    | What it does                                                                  | Reach for it when                                                                                                                                  |
+| ---------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `outbound` | Lists everything that leaves this machine, and what refusing each of it costs | You want to know what lemonfiber asks the internet for, what the services ask for on their own account, and what switching each off would stop     |
+| `stored`   | Lists what lemonfiber keeps on this machine, where it is, and why             | You want to know what is on your disk because of lemonfiber, and to be sure your library is not part of it                                         |
+| `forget`   | Removes everything lemonfiber keeps on this machine                           | You are done with it. Your library, your downloads and the containers are never touched; it lists what would go and does nothing until `--confirm` |
+
 ## Serving it over HTTP
 
-| Command | What it does                                                                                                                       | Reach for it when                                                                                                                         |
-| ------- | ---------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `ui`    | Serves the JSON API on a loopback socket for as long as you leave it running, printing the address and a token minted for that run | You are driving lemonfiber from a browser, a client or a script rather than a terminal. `--assets <dir>` serves a built web app beside it |
+| Command | What it does                                                                                                                       | Reach for it when                                                                                                                                                                                               |
+| ------- | ---------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ui`    | Serves the JSON API on a loopback socket for as long as you leave it running, printing the address and a token minted for that run | You are driving lemonfiber from a browser, a client or a script rather than a terminal. `--assets <dir>` serves a built web app beside it; `--lan` offers it to your network, once `--set-password` has set one |
 
 ## Words, and help
 

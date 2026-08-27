@@ -95,6 +95,8 @@ Two of those are worth a note.
 | [`BUNDLE-5`](/fixing/every-error-by-code/#bundle--the-support-bundle) | The machine could offer no randomness to derive stand-ins from                                  |
 | [`BUNDLE-6`](/fixing/every-error-by-code/#bundle--the-support-bundle) | This run has neither a directory of its own to keep an archive in nor anything to pack one with |
 
+Two more are about asking for a bundle **back**. The web interface has no filesystem to write into and no path it could name, so a bundle asked for there is kept with lemonfiber's own files and then handed over by name. [`BUNDLE-7`](/fixing/every-error-by-code/#bundle--the-support-bundle) means this run cannot say where those files are; [`BUNDLE-8`](/fixing/every-error-by-code/#bundle--the-support-bundle) means the name is not one of the bundles kept here — a name carrying a path is refused rather than followed.
+
 Two codes elsewhere on the site point you here rather than offering advice: [`STACK-3`](/fixing/every-error-by-code/#stack--the-stack-description) and [`SEED-3`](/fixing/every-error-by-code/#seed--wiring-the-services-together). Both mean lemonfiber does not recognise what happened and will not guess. Admitting that costs you a bundle; a confident wrong guess would cost you an afternoon.
 
 ## Before you share it
@@ -106,5 +108,5 @@ Then take it to [where to ask](/contributing/where-to-ask/), which lists the pla
 ## Related
 
 - [Run the doctor](/fixing/run-the-doctor/) — the diagnosis the bundle carries
-- [Every error by code](/fixing/every-error-by-code/) — the six `BUNDLE` codes, side by side
+- [Every error by code](/fixing/every-error-by-code/) — the eight `BUNDLE` codes, side by side
 - [C4, the support bundle](/spec/10-functional/features/c-trust/c4-support-bundle/) — the requirement this is written against

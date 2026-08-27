@@ -1,6 +1,6 @@
 ---
 title: The API
-description: One envelope, thirty payload kinds, a local HTTP surface, and two SDKs generated from a single contract artefact.
+description: One envelope, thirty-eight payload kinds, a local HTTP surface, and two SDKs generated from a single contract artefact.
 sidebar:
   order: 0
 ---
@@ -15,9 +15,10 @@ It reaches you two ways. [`--json`](/commands/global-flags/) on the command line
 prints it. `lemonfiber ui` serves it over local HTTP: one read endpoint for each
 question a command answers, `POST /api/actions/<name>` for anything that changes
 something, and `GET /api/events` as a live stream — all of it behind a token
-minted for that run, on a socket bound to this machine. Both surfaces dispatch
-through the same entry point, so neither can say something about your stack that
-the other would not.
+minted for that run, on a socket bound to this machine. `--lan` offers it to
+your network instead, and is refused until a password has been set. Both
+surfaces dispatch through the same entry point, so neither can say something
+about your stack that the other would not.
 
 What the binary does **not** yet carry is the web app itself, so `lemonfiber ui`
 today serves the API and no interface unless `--assets` points it at a build. The
