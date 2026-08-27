@@ -34,6 +34,8 @@ export interface Sources {
   readonly mirrors: string;
   /** `vendor/sdk-ts/src/index.ts`, the client package's entry point. */
   readonly clientIndex: string;
+  /** `vendor/lemonfiber-web/package.json`, the web surface's manifest. */
+  readonly webManifest: string;
   /** Every path under `vendor/spec`, repository-relative. */
   readonly spec: readonly string[];
 }

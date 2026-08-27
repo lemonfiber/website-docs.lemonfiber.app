@@ -38,6 +38,12 @@ describe("what a guard reads", () => {
     expect(GUARDED).toContain(ARTEFACT);
   });
 
+  it("reaches into the web surface, which held no guarded path before", () => {
+    expect(watched(GUARDED, ["vendor/lemonfiber-web"])).toEqual([
+      { module: "vendor/lemonfiber-web", path: "package.json" },
+    ]);
+  });
+
   it("watches the artefact that made a page wrong while its guard stayed green", () => {
     expect(watched(GUARDED, ["vendor/lemonfiber"])).toContainEqual({
       module: "vendor/lemonfiber",

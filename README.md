@@ -126,10 +126,12 @@ journeys. Each one is a transcription of something machine-readable, and goes
 false when a pin moves.
 
 `src/lib/inventories.ts` names, for each such set, the tree it is declared in,
-how to read the members out of it, and the sentence shapes the prose states the
-number in. `src/lib/counts.ts` derives the number on every run and compares.
-**No number is written down in either file** — a check that carried its own copy
-of the answer would be one more transcription to go stale.
+which reader takes the members out of it, and the sentence shapes the prose
+states the number in. `src/lib/sources.ts` is the readers — one per shape a
+source declares its members in, knowing nothing of which sets there are.
+`src/lib/counts.ts` derives the number on every run and compares. **No number is
+written down in any of them** — a check that carried its own copy of the answer
+would be one more transcription to go stale.
 
 The paragraph above is inside that check. This README states the site's numbers
 in the site's own sentence shapes, so it is read as one more page rather than as

@@ -17,6 +17,7 @@ const nothing: Sources = {
   webApi: "",
   mirrors: "",
   clientIndex: "",
+  webManifest: "",
   spec: [],
 };
 
