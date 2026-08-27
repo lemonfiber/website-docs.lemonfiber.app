@@ -119,6 +119,13 @@ what the tests exercise. They enforce:
   out of the formula rather than kept by hand — the release pipeline rewrites
   that file at 1.0.0, and the sentence calling it a placeholder goes false in
   the commit that does it.
+- **The stylesheet against the brand tokens it renames.** `src/app.css` defines
+  no colour, radius or step of its own. A name it reads that brand does not
+  declare falls back to the inherited value rather than failing, so the page
+  renders in the wrong colours and nothing says so. Brand arrives here twice —
+  the submodule the brand pages are rendered from, and the npm package the
+  stylesheet imports — and the two are compared with each other as well, which
+  is the disagreement the lockfile rule cannot see.
 
 The mirrors are declared in `mirrors.json`, which is what the last two rules
 check against. A tree mirror's own root route is the one place an owned page may
