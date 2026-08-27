@@ -23,7 +23,7 @@ The specification is one of those mirrors. It is authored and checked in
 points at the repository that owns it, and its footer names the revision it was
 rendered from.
 
-## The nine sections, and the specification
+## Nine sections, and the specification
 
 `src/lib/sections.ts` is the sidebar. The nine authored sections address three
 audiences in order — someone using the tool, someone building on it, someone
@@ -120,15 +120,21 @@ renders there.
 
 ### Counts, against what is counted
 
-This site's pages state numbers about the trees under `vendor/`: nineteen
-services, twenty-five payload kinds, sixty-eight features. Each one is a
-transcription of something machine-readable, and goes false when a pin moves.
+This site's pages state numbers about the trees under `vendor/`: the nineteen
+services, thirty-eight payload kinds, sixty-eight features and nine end-to-end
+journeys. Each one is a transcription of something machine-readable, and goes
+false when a pin moves.
 
 `src/lib/inventories.ts` names, for each such set, the tree it is declared in,
 how to read the members out of it, and the sentence shapes the prose states the
 number in. `src/lib/counts.ts` derives the number on every run and compares.
 **No number is written down in either file** — a check that carried its own copy
 of the answer would be one more transcription to go stale.
+
+The paragraph above is inside that check. This README states the site's numbers
+in the site's own sentence shapes, so it is read as one more page rather than as
+documentation about them — the count of payload kinds in it had been left behind
+by the contract, and nothing here was looking.
 
 Where a page sets the members out in a table rather than only counting them, the
 table is compared against the source in both directions, as the error-code page
