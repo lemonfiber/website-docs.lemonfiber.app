@@ -41,8 +41,12 @@ $status = $client->read('/api/status');
 $status->kind;        // 'status'
 $status->data;        // the payload, shaped by kind
 
-$client->act('/api/actions/retry-import', ['service' => 'sonarr']);
+$client->act('/api/actions/restart', ['forms' => ['tv'], 'services' => ['sonarr']]);
 ```
+
+An action's name and its arguments are the command line's own. A name this
+surface does not offer is refused rather than invented, and a field no action
+takes is refused rather than ignored.
 
 ## One class per kind
 
@@ -88,11 +92,11 @@ Shapes are generated. `src/Generated/` holds types produced from
 `web-api.contract.json`, the artefact lemonfiber builds from the types it
 serialises with. Nothing in that directory is edited by hand.
 
-| File                 | What it holds                                                                     |
-| -------------------- | --------------------------------------------------------------------------------- |
-| `Contract.php`       | The `api_version` these types were generated from, and the release they came from |
-| `Kind.php`           | Every kind the contract describes                                                 |
-| `<Kind>Envelope.php` | One class per kind: the kind it reads, and the payload type the contract gives it |
+| File                 | What it holds                                                                      |
+| -------------------- | ---------------------------------------------------------------------------------- |
+| `Contract.php`       | The `api_version` these types were generated from, and the revision they came from |
+| `Kind.php`           | Every kind the contract describes                                                  |
+| `<Kind>Envelope.php` | One class per kind: the kind it reads, and the payload type the contract gives it  |
 
 A copy of the artefact is vendored beside the revision it came from, so
 generation needs no network and a contract change arrives as a diff somebody
@@ -116,10 +120,10 @@ Everything else in `src/` is behaviour no schema expresses.
 | Written by hand           | What it holds to                                                                                                                                       |
 | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `Http\RunToken`           | The per-run token travels in a header, never in an address                                                                                             |
-| `Http\BaseUrl`            | Loopback only; any other host is refused before anything is sent                                                                                       |
+| `Http\BaseUrl`            | Loopback only; any other host is refused before anything is sent, and a loopback address is not refused for being named rather than numeric            |
 | `Envelope\EnvelopeReader` | A version mismatch is refused plainly, naming both versions, rather than rendering part of an answer                                                   |
 | `Envelope\Payload`        | An envelope is read as the kind it carries, or not at all                                                                                              |
-| `Events\EventStream`      | A stream that goes quiet longer than the agreed heartbeat is reported as broken, not as calm                                                           |
+| `Events\EventStream`      | A stream quiet for twice the agreed heartbeat is reported as broken, not as calm; one missed beat is not                                               |
 | `Events\HeldValues`       | Values gathered before a reconnection gap are marked out of date                                                                                       |
 | `Exception\RequestFailed` | A refusal carries the sentence lemonfiber answered with, read back through `said()`; an answer carrying none names the endpoint and the status instead |
 | `Exception\*`             | The error model, in plain language                                                                                                                     |
@@ -128,13 +132,15 @@ Everything else in `src/` is behaviour no schema expresses.
 
 Every gate is a merge gate. `composer ci` runs all but one of them: Pint with the
 `per` preset and strict rules on top, PHPStan at level max with 100% type
-coverage, a Rector dry run with zero changes, dependency checks, contract
-regeneration with no diff, 100% line coverage and a 100% mutation score.
+coverage, a Rector dry run with zero changes, the repository's own guards,
+dependency checks, contract regeneration with no diff, 100% line coverage and a
+100% mutation score.
 
-The one it leaves out is the backward-compatibility check against the last
-released tag. That is `composer bc`, a script of its own and a CI job of its own,
-and it is skipped entirely while this package has no released tag to compare
-against — the job says so rather than reporting a success it did not earn.
+The one it leaves out is the backward-compatibility check, which runs against the
+newest `v*` tag. That is `composer bc`, a script of its own and a CI job of its
+own, and it needs a checker installed separately with `composer bin bc install`.
+There are no tags yet, so the job skips both its steps and passes having compared
+nothing — it says as much rather than reporting a success it did not earn.
 
 There is no PHPStan baseline and no ignored errors. `@phpstan-ignore`,
 `@codeCoverageIgnore`, `@SuppressWarnings` and their relatives are rejected by a
