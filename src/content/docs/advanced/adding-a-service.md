@@ -72,18 +72,18 @@ because nothing in this stack should change because time passed.
 Each of these has a specification requirement behind it, and each is itself
 proven to fail when broken.
 
-| Check                                      | What it holds to                                                         |
-| ------------------------------------------ | ------------------------------------------------------------------------ |
-| Manifest and compose parity                | Every service in one is in the other                                     |
-| One `${DATA_ROOT}:/data` mount per service | Imports hardlink                                                         |
-| Bindings match the manifest tier           | Administrative on loopback, household on the LAN                         |
-| No `depends_on` across a profile           | Any subset of the stack still boots                                      |
-| Killswitch routing                         | Nothing shares the VPN container's profile without its network namespace |
-| Pinned, non-floating tags                  | Nothing changes because time passed                                      |
-| Capabilities match the manifest            | Only the VPN container holds an elevated network capability              |
-| An OSI licence per service                 | Verified against a vendored SPDX list                                    |
-| Every form resolves                        | And drags in nothing outside its profiles                                |
-| Both architectures per pin                 | `linux/amd64` and `linux/arm64`, read from each registry                 |
+| Check                                      | What it holds to                                                                                                                       |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Manifest and compose parity                | Every service in one is in the other                                                                                                   |
+| One `${DATA_ROOT}:/data` mount per service | Imports hardlink                                                                                                                       |
+| Bindings match the manifest tier           | Administrative on loopback, household on the LAN                                                                                       |
+| No `depends_on` across a profile           | Any subset of the stack still boots                                                                                                    |
+| Killswitch routing                         | Nothing shares the VPN container's profile without its network namespace, so no client here is one lemonfiber has to report as leaking |
+| Pinned, non-floating tags                  | Nothing changes because time passed                                                                                                    |
+| Capabilities match the manifest            | Only the VPN container holds an elevated network capability                                                                            |
+| An OSI licence per service                 | Verified against a vendored SPDX list                                                                                                  |
+| Every form resolves                        | And drags in nothing outside its profiles                                                                                              |
+| Both architectures per pin                 | `linux/amd64` and `linux/arm64`, read from each registry                                                                               |
 
 The parity checks read the model `docker compose config` resolves rather than the
 YAML, so they check what Docker will actually run rather than what the file
