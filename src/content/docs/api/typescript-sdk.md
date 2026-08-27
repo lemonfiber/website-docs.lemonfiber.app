@@ -61,13 +61,17 @@ if (status.ok) {
   status.value.data; // the payload, shaped by kind
 }
 
-await opened.client.act("retry-import", { service: "sonarr" });
+await opened.client.act("restart", { forms: ["tv"], services: ["sonarr"] });
 ```
 
 `read(endpoint, query?)` issues a `GET` to `/api/<endpoint>`, which is what the
 equivalent command prints under `--json`. `act(name, body?)` issues a `POST` to
 `/api/actions/<name>`. Nothing throws for an expected failure: a call returns
 either a value or a `Problem` carrying a sentence written for a person to read.
+
+An action's name and its arguments are the command line's own. A name this
+surface does not offer is refused rather than invented, and a field no action
+takes is refused rather than ignored.
 
 ## Following live state
 
@@ -112,9 +116,16 @@ than in front of it. A stopped container engine is `failed`, and the same reques
 succeeds once it is running again.
 
 `missing`, `misasked` and `failed` always carry lemonfiber's own sentence. A body
-the package cannot read is `unreachable` whatever status carried it, so a page
-from something standing in front of lemonfiber is never passed off as lemonfiber's
-account of itself.
+the package cannot read — a page, or JSON that is not this envelope — is
+`unreachable` whatever status carried it.
+
+What that rules out is a document rather than a stranger. A plain sentence is
+taken as lemonfiber's own, because every refusal the write surface makes is prose
+and so is a read it could not read, and nothing in a line of words says who wrote
+it: a plain-text answer from whatever else is listening on that loopback port is
+read as lemonfiber's account of what there is. Refusing prose would close that
+door by reporting every one of lemonfiber's own refusals as a server that had
+stopped answering, which is the larger loss of the two and the more common.
 
 ## What the package exports
 
