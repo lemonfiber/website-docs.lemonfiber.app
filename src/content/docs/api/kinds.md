@@ -1,13 +1,13 @@
 ---
 title: Every payload kind
-description: The thirty payload kinds the contract artefact describes, and every field the six most-used ones carry.
+description: The thirty-eight payload kinds the contract artefact describes, and every field the six most-used ones carry.
 sidebar:
   order: 2
 ---
 
 `kind` says which payload an [envelope](/api/the-envelope/) carries, so a
 consumer can branch before parsing `data`. The contract artefact describes
-thirty of them, and each entry is the whole envelope with that kind's
+thirty-eight of them, and each entry is the whole envelope with that kind's
 payload in place rather than the payload alone — a generator wants the shape it
 will actually parse.
 
@@ -16,45 +16,53 @@ cannot be constructed outside that place, and the contract is generated from the
 same list — so a kind that reaches the wire without a schema, or a schema for a
 kind nobody emits, fails the build rather than reaching a client.
 
-| Kind          | `data` carries         | In one line                                                                         |
-| ------------- | ---------------------- | ----------------------------------------------------------------------------------- |
-| `backup`      | A capture report       | Where the archive went, what it covers, and which older ones retention pruned       |
-| `bundle`      | A bundle description   | What a support bundle holds, how large it is, and where it is if it was written     |
-| `config`      | A configuration answer | The settings asked about, and what a change did to them                             |
-| `dashboard`   | A dashboard snapshot   | One moment of what the stack is doing, as the dashboard assembles it                |
-| `doctor`      | A diagnosis            | What the diagnostic checks found                                                    |
-| `error`       | A problem              | A command could not do what was asked                                               |
-| `forms`       | The form catalogue     | Every form the stack declares                                                       |
-| `glossary`    | The whole vocabulary   | Every word this product explains, for somebody who asked what there is to ask about |
-| `household`   | A household view       | What the household asked for, member by member                                      |
-| `job`         | A job's name           | The name given to work that outlives the request that started it                    |
-| `lifecycle`   | A lifecycle report     | What a lifecycle command did, or would have done                                    |
-| `log`         | A log line             | One line of one service's output                                                    |
-| `music`       | A music-format report  | The music format chosen, and what became of applying it                             |
-| `preview`     | A preview              | What starting or stopping would do, before it is done                               |
-| `pull`        | A line of text         | One line the container engine wrote while pulling images                            |
-| `quality`     | A quality report       | The quality choice, what it means, and what a command did with it                   |
-| `reset`       | A reset report         | What a full reset did, or would do                                                  |
-| `restore`     | A restoration          | What restoring an archive would overwrite, and whether it did                       |
-| `seed`        | A seeding report       | What seeding wired, and what it left for a re-run                                   |
-| `setup`       | A setup report         | What setup settled on                                                               |
-| `start`       | A line of text         | One line the container engine wrote while starting services                         |
-| `status`      | A stack reading        | What each service is doing                                                          |
-| `stuck`       | The stuck items        | The items whose downloads are stuck                                                 |
-| `trace`       | One item's progress    | Where one item is in the pipeline                                                   |
-| `upgrade`     | An upgrade report      | What upgrading existing content did, or would do                                    |
-| `version`     | The versions in play   | The binary, and the stack it can operate                                            |
-| `walkthrough` | A walkthrough report   | What a first-content walk did, narrated line by line                                |
-| `watch`       | A supervision report   | What a watch saw, once the data root it was guarding was lost                       |
-| `wizard`      | A wizard report        | Where a setup run stands, and what it is still asking for                           |
-| `word`        | A glossary term        | One word this product uses, and what it means                                       |
+| Kind          | `data` carries           | In one line                                                                         |
+| ------------- | ------------------------ | ----------------------------------------------------------------------------------- |
+| `admission`   | A session                | The secret a session is carried by, and the moment it stops being one               |
+| `archives`    | The archives kept here   | Every backup this machine has kept, newest first, by the name a restore asks for    |
+| `backup`      | A capture report         | Where the archive went, what it covers, and which older ones retention pruned       |
+| `bundle`      | A bundle description     | What a support bundle holds, how large it is, and where it is if it was written     |
+| `config`      | A configuration answer   | The settings asked about, and what a change did to them                             |
+| `dashboard`   | A dashboard snapshot     | One moment of what the stack is doing, as the dashboard assembles it                |
+| `doctor`      | A diagnosis              | What the diagnostic checks found                                                    |
+| `error`       | A problem                | A command could not do what was asked                                               |
+| `forms`       | The form catalogue       | Every form the stack declares                                                       |
+| `front-door`  | A front-door report      | The one address to send somebody who lives here, and why the others are not it      |
+| `glossary`    | The whole vocabulary     | Every word this product explains, for somebody who asked what there is to ask about |
+| `household`   | A household view         | What the household asked for, member by member                                      |
+| `job`         | A job's name             | The name given to work that outlives the request that started it                    |
+| `lifecycle`   | A lifecycle report       | What a lifecycle command did, or would have done                                    |
+| `log`         | A log line               | One line of one service's output                                                    |
+| `music`       | A music-format report    | The music format chosen, and what became of applying it                             |
+| `outbound`    | What leaves this machine | Every request lemonfiber makes on its own account, and the ones the services make   |
+| `preview`     | A preview                | What starting or stopping would do, before it is done                               |
+| `pull`        | A line of text           | One line the container engine wrote while pulling images                            |
+| `quality`     | A quality report         | The quality choice, what it means, and what a command did with it                   |
+| `repair`      | A repair report          | What a repairing run offered, and what it did                                       |
+| `reset`       | A reset report           | What a full reset did, or would do                                                  |
+| `restore`     | A restoration            | What restoring an archive would overwrite, and whether it did                       |
+| `seed`        | A seeding report         | What seeding wired, and what it left for a re-run                                   |
+| `setup`       | A setup report           | What setup settled on                                                               |
+| `start`       | A line of text           | One line the container engine wrote while starting services                         |
+| `status`      | A stack reading          | What each service is doing                                                          |
+| `step`        | A narrated line          | One step of a walkthrough, and what was specifically true of it                     |
+| `stored`      | What is kept here        | Everything lemonfiber keeps on this machine, and what became of it                  |
+| `stuck`       | The stuck items          | The items whose downloads are stuck                                                 |
+| `trace`       | One item's progress      | Where one item is in the pipeline                                                   |
+| `undo`        | A reversal               | What putting back the last repair came to                                           |
+| `upgrade`     | An upgrade report        | What upgrading existing content did, or would do                                    |
+| `version`     | The versions in play     | The binary, and the stack it can operate                                            |
+| `walkthrough` | A walkthrough report     | What a first-content walk did, narrated line by line                                |
+| `watch`       | A supervision report     | What a watch saw, once the data root it was guarding was lost                       |
+| `wizard`      | A wizard report          | Where a setup run stands, and what it is still asking for                           |
+| `word`        | A glossary term          | One word this product uses, and what it means                                       |
 
 `pull` and `start` are the two whose `data` is not an object. Both are a single
 string: one line the container engine wrote, emitted as it was written, because a
 pull that takes ten minutes has to say something before it ends.
 
 Six of them are set out field by field below — the ones a client meets first, and
-the ones whose payloads are small enough to read as a table. The other twenty-four
+the ones whose payloads are small enough to read as a table. The other thirty-two
 are in the artefact in full, and both SDKs generate a type per kind from it, so
 nothing here is the only place their shapes are written down. Everything below is
 generated from the types that serialise the reply, so a field here is a field on
@@ -283,11 +291,11 @@ A word this product uses, and what somebody meeting it needs to know.
 moving between their screens should not have to work out that two of them are
 one.
 
-## The other twenty-four
+## The other thirty-two
 
 Every kind in the table above is in the contract artefact with its full schema,
-including the twenty-four not expanded here. Their payloads are larger — a
-`dashboard` carries nine panels, each with its own shape; a `lifecycle` report
+including the thirty-two not expanded here. Their payloads are larger — a
+`dashboard` carries ten panels, each with its own shape; a `lifecycle` report
 carries ten fields — and transcribing them into this page would create a second
 place their shapes are written down, which is the one thing the artefact exists to
 prevent.
