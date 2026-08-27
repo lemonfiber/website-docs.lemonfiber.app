@@ -144,6 +144,7 @@ found.push(
       webApi: await text("vendor/spec/20-architecture/contracts/web-api.md"),
       mirrors: await text("mirrors.json"),
       clientIndex: await text("vendor/sdk-ts/src/index.ts"),
+      phpManifest: await text("vendor/sdk-php/composer.json"),
       spec: specPaths.map(rel),
     },
     prose,

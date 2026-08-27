@@ -130,11 +130,23 @@ Everything else in `src/` is behaviour no schema expresses.
 
 ## The bar it is held to
 
-Every gate is a merge gate. `composer ci` runs all but one of them: Pint with the
-`per` preset and strict rules on top, PHPStan at level max with 100% type
-coverage, a Rector dry run with zero changes, the repository's own guards,
-dependency checks, contract regeneration with no diff, 100% line coverage and a
-100% mutation score.
+Every gate is a merge gate, and `composer ci` runs the eleven below, in this
+order — cheapest first, so a manifest left unsorted does not wait on a mutation
+run.
+
+| Gate                           | What it asks                                                                                 |
+| ------------------------------ | -------------------------------------------------------------------------------------------- |
+| `composer validate --strict`   | The manifest is well formed, with no warning tolerated                                       |
+| `composer normalize --dry-run` | The manifest is in its canonical order                                                       |
+| `composer audit`               | No dependency carries a known advisory                                                       |
+| `composer lint`                | Pint, with the `per` preset and strict rules on top                                          |
+| `composer analyse`             | PHPStan at level max, with 100% type coverage                                                |
+| `composer refactor`            | A Rector dry run with zero changes                                                           |
+| `composer guards`              | The repository's own: suppressions, oversized files, remote addresses, reasoning in comments |
+| `composer deps`                | Every dependency the code uses is declared, and every one declared is used                   |
+| `composer contract:check`      | `src/Generated` regenerates with no diff                                                     |
+| `composer test:coverage`       | 100% line coverage                                                                           |
+| `composer test:mutation`       | A 100% mutation score                                                                        |
 
 The one it leaves out is the backward-compatibility check, which runs against the
 newest `v*` tag. That is `composer bc`, a script of its own and a CI job of its

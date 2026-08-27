@@ -20,6 +20,7 @@ const COMMANDS = "vendor/lemonfiber/reference/commands.md";
 const WEB_API = "vendor/spec/20-architecture/contracts/web-api.md";
 const MIRRORS = "mirrors.json";
 const CLIENT_INDEX = "vendor/sdk-ts/src/index.ts";
+const PHP_MANIFEST = "vendor/sdk-php/composer.json";
 const SPEC = "vendor/spec";
 
 const DOCS = "src/content/docs/";
@@ -28,6 +29,7 @@ const KINDS_PAGE = `${DOCS}api/kinds.md`;
 const TUI_PAGE = `${DOCS}commands/the-tui.md`;
 const CODES_PAGE = `${DOCS}fixing/every-error-by-code.md`;
 const CLIENT_PAGE = `${DOCS}api/typescript-sdk.md`;
+const PHP_PAGE = `${DOCS}api/php-sdk.md`;
 
 /** One page's prose, or none when the page is not in the tree. */
 const prose = (pages: readonly Page[], path: string): string =>
@@ -175,6 +177,25 @@ const specSections = (paths: readonly string[]): string[] => {
   }
   return [...found];
 };
+
+/**
+ * The steps a composer script runs, as the commands a person runs.
+ *
+ * A step naming another script carries an `@`, and a `composer` of its own
+ * where it names one of composer's own commands. Both are written here the way
+ * a reader would type them, which is how the page writes them.
+ */
+export function composerSteps(manifest: string, script: string): string[] {
+  const node = nodeAt(manifest, ["scripts", script]);
+  if (!Array.isArray(node)) return [];
+
+  return node.map((one) => {
+    const step = String(one);
+    if (!step.startsWith("@")) return step;
+    const named = step.slice(1);
+    return named.startsWith("composer ") ? named : `composer ${named}`;
+  });
+}
 
 /** One `export { … } from "…";` of a package's entry point. */
 const RE_EXPORTED = /export\s*\{([^}]*)\}\s*from\s*"[^"]*";/g;
@@ -470,6 +491,16 @@ export const INVENTORIES: readonly Inventory[] = [
     listing: {
       page: CLIENT_PAGE,
       members: (text) => namesUnder(text, "Export"),
+    },
+  },
+  {
+    what: "gates `composer ci` runs",
+    source: PHP_MANIFEST,
+    members: (sources) => composerSteps(sources.phpManifest, "ci"),
+    claims: [{ says: "runs the %N% below" }],
+    listing: {
+      page: PHP_PAGE,
+      members: (text) => columnUnder(text, "Gate"),
     },
   },
   {

@@ -2,7 +2,13 @@ import { readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import { countViolations, type Page, type Sources } from "./counts.ts";
-import { exportedBy, INVENTORIES, keysAt, variantsAt } from "./inventories.ts";
+import {
+  composerSteps,
+  exportedBy,
+  INVENTORIES,
+  keysAt,
+  variantsAt,
+} from "./inventories.ts";
 
 /** Every real file under a directory, symlinked trees left where they are. */
 const walk = (dir: string, keep: (path: string) => boolean): string[] => {
@@ -26,6 +32,7 @@ const theTree = (): { sources: Sources; pages: Page[] } => ({
     webApi: read("vendor/spec/20-architecture/contracts/web-api.md"),
     mirrors: read("mirrors.json"),
     clientIndex: read("vendor/sdk-ts/src/index.ts"),
+    phpManifest: read("vendor/sdk-php/composer.json"),
     spec: walk("vendor/spec", () => true),
   },
   pages: walk("src/content/docs", (path) => /\.(md|mdx)$/.test(path)).map(
@@ -40,6 +47,7 @@ const nothing: Sources = {
   webApi: "",
   mirrors: "",
   clientIndex: "",
+  phpManifest: "",
   spec: [],
 };
 
@@ -278,5 +286,36 @@ describe("exportedBy", () => {
 
   it("names nothing where an entry point re-exports nothing", () => {
     expect(exportedBy('export * from "./everything.js";')).toEqual([]);
+  });
+});
+
+describe("composerSteps", () => {
+  const manifest = JSON.stringify({
+    scripts: {
+      ci: [
+        "@composer validate --strict",
+        "@lint",
+        "@test:coverage",
+        "git diff --exit-code",
+      ],
+      lint: "pint --test",
+    },
+  });
+
+  it("writes each step the way a reader would type it", () => {
+    expect(composerSteps(manifest, "ci")).toEqual([
+      "composer validate --strict",
+      "composer lint",
+      "composer test:coverage",
+      "git diff --exit-code",
+    ]);
+  });
+
+  it("finds no steps in a script that is one command rather than a list", () => {
+    expect(composerSteps(manifest, "lint")).toEqual([]);
+  });
+
+  it("finds no steps in a manifest that cannot be read", () => {
+    expect(composerSteps("{ not json", "ci")).toEqual([]);
   });
 });
