@@ -2,7 +2,8 @@ import { readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import { countViolations, type Page, type Sources } from "./counts.ts";
-import { exportedBy, INVENTORIES, keysAt, variantsAt } from "./inventories.ts";
+import { INVENTORIES } from "./inventories.ts";
+import { exportedBy, keysAt, variantsAt } from "./sources.ts";
 
 /** Every real file under a directory, symlinked trees left where they are. */
 const walk = (dir: string, keep: (path: string) => boolean): string[] => {
@@ -26,6 +27,9 @@ const theTree = (): { sources: Sources; pages: Page[] } => ({
     webApi: read("vendor/spec/20-architecture/contracts/web-api.md"),
     mirrors: read("mirrors.json"),
     clientIndex: read("vendor/sdk-ts/src/index.ts"),
+    webManifest: read("vendor/lemonfiber-web/package.json"),
+    phpContract: read("vendor/sdk-php/contract/web-api.contract.json"),
+    tsContract: read("vendor/sdk-ts/contract/web-api.contract.json"),
     spec: walk("vendor/spec", () => true),
   },
   pages: walk("src/content/docs", (path) => /\.(md|mdx)$/.test(path)).map(
@@ -40,6 +44,9 @@ const nothing: Sources = {
   webApi: "",
   mirrors: "",
   clientIndex: "",
+  webManifest: "",
+  phpContract: "",
+  tsContract: "",
   spec: [],
 };
 
@@ -278,5 +285,61 @@ describe("exportedBy", () => {
 
   it("names nothing where an entry point re-exports nothing", () => {
     expect(exportedBy('export * from "./everything.js";')).toEqual([]);
+  });
+});
+
+describe("what the web surface consumes", () => {
+  const MAP = "src/content/docs/develop/repo-map.md";
+
+  const webManifest = JSON.stringify({
+    dependencies: {
+      "@lemonfiber/brand": "github:lemonfiber/brand#abc",
+      "@lemonfiber/sdk-ts": "github:lemonfiber/sdk-ts#def",
+    },
+    devDependencies: { svelte: "^5" },
+  });
+
+  const about = (text: string, manifest = webManifest): string[] =>
+    countViolations(INVENTORIES, { ...nothing, webManifest: manifest }, [
+      { path: MAP, text },
+    ])
+      .filter((one) => one.where === MAP)
+      .map((one) => one.message);
+
+  const SAYS = "**`lemonfiber-web` consumes `sdk-ts` and `brand`**, and is";
+
+  it("says nothing where the map names exactly what the manifest requires", () => {
+    expect(about(SAYS)).toEqual([]);
+  });
+
+  it("names the one the map has dropped", () => {
+    expect(about("**`lemonfiber-web` consumes `sdk-ts`**, and is")).toEqual([
+      expect.stringContaining("has these and the page does not: brand"),
+    ]);
+  });
+
+  it("names one the map states that the manifest does not require", () => {
+    expect(
+      about(
+        "**`lemonfiber-web` consumes `sdk-ts`, `brand` and `svelte`**, and",
+      ),
+    ).toEqual([expect.stringContaining("the page has these and")]);
+  });
+
+  it("finds nothing where the sentence has been reworded", () => {
+    expect(
+      about("**`lemonfiber-web` is built on the client and the tokens**"),
+    ).toEqual([
+      expect.stringContaining("has these and the page does not: brand, sdk-ts"),
+    ]);
+  });
+
+  it("keeps the name of a dependency from outside the org", () => {
+    expect(
+      about(SAYS, JSON.stringify({ dependencies: { svelte: "^5" } })),
+    ).toEqual([
+      expect.stringContaining("has these and the page does not: svelte"),
+      expect.stringContaining("the page has these and"),
+    ]);
   });
 });

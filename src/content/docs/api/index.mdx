@@ -20,9 +20,12 @@ your network instead, and is refused until a password has been set. Both
 surfaces dispatch through the same entry point, so neither can say something
 about your stack that the other would not.
 
-What the binary does **not** yet carry is the web app itself, so `lemonfiber ui`
-today serves the API and no interface unless `--assets` points it at a build. The
-shape of the surface is [the web API contract](/spec/20-architecture/contracts/web-api/);
+The binary carries the web app as well, embedded the way the stack beside it is:
+a submodule at `assets/web`, pinned to a built revision, and a build whose two
+halves speak different wire versions stops rather than shipping. A build told to
+carry none says so, and `lemonfiber ui --assets <dir>` serves a directory
+instead. The shape of the surface is
+[the web API contract](/spec/20-architecture/contracts/web-api/);
 [the envelope](/api/the-envelope/) covers the endpoints, the guard, and what is
 still missing.
 
