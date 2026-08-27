@@ -112,6 +112,13 @@ what the tests exercise. They enforce:
 - **No real file under a mirror.** A mirrored route must be a symlink into
   `vendor/`, never a copy.
 - **No owned page whose slug collides with a mirrored path.** One home per fact.
+- **The tap's formula, against what a page says installing it gets you.**
+  `brew install lemonfiber/tap/<name>` loads `Formula/<name>.rb` from the tap,
+  and what that file declares is the whole of what the command installs. The
+  names are compared in both directions, and the version a page states is read
+  out of the formula rather than kept by hand — the release pipeline rewrites
+  that file at 1.0.0, and the sentence calling it a placeholder goes false in
+  the commit that does it.
 
 The mirrors are declared in `mirrors.json`, which is what the last two rules
 check against. A tree mirror's own root route is the one place an owned page may
@@ -171,8 +178,8 @@ the pin was two days old.
 
 `sources` asks the other question, and applies no window at all. Has a pin gone
 behind on a file a guard here reads? The paths are the declarations themselves —
-every inventory's `source`, and the artefact the error-code guard holds the
-reference page to — so a new inventory is watched from the day it is declared
+every inventory's `source`, and the artefact each guard that is not one holds
+a page to — so a new inventory is watched from the day it is declared
 and nothing is written down twice. It names the commits rather than counting
 them: a repository commits far more than this site reads, and the count of
 everything says nothing about whether a page here has gone wrong.
