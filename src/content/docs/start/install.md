@@ -66,7 +66,7 @@ the tag you want — the newest is on the
 
 ```sh
 $ curl --proto '=https' --tlsv1.2 -LsSf \
-    https://github.com/lemonfiber/lemonfiber/releases/download/v0.8.0/lemonfiber-installer.sh | sh
+    https://github.com/lemonfiber/lemonfiber/releases/download/v0.9.1/lemonfiber-installer.sh | sh
 ```
 
 The archives sit beside it on the same release, if you would rather check a
