@@ -5,6 +5,7 @@ import { join, relative, sep } from "node:path";
 
 import { codeViolations, familyViolations } from "../src/lib/codes.ts";
 import { countViolations, type Page } from "../src/lib/counts.ts";
+import { HEALTH, healthViolations } from "../src/lib/health.ts";
 import { INVENTORIES } from "../src/lib/inventories.ts";
 import { lockViolations } from "../src/lib/lockfile.ts";
 import {
@@ -82,6 +83,14 @@ for (const link of links.filter((l) => l.startsWith(CONTENT + sep))) {
   });
 }
 found.push(...mirrorViolations(declared, state));
+
+// The community health files GitHub serves for every repository in the org.
+// The mirror rule above catches a symlink pointing at a file that is not
+// there; this catches the file that is there and no page renders.
+const orgPaths: string[] = [];
+const orgLinks: string[] = [];
+await walk(join(ROOT, HEALTH), orgPaths, orgLinks);
+found.push(...healthViolations(orgPaths.map(rel), declared));
 
 const owned = kept
   .filter((p) => p.startsWith(CONTENT + sep) && /\.(md|mdx)$/.test(p))

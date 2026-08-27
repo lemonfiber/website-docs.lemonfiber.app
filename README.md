@@ -112,6 +112,11 @@ what the tests exercise. They enforce:
 - **No real file under a mirror.** A mirrored route must be a symlink into
   `vendor/`, never a copy.
 - **No owned page whose slug collides with a mirrored path.** One home per fact.
+- **Every community health file the org publishes has a page here.** The mirror
+  rule catches a symlink pointing at a file that is not there. This catches the
+  other direction: a file GitHub serves for every repository in the org that no
+  page here renders, which is how the contributing section would quietly stop
+  being all of it.
 
 The mirrors are declared in `mirrors.json`, which is what the last two rules
 check against. A tree mirror's own root route is the one place an owned page may
@@ -171,8 +176,8 @@ the pin was two days old.
 
 `sources` asks the other question, and applies no window at all. Has a pin gone
 behind on a file a guard here reads? The paths are the declarations themselves —
-every inventory's `source`, and the artefact the error-code guard holds the
-reference page to — so a new inventory is watched from the day it is declared
+every inventory's `source`, and the artefact each guard that is not one holds
+a page to — so a new inventory is watched from the day it is declared
 and nothing is written down twice. It names the commits rather than counting
 them: a repository commits far more than this site reads, and the count of
 everything says nothing about whether a page here has gone wrong.
