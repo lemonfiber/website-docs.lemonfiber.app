@@ -115,6 +115,14 @@ binary at the revision this site pins, which that page names at its foot.
 | `stored`   | Lists what lemonfiber keeps on this machine, where it is, and why             | You want to know what is on your disk because of lemonfiber, and to be sure your library is not part of it                                         |
 | `forget`   | Removes everything lemonfiber keeps on this machine                           | You are done with it. Your library, your downloads and the containers are never touched; it lists what would go and does nothing until `--confirm` |
 
+`outbound` says what would leave. What actually left is written down as it goes,
+in `outbound.log` beside your settings: when, which kind of request, where it
+went, and what came back. Never a header, never a body, and the address arrives
+with its query stripped off, because a search term, a title or an indexer key
+ends up there — a record kept to reassure you should not be a file full of your
+own keys. It holds the last five hundred lines, oldest dropped, and `stored`
+lists it with everything else.
+
 ## Serving it over HTTP
 
 | Command | What it does                                                                                                                       | Reach for it when                                                                                                                                                                                               |
