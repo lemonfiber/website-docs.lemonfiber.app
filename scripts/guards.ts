@@ -5,8 +5,20 @@ import { join, relative, sep } from "node:path";
 
 import { codeViolations, familyViolations } from "../src/lib/codes.ts";
 import { countViolations, type Page } from "../src/lib/counts.ts";
+import {
+  formulaViolations,
+  FORMULAE,
+  type Formula,
+} from "../src/lib/formula.ts";
+import { HEALTH, healthViolations } from "../src/lib/health.ts";
 import { INVENTORIES } from "../src/lib/inventories.ts";
 import { lockViolations } from "../src/lib/lockfile.ts";
+import {
+  INSTALLED,
+  STYLESHEET,
+  TOKENS,
+  tokenViolations,
+} from "../src/lib/tokens.ts";
 import {
   collisionViolations,
   fileViolations,
@@ -83,6 +95,14 @@ for (const link of links.filter((l) => l.startsWith(CONTENT + sep))) {
 }
 found.push(...mirrorViolations(declared, state));
 
+// The community health files GitHub serves for every repository in the org.
+// The mirror rule above catches a symlink pointing at a file that is not
+// there; this catches the file that is there and no page renders.
+const orgPaths: string[] = [];
+const orgLinks: string[] = [];
+await walk(join(ROOT, HEALTH), orgPaths, orgLinks);
+found.push(...healthViolations(orgPaths.map(rel), declared));
+
 const owned = kept
   .filter((p) => p.startsWith(CONTENT + sep) && /\.(md|mdx)$/.test(p))
   .map((p) => routeOf(relative(CONTENT, p).split(sep).join("/")));
@@ -107,7 +127,15 @@ const errorCodes = await text("vendor/lemonfiber/reference/error-codes.md");
 const declaredPin = await text("package.json");
 const resolvedPin = await text("package-lock.json");
 
+// The stylesheet against the brand tokens it renames. Brand arrives twice —
+// the submodule the brand pages are rendered from, and the package the
+// stylesheet imports — and the two are compared with each other as well.
 found.push(
+  ...tokenViolations(
+    await text(TOKENS),
+    await text(INSTALLED),
+    await text(STYLESHEET),
+  ),
   ...codeViolations(
     errorCodes,
     await text("src/content/docs/fixing/every-error-by-code.md"),
@@ -134,7 +162,19 @@ const specPaths: string[] = [];
 const specLinks: string[] = [];
 await walk(join(ROOT, "vendor", "spec"), specPaths, specLinks);
 
+// The formulae the tap serves. `brew install lemonfiber/tap/<name>` loads
+// `Formula/<name>.rb` from that repository, so the file name is the name the
+// pages print and the file's contents are the whole of what it installs.
+const formulae: Formula[] = [];
+for (const entry of await readdir(join(ROOT, FORMULAE)).catch(() => []))
+  if (entry.endsWith(".rb"))
+    formulae.push({
+      name: entry.slice(0, -".rb".length),
+      text: await text(`${FORMULAE}/${entry}`),
+    });
+
 found.push(
+  ...formulaViolations(formulae, prose),
   ...countViolations(
     INVENTORIES,
     {
