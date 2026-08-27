@@ -124,6 +124,12 @@ for (const path of kept.filter(
 ))
   prose.push({ path: rel(path), text: await readFile(path, "utf8") });
 
+// This repository's own README states the same numbers in the same sentence
+// shapes, and is read as one more page rather than as documentation about the
+// pages. Its count of payload kinds sat outside every check while the contract
+// left it behind.
+prose.push({ path: "README.md", text: await text("README.md") });
+
 const specPaths: string[] = [];
 const specLinks: string[] = [];
 await walk(join(ROOT, "vendor", "spec"), specPaths, specLinks);

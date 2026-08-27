@@ -51,12 +51,12 @@ stack on Windows through Docker Desktop, but not the `lemonfiber` binary itself.
 Three routes get you a binary. The fourth, Homebrew, is a placeholder, and it is
 better to say so than to give you a command that fails.
 
-| Route                                               | What it gets you                                                                                            |
-| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| One-line shell installer                            | `lemonfiber-installer.sh`, attached to every release. It puts the binary in your Cargo home.                |
-| Prebuilt archive                                    | A `.tar.xz` per platform, each with a `.sha256` beside it and a `sha256.sum` over the set.                  |
-| Building from source                                | The route for a change you are making yourself.                                                             |
-| Homebrew — `brew install lemonfiber/tap/lemonfiber` | Nothing. The tap repository exists, but the formula in it is a placeholder and no release job writes to it. |
+| Route                                               | What it gets you                                                                                                      |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| One-line shell installer                            | `lemonfiber-installer.sh`, attached to every release. It puts the binary in your Cargo home.                          |
+| Prebuilt archive                                    | A `.tar.xz` per platform, each with a `.sha256` beside it and a `sha256.sum` over the set.                            |
+| Building from source                                | The route for a change you are making yourself.                                                                       |
+| Homebrew — `brew install lemonfiber/tap/lemonfiber` | Nothing. The tap repository exists, but the formula in it is a placeholder: the job that writes it turns on at 1.0.0. |
 
 ### The shell installer
 
@@ -66,7 +66,7 @@ the tag you want — the newest is on the
 
 ```sh
 $ curl --proto '=https' --tlsv1.2 -LsSf \
-    https://github.com/lemonfiber/lemonfiber/releases/download/v0.8.0/lemonfiber-installer.sh | sh
+    https://github.com/lemonfiber/lemonfiber/releases/download/v0.9.1/lemonfiber-installer.sh | sh
 ```
 
 The archives sit beside it on the same release, if you would rather check a

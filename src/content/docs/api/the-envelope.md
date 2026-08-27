@@ -129,15 +129,27 @@ A refusal is prose, and says so. Nothing about which paths exist is disclosed to
 caller that has not been admitted: a path nothing serves is refused rather than
 reported as missing.
 
-## What is not built yet
+## The app served beside it
 
-**The binary carries no web app.** The app arrives as a pinned submodule at
-`assets/web`, embedded exactly as the stack beside it is; that submodule does not
-exist, so a build made today serves the API and no interface. What reads an
-embedded app is built and proven — `lemonfiber ui --assets <dir>` serves a
-directory instead, which is how the app is worked on before it is embedded — and
-a request for a file when there is no app is answered plainly rather than with a
-page.
+The binary carries a web app, embedded exactly as the stack beside it is: a
+submodule at `assets/web`, pinned to an exact revision and never to a branch.
+What is pinned there is the app's **built** tree rather than its source — cutting
+a version tag on `lemonfiber-web` builds it and pushes the output to a tag of its
+own — so what a binary carries is addressable as a revision and can be checked by
+its contents rather than fetched while the binary is being built.
+
+The pair is held together at compile time. The app declares the wire version it
+speaks, the build compares it against the one this binary serves, and a build
+whose two halves disagree stops and names both numbers. An incompatible pairing
+therefore cannot ship, because it cannot be built — the same argument the
+embedded stack rests on, for the other embedded thing.
+
+An absent app is not a mismatch. A build told to carry none says so rather than
+answering with an empty document, the endpoints below `/api` answer as usual, and
+`lemonfiber ui --assets <dir>` serves a directory instead, which is what somebody
+working on the app itself needs.
+
+## What is not built yet
 
 **A job cannot be followed yet.** An action that runs for minutes answers with a
 name for the work, and the stream carries the dashboard's state rather than that

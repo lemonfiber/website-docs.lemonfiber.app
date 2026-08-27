@@ -42,8 +42,10 @@ Five relationships carry all the weight.
 validates the manifest's schema version at build time. The two version
 independently; the pin is what says exactly which stack a given binary shipped.
 
-**`lemonfiber` generates `homebrew-tap`.** The release pipeline rewrites the
-formula on every release. The tap is downstream of everything and inert
+**`lemonfiber` generates `homebrew-tap`.** The formula is written by the release
+pipeline and never by hand. That publish job is off until 1.0.0, when the tap has
+a token to be written with, so every release so far has left the formula as the
+placeholder it started as. The tap is downstream of everything and inert
 otherwise.
 
 **`lemonfiber` generates the SDKs' contract.** One artefact is emitted from the
