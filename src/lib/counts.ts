@@ -43,6 +43,8 @@ export interface Sources {
   readonly phpManifest: string;
   /** `vendor/lemonfiber-web/package.json`, the web surface's manifest. */
   readonly webManifest: string;
+  /** `vendor/lemonfiber-web/src/lib/route.ts`, the console's own list of screens. */
+  readonly webRoute: string;
   /** Every path under `vendor/spec`, repository-relative. */
   readonly spec: readonly string[];
 }

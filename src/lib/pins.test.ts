@@ -64,6 +64,7 @@ describe("what a guard reads", () => {
   it("reaches into the web surface, which held no guarded path before", () => {
     expect(watched(GUARDED, ["vendor/lemonfiber-web"])).toEqual([
       { module: "vendor/lemonfiber-web", path: "package.json" },
+      { module: "vendor/lemonfiber-web", path: "src/lib/route.ts" },
     ]);
   });
 
