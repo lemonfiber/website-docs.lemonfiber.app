@@ -5,6 +5,11 @@ import { join, relative, sep } from "node:path";
 
 import { codeViolations, familyViolations } from "../src/lib/codes.ts";
 import { countViolations, type Page } from "../src/lib/counts.ts";
+import {
+  formulaViolations,
+  FORMULAE,
+  type Formula,
+} from "../src/lib/formula.ts";
 import { INVENTORIES } from "../src/lib/inventories.ts";
 import { lockViolations } from "../src/lib/lockfile.ts";
 import {
@@ -134,7 +139,19 @@ const specPaths: string[] = [];
 const specLinks: string[] = [];
 await walk(join(ROOT, "vendor", "spec"), specPaths, specLinks);
 
+// The formulae the tap serves. `brew install lemonfiber/tap/<name>` loads
+// `Formula/<name>.rb` from that repository, so the file name is the name the
+// pages print and the file's contents are the whole of what it installs.
+const formulae: Formula[] = [];
+for (const entry of await readdir(join(ROOT, FORMULAE)).catch(() => []))
+  if (entry.endsWith(".rb"))
+    formulae.push({
+      name: entry.slice(0, -".rb".length),
+      text: await text(`${FORMULAE}/${entry}`),
+    });
+
 found.push(
+  ...formulaViolations(formulae, prose),
   ...countViolations(
     INVENTORIES,
     {
