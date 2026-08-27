@@ -18,6 +18,8 @@ const nothing: Sources = {
   mirrors: "",
   clientIndex: "",
   webManifest: "",
+  phpContract: "",
+  tsContract: "",
   spec: [],
 };
 

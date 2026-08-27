@@ -174,7 +174,10 @@ to negotiate. `npm run ci` runs everything CI runs.
 ## Where to go next
 
 The repository's own page is [sdk-ts](/develop/repos/sdk-ts/), and its
-specification is [the sdk-ts spec](/spec/30-repos/sdk-ts/). The shapes it
-generates are listed in [every payload kind](/api/kinds/), and the reason
+specification is [the sdk-ts spec](/spec/30-repos/sdk-ts/). It generates types
+for thirty-four of them, from its own copy of the contract, which is older than
+the one the binary serves — [every payload kind](/api/kinds/) is what the server
+sends today, and both speak wire version 1, so the ones without a type of their
+own still arrive and still read. The reason
 `CONTRACT_API_VERSION` is not the package version is
 [two version numbers](/api/two-version-numbers/).

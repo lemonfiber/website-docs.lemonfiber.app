@@ -39,6 +39,12 @@ const WEB_API = "vendor/spec/20-architecture/contracts/web-api.md";
 const MIRRORS = "mirrors.json";
 const CLIENT_INDEX = "vendor/sdk-ts/src/index.ts";
 const WEB_MANIFEST = "vendor/lemonfiber-web/package.json";
+// Each client is generated from a copy of the contract taken when it was last
+// re-synced, and the two copies are at different revisions. Held separately from
+// the binary's for exactly that reason: a page that stated one number for all
+// three would be wrong about two of them.
+const PHP_CONTRACT = "vendor/sdk-php/contract/web-api.contract.json";
+const TS_CONTRACT = "vendor/sdk-ts/contract/web-api.contract.json";
 const SPEC = "vendor/spec";
 
 const DOCS = "src/content/docs/";
@@ -128,6 +134,18 @@ export const INVENTORIES: readonly Inventory[] = [
       page: KINDS_PAGE,
       members: (text) => columnUnder(text, "Kind"),
     },
+  },
+  {
+    what: "kinds the PHP client generates a class for",
+    source: PHP_CONTRACT,
+    members: (sources) => keysAt(sources.phpContract, "kinds"),
+    claims: [{ says: "a class for each of %N%" }],
+  },
+  {
+    what: "kinds the TypeScript client generates a type for",
+    source: TS_CONTRACT,
+    members: (sources) => keysAt(sources.tsContract, "kinds"),
+    claims: [{ says: "types for %N% of them" }],
   },
   {
     what: "payload kinds set out field by field",

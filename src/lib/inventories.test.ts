@@ -28,6 +28,8 @@ const theTree = (): { sources: Sources; pages: Page[] } => ({
     mirrors: read("mirrors.json"),
     clientIndex: read("vendor/sdk-ts/src/index.ts"),
     webManifest: read("vendor/lemonfiber-web/package.json"),
+    phpContract: read("vendor/sdk-php/contract/web-api.contract.json"),
+    tsContract: read("vendor/sdk-ts/contract/web-api.contract.json"),
     spec: walk("vendor/spec", () => true),
   },
   pages: walk("src/content/docs", (path) => /\.(md|mdx)$/.test(path)).map(
@@ -43,6 +45,8 @@ const nothing: Sources = {
   mirrors: "",
   clientIndex: "",
   webManifest: "",
+  phpContract: "",
+  tsContract: "",
   spec: [],
 };
 
