@@ -89,6 +89,29 @@ export function watched(
 }
 
 /**
+ * The pinned repositories no guard reads a path inside.
+ *
+ * `watched` answers which paths are read; this answers what that leaves out,
+ * which is the half a reader cannot infer from a clean run. A repository no
+ * guard reads a path inside contributes nothing to the comparison and so can
+ * never appear in it — the run then says every pin has taken every commit
+ * touching a guarded source, which is true, and reads as an account of all of
+ * them.
+ *
+ * Named rather than counted, because "four of nine" invites the reader to guess
+ * which five, and which five it is decides whether the silence matters.
+ */
+export function unread(
+  paths: readonly string[],
+  modules: readonly string[],
+): string[] {
+  const reading = new Set(watched(paths, modules).map((one) => one.module));
+  return [...modules]
+    .filter((one) => !reading.has(one))
+    .sort((a, b) => a.localeCompare(b));
+}
+
+/**
  * The revision each submodule is pinned to, by the path it sits at.
  *
  * What `git submodule status` prints.
