@@ -188,6 +188,7 @@ found.push(
       phpManifest: await text("vendor/sdk-php/composer.json"),
       tsContract: await text("vendor/sdk-ts/contract/web-api.contract.json"),
       webManifest: await text("vendor/lemonfiber-web/package.json"),
+      webRoute: await text("vendor/lemonfiber-web/src/lib/route.ts"),
       spec: specPaths.map(rel),
     },
     prose,

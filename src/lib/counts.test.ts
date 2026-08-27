@@ -18,6 +18,7 @@ const nothing: Sources = {
   mirrors: "",
   clientIndex: "",
   webManifest: "",
+  webRoute: "",
   phpContract: "",
   tsContract: "",
   phpManifest: "",

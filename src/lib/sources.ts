@@ -173,6 +173,20 @@ export function composerSteps(manifest: string, script: string): string[] {
   });
 }
 
+/**
+ * Every screen the console has, read from the list it draws its own menu from.
+ *
+ * `everyPlace` in the console's `route.ts` is the one list a screen, a story and
+ * a test all walk, so it is what a page about the console must agree with. A
+ * screen added there and not here leaves a page describing a console that has
+ * moved on.
+ */
+export const consolePlaces = (route: string): string[] => {
+  const said =
+    /export const everyPlace: readonly Place\[\] = \[([^\]]*)\]/.exec(route);
+  return said === null ? [] : matches(/"([a-z-]+)"/g, captured(said, 1));
+};
+
 /** One `export { … } from "…";` of a package's entry point. */
 const RE_EXPORTED = /export\s*\{([^}]*)\}\s*from\s*"[^"]*";/g;
 

@@ -14,6 +14,7 @@ import { matches, type Inventory, type Page, type Sources } from "./counts.ts";
 import { captured } from "./mirror.ts";
 import {
   composerSteps,
+  consolePlaces,
   consumes,
   contracts,
   decisions,
@@ -40,6 +41,7 @@ const WEB_API = "vendor/spec/20-architecture/contracts/web-api.md";
 const MIRRORS = "mirrors.json";
 const CLIENT_INDEX = "vendor/sdk-ts/src/index.ts";
 const WEB_MANIFEST = "vendor/lemonfiber-web/package.json";
+const WEB_ROUTE = "vendor/lemonfiber-web/src/lib/route.ts";
 // Each client is generated from a copy of the contract taken when it was last
 // re-synced, and the two copies are at different revisions. Held separately from
 // the binary's for exactly that reason: a page that stated one number for all
@@ -53,6 +55,7 @@ const DOCS = "src/content/docs/";
 const ENVELOPE_PAGE = `${DOCS}api/the-envelope.md`;
 const KINDS_PAGE = `${DOCS}api/kinds.md`;
 const TUI_PAGE = `${DOCS}commands/the-tui.md`;
+const CONSOLE_PAGE = `${DOCS}commands/the-web-console.md`;
 const CODES_PAGE = `${DOCS}fixing/every-error-by-code.md`;
 const CLIENT_PAGE = `${DOCS}api/typescript-sdk.md`;
 const PHP_PAGE = `${DOCS}api/php-sdk.md`;
@@ -364,6 +367,22 @@ export const INVENTORIES: readonly Inventory[] = [
     listing: {
       page: PHP_PAGE,
       members: (text) => columnUnder(text, "Gate"),
+    },
+  },
+  {
+    what: "screens the console has",
+    source: WEB_ROUTE,
+    members: (sources) => consolePlaces(sources.webRoute),
+    claims: [{ says: "The %N% screens" }],
+    listing: {
+      page: CONSOLE_PAGE,
+      // The page writes an address as code, and the root as `/`. What the
+      // console calls that place is `overview`, which is the name the list it
+      // is compared against holds.
+      members: (text) =>
+        columnUnder(text, "Address").map(
+          (at) => at.replace("/", "") || "overview",
+        ),
     },
   },
   {

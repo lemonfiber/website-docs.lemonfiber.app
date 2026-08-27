@@ -3,7 +3,13 @@ import { describe, expect, it } from "vitest";
 
 import { countViolations, type Page, type Sources } from "./counts.ts";
 import { INVENTORIES } from "./inventories.ts";
-import { composerSteps, exportedBy, keysAt, variantsAt } from "./sources.ts";
+import {
+  composerSteps,
+  consolePlaces,
+  exportedBy,
+  keysAt,
+  variantsAt,
+} from "./sources.ts";
 
 /** Every real file under a directory, symlinked trees left where they are. */
 const walk = (dir: string, keep: (path: string) => boolean): string[] => {
@@ -28,6 +34,7 @@ const theTree = (): { sources: Sources; pages: Page[] } => ({
     mirrors: read("mirrors.json"),
     clientIndex: read("vendor/sdk-ts/src/index.ts"),
     webManifest: read("vendor/lemonfiber-web/package.json"),
+    webRoute: read("vendor/lemonfiber-web/src/lib/route.ts"),
     phpContract: read("vendor/sdk-php/contract/web-api.contract.json"),
     tsContract: read("vendor/sdk-ts/contract/web-api.contract.json"),
     phpManifest: read("vendor/sdk-php/composer.json"),
@@ -46,6 +53,7 @@ const nothing: Sources = {
   mirrors: "",
   clientIndex: "",
   webManifest: "",
+  webRoute: "",
   phpContract: "",
   tsContract: "",
   phpManifest: "",
@@ -256,6 +264,26 @@ describe("variantsAt", () => {
 
   it("reads nothing out of a schema that is not a choice", () => {
     expect(variantsAt('{"a": {"type": "string"}}', "a")).toEqual([]);
+  });
+});
+
+describe("consolePlaces", () => {
+  const route = `export const everyPlace: readonly Place[] = [
+  "overview",
+  "checks",
+  "requests",
+];`;
+
+  it("reads the screens in the order the menu shows them", () => {
+    expect(consolePlaces(route)).toEqual(["overview", "checks", "requests"]);
+  });
+
+  it("gives nothing where the list is not declared", () => {
+    expect(consolePlaces("export const somethingElse = [];")).toEqual([]);
+  });
+
+  it("gives nothing for a file it cannot read", () => {
+    expect(consolePlaces("")).toEqual([]);
   });
 });
 
