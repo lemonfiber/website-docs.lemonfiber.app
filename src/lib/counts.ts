@@ -39,6 +39,8 @@ export interface Sources {
   readonly phpContract: string;
   /** `vendor/sdk-ts/contract/web-api.contract.json`, the same for that client. */
   readonly tsContract: string;
+  /** `vendor/sdk-php/composer.json`, the PHP package's manifest. */
+  readonly phpManifest: string;
   /** `vendor/lemonfiber-web/package.json`, the web surface's manifest. */
   readonly webManifest: string;
   /** Every path under `vendor/spec`, repository-relative. */

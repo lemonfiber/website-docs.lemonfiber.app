@@ -145,6 +145,7 @@ found.push(
       mirrors: await text("mirrors.json"),
       clientIndex: await text("vendor/sdk-ts/src/index.ts"),
       phpContract: await text("vendor/sdk-php/contract/web-api.contract.json"),
+      phpManifest: await text("vendor/sdk-php/composer.json"),
       tsContract: await text("vendor/sdk-ts/contract/web-api.contract.json"),
       webManifest: await text("vendor/lemonfiber-web/package.json"),
       spec: specPaths.map(rel),

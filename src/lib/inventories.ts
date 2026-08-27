@@ -13,6 +13,7 @@
 import { matches, type Inventory, type Page, type Sources } from "./counts.ts";
 import { captured } from "./mirror.ts";
 import {
+  composerSteps,
   consumes,
   contracts,
   decisions,
@@ -43,6 +44,7 @@ const WEB_MANIFEST = "vendor/lemonfiber-web/package.json";
 // re-synced, and the two copies are at different revisions. Held separately from
 // the binary's for exactly that reason: a page that stated one number for all
 // three would be wrong about two of them.
+const PHP_MANIFEST = "vendor/sdk-php/composer.json";
 const PHP_CONTRACT = "vendor/sdk-php/contract/web-api.contract.json";
 const TS_CONTRACT = "vendor/sdk-ts/contract/web-api.contract.json";
 const SPEC = "vendor/spec";
@@ -53,6 +55,7 @@ const KINDS_PAGE = `${DOCS}api/kinds.md`;
 const TUI_PAGE = `${DOCS}commands/the-tui.md`;
 const CODES_PAGE = `${DOCS}fixing/every-error-by-code.md`;
 const CLIENT_PAGE = `${DOCS}api/typescript-sdk.md`;
+const PHP_PAGE = `${DOCS}api/php-sdk.md`;
 const REPO_MAP_PAGE = `${DOCS}develop/repo-map.md`;
 
 /** One page's prose, or none when the page is not in the tree. */
@@ -351,6 +354,16 @@ export const INVENTORIES: readonly Inventory[] = [
     listing: {
       page: REPO_MAP_PAGE,
       members: consumedByWeb,
+    },
+  },
+  {
+    what: "gates `composer ci` runs",
+    source: PHP_MANIFEST,
+    members: (sources) => composerSteps(sources.phpManifest, "ci"),
+    claims: [{ says: "runs the %N% below" }],
+    listing: {
+      page: PHP_PAGE,
+      members: (text) => columnUnder(text, "Gate"),
     },
   },
   {

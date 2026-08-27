@@ -20,6 +20,7 @@ const nothing: Sources = {
   webManifest: "",
   phpContract: "",
   tsContract: "",
+  phpManifest: "",
   spec: [],
 };
 

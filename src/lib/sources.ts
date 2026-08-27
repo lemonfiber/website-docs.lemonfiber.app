@@ -154,6 +154,25 @@ export const specSections = (paths: readonly string[]): string[] => {
   return [...found];
 };
 
+/**
+ * The steps a composer script runs, as the commands a person runs.
+ *
+ * A step naming another script carries an `@`, and a `composer` of its own where
+ * it names one of composer's own commands. Both are written here the way a
+ * reader would type them, which is how the page writes them.
+ */
+export function composerSteps(manifest: string, script: string): string[] {
+  const node = nodeAt(manifest, ["scripts", script]);
+  if (!Array.isArray(node)) return [];
+
+  return node.map((one) => {
+    const step = String(one);
+    if (!step.startsWith("@")) return step;
+    const named = step.slice(1);
+    return named.startsWith("composer ") ? named : `composer ${named}`;
+  });
+}
+
 /** One `export { … } from "…";` of a package's entry point. */
 const RE_EXPORTED = /export\s*\{([^}]*)\}\s*from\s*"[^"]*";/g;
 

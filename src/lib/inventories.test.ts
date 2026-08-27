@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { countViolations, type Page, type Sources } from "./counts.ts";
 import { INVENTORIES } from "./inventories.ts";
-import { exportedBy, keysAt, variantsAt } from "./sources.ts";
+import { composerSteps, exportedBy, keysAt, variantsAt } from "./sources.ts";
 
 /** Every real file under a directory, symlinked trees left where they are. */
 const walk = (dir: string, keep: (path: string) => boolean): string[] => {
@@ -30,6 +30,7 @@ const theTree = (): { sources: Sources; pages: Page[] } => ({
     webManifest: read("vendor/lemonfiber-web/package.json"),
     phpContract: read("vendor/sdk-php/contract/web-api.contract.json"),
     tsContract: read("vendor/sdk-ts/contract/web-api.contract.json"),
+    phpManifest: read("vendor/sdk-php/composer.json"),
     spec: walk("vendor/spec", () => true),
   },
   pages: walk("src/content/docs", (path) => /\.(md|mdx)$/.test(path)).map(
@@ -47,6 +48,7 @@ const nothing: Sources = {
   webManifest: "",
   phpContract: "",
   tsContract: "",
+  phpManifest: "",
   spec: [],
 };
 
@@ -254,6 +256,41 @@ describe("variantsAt", () => {
 
   it("reads nothing out of a schema that is not a choice", () => {
     expect(variantsAt('{"a": {"type": "string"}}', "a")).toEqual([]);
+  });
+});
+
+describe("composerSteps", () => {
+  const manifest = JSON.stringify({
+    scripts: {
+      ci: [
+        "@composer validate --strict",
+        "@lint",
+        "@test:coverage",
+        "git diff --exit-code",
+      ],
+      lint: "pint --test",
+    },
+  });
+
+  it("writes each step the way a reader would type it", () => {
+    expect(composerSteps(manifest, "ci")).toEqual([
+      "composer validate --strict",
+      "composer lint",
+      "composer test:coverage",
+      "git diff --exit-code",
+    ]);
+  });
+
+  it("gives nothing for a script the manifest does not declare", () => {
+    expect(composerSteps(manifest, "release")).toEqual([]);
+  });
+
+  it("gives nothing for a script that is one command rather than a list", () => {
+    expect(composerSteps(manifest, "lint")).toEqual([]);
+  });
+
+  it("gives nothing for a manifest it cannot read", () => {
+    expect(composerSteps("{", "ci")).toEqual([]);
   });
 });
 
