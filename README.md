@@ -126,6 +126,11 @@ what the tests exercise. They enforce:
   the submodule the brand pages are rendered from, and the npm package the
   stylesheet imports — and the two are compared with each other as well, which
   is the disagreement the lockfile rule cannot see.
+- **Every community health file the org publishes has a page here.** The mirror
+  rule catches a symlink pointing at a file that is not there. This catches the
+  other direction: a file GitHub serves for every repository in the org that no
+  page here renders, which is how the contributing section would quietly stop
+  being all of it.
 
 The mirrors are declared in `mirrors.json`, which is what the last two rules
 check against. A tree mirror's own root route is the one place an owned page may

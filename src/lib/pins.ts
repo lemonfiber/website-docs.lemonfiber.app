@@ -14,6 +14,7 @@
 
 import { ARTEFACT } from "./codes.ts";
 import { FORMULAE } from "./formula.ts";
+import { HEALTH } from "./health.ts";
 import { INVENTORIES } from "./inventories.ts";
 import { TOKENS } from "./tokens.ts";
 import { captured } from "./mirror.ts";
@@ -59,7 +60,7 @@ export interface Behind extends Watched {
  * Each names its own, so a guard added here is watched from the day it is
  * declared and no path is written down twice.
  */
-const ARTEFACTS: readonly string[] = [ARTEFACT, FORMULAE, TOKENS];
+const ARTEFACTS: readonly string[] = [ARTEFACT, FORMULAE, TOKENS, HEALTH];
 
 /**
  * Every path a guard in this repository reads to hold a page to.
