@@ -10,6 +10,7 @@ import {
   parseCommits,
   pinnedRevisions,
   report,
+  unread,
   watched,
   type Behind,
 } from "../src/lib/pins.ts";
@@ -133,7 +134,9 @@ for (const read of reads) {
     behind.push({ ...read, pin: pin.slice(0, 7), commits });
 }
 
-const scanned = `${String(reads.length)} guarded paths, in ${String(fetched.size)} pinned repositories.`;
+const blind = unread(GUARDED, [...pinned.keys()]);
+
+const scanned = `${String(reads.length)} guarded paths, in ${String(fetched.size)} of ${String(pinned.size)} pinned repositories.`;
 
 if (behind.length > 0) {
   say("## A guard is reading a source its pin has gone behind on");
@@ -177,6 +180,19 @@ if (behind.length > 0) {
 
 say();
 say(scanned);
+
+// What a clean run does not say. These repositories hold no path any guard
+// reads, so no commit in them can ever appear above — the verdict is about
+// the ones that are read, and without this it reads as an account of all of
+// them. Said on every run, green or not, because the reader who needs it is
+// the one looking at a clean one.
+if (blind.length > 0) {
+  say();
+  say("No guard reads a path inside these, so this check says nothing about");
+  say("them either way:");
+  say();
+  fenced(blind);
+}
 
 if (behind.length > 0) {
   say();

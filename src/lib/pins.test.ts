@@ -8,6 +8,7 @@ import {
   parseCommits,
   pinnedRevisions,
   report,
+  unread,
   watched,
   type Behind,
 } from "./pins.ts";
@@ -42,6 +43,69 @@ describe("what a guard reads", () => {
       module: "vendor/lemonfiber",
       path: "reference/error-codes.md",
     });
+  });
+});
+
+describe("unread", () => {
+  it("names a pinned repository no guarded path sits inside", () => {
+    expect(unread(["vendor/spec/README.md"], MODULES)).toEqual([
+      "vendor/lemonfiber",
+      "vendor/lemonfiber/dep",
+    ]);
+  });
+
+  it("says nothing where every module is read", () => {
+    expect(
+      unread(
+        ["vendor/spec", "vendor/lemonfiber", "vendor/lemonfiber/dep"],
+        MODULES,
+      ),
+    ).toEqual([]);
+  });
+
+  it("names every module where no path is guarded at all", () => {
+    expect(unread([], MODULES)).toEqual([
+      "vendor/lemonfiber",
+      "vendor/lemonfiber/dep",
+      "vendor/spec",
+    ]);
+  });
+
+  it("does not count a module read by a path this repository owns", () => {
+    expect(unread(["src/content/docs/api/kinds.md"], ["vendor/spec"])).toEqual([
+      "vendor/spec",
+    ]);
+  });
+
+  /**
+   * The state this exists for, in the shape it was found in: the guard reads
+   * four of the pinned repositories and is green, and the five it does not read
+   * cannot appear in that verdict however far behind they are.
+   */
+  it("names the repositories a clean run is silent about", () => {
+    const modules = [
+      "vendor/brand",
+      "vendor/homebrew-tap",
+      "vendor/lemonfiber",
+      "vendor/lemonfiber-web",
+      "vendor/org",
+      "vendor/sdk-php",
+      "vendor/sdk-ts",
+      "vendor/spec",
+    ];
+    const guarded = [
+      "vendor/lemonfiber/reference/commands.md",
+      "vendor/sdk-ts/src/index.ts",
+      "vendor/spec",
+    ];
+
+    expect(unread(guarded, modules)).toEqual([
+      "vendor/brand",
+      "vendor/homebrew-tap",
+      "vendor/lemonfiber-web",
+      "vendor/org",
+      "vendor/sdk-php",
+    ]);
   });
 });
 
