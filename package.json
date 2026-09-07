@@ -42,7 +42,7 @@
     "@inlang/paraglide-js": "^2.25.0",
     "@inlang/plugin-message-format": "^4.4.4",
     "@vitest/coverage-v8": "^4.1.11",
-    "astro": "^7.2.4",
+    "astro": "^7.3.1",
     "dependency-cruiser": "^18.2.0",
     "eslint": "^10.9.1",
     "eslint-plugin-astro": "^3.1.0",
