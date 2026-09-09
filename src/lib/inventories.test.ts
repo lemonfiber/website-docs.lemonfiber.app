@@ -6,6 +6,7 @@ import { INVENTORIES } from "./inventories.ts";
 import {
   composerSteps,
   consolePlaces,
+  enumAt,
   exportedBy,
   keysAt,
   variantsAt,
@@ -38,6 +39,10 @@ const theTree = (): { sources: Sources; pages: Page[] } => ({
     phpContract: read("vendor/sdk-php/contract/web-api.contract.json"),
     tsContract: read("vendor/sdk-ts/contract/web-api.contract.json"),
     phpManifest: read("vendor/sdk-php/composer.json"),
+    manifests: read("vendor/spec/70-operations/versions/README.md"),
+    featureSchema: read(
+      "vendor/spec/10-functional/features/_meta/feature.schema.json",
+    ),
     spec: walk("vendor/spec", () => true),
   },
   pages: walk("src/content/docs", (path) => /\.(md|mdx)$/.test(path)).map(
@@ -57,6 +62,8 @@ const nothing: Sources = {
   phpContract: "",
   tsContract: "",
   phpManifest: "",
+  manifests: "",
+  featureSchema: "",
   spec: [],
 };
 
@@ -227,6 +234,26 @@ describe("keysAt", () => {
 
   it("reads nothing out of a document that will not parse", () => {
     expect(keysAt("{", "a")).toEqual([]);
+  });
+});
+
+describe("enumAt", () => {
+  it("reads the values the enum at a path names", () => {
+    expect(
+      enumAt('{"p": {"m": {"enum": ["planned", "shipped"]}}}', "p", "m"),
+    ).toEqual(["planned", "shipped"]);
+  });
+
+  it("reads nothing where the path leads to no enum", () => {
+    expect(enumAt('{"p": {"m": {"type": "string"}}}', "p", "m")).toEqual([]);
+  });
+
+  it("reads nothing where the path leads to a value", () => {
+    expect(enumAt('{"p": 1}', "p")).toEqual([]);
+  });
+
+  it("keeps only the values that are text", () => {
+    expect(enumAt('{"m": {"enum": ["one", 2, null]}}', "m")).toEqual(["one"]);
   });
 });
 

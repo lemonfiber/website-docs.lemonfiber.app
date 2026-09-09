@@ -20,15 +20,16 @@ Each version is a machine-readable manifest, and it is the single source of
 truth. Staging writes it, the tracker reads it, the gate checks it, and the
 release finalises it.
 
-| Field          | What it holds                                                       |
-| -------------- | ------------------------------------------------------------------- |
-| `version`      | The semantic version, matching the tag it will eventually carry     |
-| `epoch`        | Which epoch it belongs to — `v1` or `v2`                            |
-| `status`       | Where the version is in its lifecycle                               |
-| `repos`        | The release streams this version cuts                               |
-| `goals`        | The locked list of accepted requirement identifiers it must satisfy |
-| `closes_epoch` | Present only on a major, naming the epoch it completes              |
-| `pins`         | The exact submodule commits embedded, recorded when it ships        |
+| Field          | What it holds                                                                  |
+| -------------- | ------------------------------------------------------------------------------ |
+| `version`      | The semantic version, matching the tag it will eventually carry                |
+| `status`       | Where the version is in its lifecycle                                          |
+| `released_on`  | The day it was published, written by the release rather than typed             |
+| `repos`        | The release streams this version cuts                                          |
+| `satisfied_in` | Where the gate searches for citations; absent, it searches the streams it cuts |
+| `goals`        | The locked list of accepted requirement identifiers it must satisfy            |
+| `released_as`  | The tag the goals actually shipped under, where a patch closed the line        |
+| `pins`         | The exact submodule commits embedded, recorded when it ships                   |
 
 The file, not the CI history, answers "where is this version": you read its
 status. The manifests and their contract are in
@@ -93,29 +94,51 @@ the order in which the work happened to be written. Three rules keep them
 honest.
 
 **A major carries the capability that justifies it.** `1.0.0` opens the
-dashboard on a bare invocation. `2.0.0` runs the stack without Docker, which is
-a different generation of the product. A major that adds no capability is a
-number nobody can read.
+dashboard on a bare invocation, and is where everything specified is built and
+the interfaces stop moving. A major that adds no capability is a number nobody
+can read.
 
-**An epoch's work ships inside its own major.** The ecosystem features were once
-scheduled as minors, one of which removed the container runtime — anyone reading
-the version would have been misled about how much had changed. They are `2.x`
-now, so the epoch boundary and the major boundary agree.
+**The train is one sequence, and it ends at `1.0.0`.** There was once a second
+epoch — the ecosystem, numbered `2.x`, opening after a `1.0.0` that closed the
+first — and the versions that carried it are themed minors on the same train
+now, ahead of the major rather than behind it. There is one order to read and
+one place it arrives at.
 
 **A version is one theme, not a backlog.** Versions once ranged from nine goals
 to a hundred and eighty-five. The large ones were not releases; they were
 everything left over with a number attached. Each unreleased version is now
 something you can say in a sentence.
 
-## A major ships no stubs
+## No version ships a stub
 
-A minor proves its own goals. A **major proves its whole epoch**: a manifest
-declaring that it closes an epoch cannot execute unless every feature tracking
-that epoch is accepted and marked done — the same dual proof, widened from a
-requirement list to the epoch's entire surface.
+A version proves its goals one requirement at a time, and that is not the whole
+of what it claims. A requirement can be met while the feature around it is half
+built: a `1.0.0` announcing a dashboard whose panels are stubs would satisfy
+every goal it locked and still be the release nobody wanted. **The feature is
+the unit a reader understands, so the feature is what the gate asks about.**
 
-That is what makes "no major ships with stubs" mechanical rather than
-aspirational, and a refusal names the features that are not finished.
+Executing a release refuses while any feature the manifest locks — one whose
+requirements its `goals` name — is not `shipped` in the feature catalogue, and
+the refusal names them. That is the whole of what "a major ships no stubs"
+means: a rule about every version, of which a major is only where it bites
+hardest.
+
+### How far a feature is built
+
+The catalogue answers that in its own field, `maturity`, kept apart from the
+`status` that describes the specification. A feature is routinely accepted and
+unbuilt for a year, and one field cannot hold both answers without losing
+whichever is asked less often.
+
+| Maturity    | What it says                                              |
+| ----------- | --------------------------------------------------------- |
+| `planned`   | Specified, and nobody has built it                        |
+| `building`  | Work has started, or a version in flight locks it         |
+| `shipped`   | Built and out, in the version the feature names beside it |
+| `withdrawn` | No longer to be built                                     |
+
+A shipped feature names the version that carried it, so the gate reads a mark
+written before the tag rather than one inferred from it.
 
 ## Hotfixes and the trunk
 

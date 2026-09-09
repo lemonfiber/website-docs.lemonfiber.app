@@ -50,6 +50,15 @@ export function keysAt(json: string, ...path: readonly string[]): string[] {
   return typeof here === "object" && here !== null ? Object.keys(here) : [];
 }
 
+/** Every value the `enum` at `path` names, in the order the schema lists them. */
+export function enumAt(json: string, ...path: readonly string[]): string[] {
+  const node = nodeAt(json, path);
+  if (typeof node !== "object" || node === null) return [];
+  const values = (node as { enum?: unknown }).enum;
+  if (!Array.isArray(values)) return [];
+  return values.filter((one): one is string => typeof one === "string");
+}
+
 /** The first string constant anywhere inside a schema branch. */
 const constIn = (node: unknown): string | null => {
   if (typeof node !== "object" || node === null) return null;

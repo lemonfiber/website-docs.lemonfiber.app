@@ -6,7 +6,7 @@ sidebar:
 ---
 
 **This is specified and not yet built.** Nothing described below runs today. It
-belongs to the v2 work, and the normative account is
+is scheduled rather than shipped, and the normative account is
 [I1 remote access](/spec/10-functional/features/i-remote-access/i1-remote-access/)
 together with
 [I2 household identity](/spec/10-functional/features/i-remote-access/i2-identity/).
