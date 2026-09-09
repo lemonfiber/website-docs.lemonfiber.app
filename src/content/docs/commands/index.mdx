@@ -42,23 +42,25 @@ binary at the revision this site pins, which that page names at its foot.
 
 ## Getting started
 
-| Command       | What it does                                        | Reach for it when                                                                                                |
-| ------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `setup`       | Sets up the stack by answering a few questions      | You are starting, or re-answering a question you got wrong. Interactive by default; the flags make it unattended |
-| `walkthrough` | Adds one thing, end to end, and narrates every step | You want to watch the stack work once, so you know what it does because you saw it do it                         |
-| `version`     | Reports the versions in play                        | You need the binary, stack, manifest schema and Compose versions in one place                                    |
+| Command       | What it does                                                             | Reach for it when                                                                                                                |
+| ------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| `setup`       | Sets up the stack by answering a few questions                           | You are starting, or re-answering a question you got wrong. Interactive by default; the flags make it unattended                 |
+| `migrate`     | Sees what is already on this machine, and takes it over if you choose to | You already run a media stack of your own and want lemonfiber to stand beside it, in place of it, or to carry its records across |
+| `walkthrough` | Adds one thing, end to end, and narrates every step                      | You want to watch the stack work once, so you know what it does because you saw it do it                                         |
+| `version`     | Reports the versions in play                                             | You need the binary, stack, manifest schema and Compose versions in one place                                                    |
 
 ## Running the stack
 
-| Command   | What it does                                                             | Reach for it when                                                                                     |
-| --------- | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
-| `forms`   | Lists the forms this stack has, and what each one is for                 | You want to know what starting something would come to, without starting it                           |
-| `up`      | Starts a form, or the union of several                                   | You want part or all of the stack running                                                             |
-| `down`    | Stops and removes what a form started                                    | You want it stopped. `--wait` lets downloads in flight finish first                                   |
-| `switch`  | Makes these forms the active set, leaving shared services running        | You are changing shape and do not want a running download interrupted for it                          |
-| `restart` | Restarts services without touching the rest                              | One service is misbehaving and the rest is fine                                                       |
-| `pull`    | Fetches newer images without applying them                               | You want the download done now and the change made later                                              |
-| `watch`   | Guards the data location while forms run, stopping them if it disappears | The library lives on a disk that can go away, and you would rather stop than write to the wrong place |
+| Command   | What it does                                                             | Reach for it when                                                                                           |
+| --------- | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| `forms`   | Lists the forms this stack has, and what each one is for                 | You want to know what starting something would come to, without starting it                                 |
+| `up`      | Starts a form, or the union of several                                   | You want part or all of the stack running                                                                   |
+| `down`    | Stops and removes what a form started                                    | You want it stopped. `--wait` lets downloads in flight finish first                                         |
+| `switch`  | Makes these forms the active set, leaving shared services running        | You are changing shape and do not want a running download interrupted for it                                |
+| `restart` | Restarts services without touching the rest                              | One service is misbehaving and the rest is fine                                                             |
+| `pull`    | Fetches newer images without applying them                               | You want the download done now and the change made later                                                    |
+| `watch`   | Guards the data location while forms run, stopping them if it disappears | The library lives on a disk that can go away, and you would rather stop than write to the wrong place       |
+| `hosting` | Says what this machine keeps running when no terminal is open            | You want a long-running command to survive the terminal you started it in, and to know whether it really is |
 
 ## Seeing what is happening
 
@@ -71,6 +73,23 @@ binary at the revision this site pins, which that page names at its foot.
 | `stuck`      | Lists the items whose downloads are stuck                         | Something reported a count of stuck items and you want them named                           |
 | `front-door` | Names the one address to send somebody who lives here             | Somebody in the house asks where to go, and you want one answer rather than a list of ports |
 
+## The household
+
+| Command   | What it does                                                             | Reach for it when                                                                                  |
+| --------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| `invite`  | Offers somebody in the house an account they can claim                   | Somebody new should be able to watch. They set their own password; you never choose or see it      |
+| `reissue` | Lets somebody set a new password, without you choosing or seeing it      | They are locked out. The account stays theirs and becomes claimable again                          |
+| `remove`  | Takes somebody out of the household, in both places they have an account | They are leaving. It says what removing them costs before it removes anything                      |
+| `clients` | Says which app to watch on, for each kind of device in the house         | Somebody asks what to install, and you want one answer per device rather than a list of everything |
+
+## The disk and the line
+
+| Command        | What it does                                                                  | Reach for it when                                                                                  |
+| -------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `space`        | Accounts for the disk: where the room went, when it runs out, what can go     | The disk is filling and you want to know what took it, and what could be got back                  |
+| `stop-seeding` | Stops seeding one completed download, and lets its files go with it           | You want the room back from one torrent, and to be told what letting it go costs first             |
+| `bandwidth`    | Accounts for the line: what it carries, what the stack takes, what that costs | The house is complaining, and you want the stack held to a share of the line rather than all of it |
+
 ## Settings and quality
 
 | Command           | What it does                                                            | Reach for it when                                                                                                   |
@@ -79,6 +98,7 @@ binary at the revision this site pins, which that page names at its foot.
 | `config get`      | Reads one setting                                                       | You want one value                                                                                                  |
 | `config set`      | Changes one setting                                                     | You want to change one value without opening a file                                                                 |
 | `config show`     | Shows every setting, with credentials withheld                          | You want the whole picture and it is safe to look at                                                                |
+| `alerts`          | Chooses how much lemonfiber tells you about, in plain language          | You are being told too much, or too little, and want to say which                                                   |
 | `quality`         | Chooses how good your media should look, in plain language              | You are reaching for one of the four below                                                                          |
 | `quality show`    | Shows the quality choice in force, and what each preset means and costs | You are deciding, and the cost is the thing you are deciding on                                                     |
 | `quality set`     | Chooses a preset, for everything or for one media type                  | You want different quality, from now on                                                                             |
@@ -109,11 +129,13 @@ binary at the revision this site pins, which that page names at its foot.
 
 ## What this machine keeps, and what leaves it
 
-| Command    | What it does                                                                  | Reach for it when                                                                                                                                  |
-| ---------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `outbound` | Lists everything that leaves this machine, and what refusing each of it costs | You want to know what lemonfiber asks the internet for, what the services ask for on their own account, and what switching each off would stop     |
-| `stored`   | Lists what lemonfiber keeps on this machine, where it is, and why             | You want to know what is on your disk because of lemonfiber, and to be sure your library is not part of it                                         |
-| `forget`   | Removes everything lemonfiber keeps on this machine                           | You are done with it. Your library, your downloads and the containers are never touched; it lists what would go and does nothing until `--confirm` |
+| Command       | What it does                                                                  | Reach for it when                                                                                                                                  |
+| ------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `outbound`    | Lists everything that leaves this machine, and what refusing each of it costs | You want to know what lemonfiber asks the internet for, what the services ask for on their own account, and what switching each off would stop     |
+| `stored`      | Lists what lemonfiber keeps on this machine, where it is, and why             | You want to know what is on your disk because of lemonfiber, and to be sure your library is not part of it                                         |
+| `credentials` | Says which credentials this stack holds, or acts on one of them               | You want to know what secrets exist, what each is for and where it stands. Values are never printed by a read                                      |
+| `forget`      | Removes everything lemonfiber keeps on this machine                           | You are done with it. Your library, your downloads and the containers are never touched; it lists what would go and does nothing until `--confirm` |
+| `uninstall`   | Takes lemonfiber off this machine, at one of four removals                    | You are removing it and want to choose how far that goes. It lists what each removal would take before it takes anything                           |
 
 `outbound` says what would leave. What actually left is written down as it goes,
 in `outbound.log` beside your settings: when, which kind of request, where it

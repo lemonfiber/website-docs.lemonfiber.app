@@ -40,11 +40,12 @@ Raised while setup is gathering answers, applying them, or reversing an interrup
 
 Raised when the settings file cannot be read, written, or kept anywhere.
 
-| Code       | What it means                                                                                                               | What to do                                              |
-| ---------- | --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| `CONFIG-1` | Your settings exist and could not be read. Nothing has been changed — lemonfiber will not guess at settings it cannot read. | Check the file is readable. The message names its path. |
-| `CONFIG-2` | Your settings could not be saved. The change was not made and your existing settings are untouched.                         | Check the location is writable and has space.           |
-| `CONFIG-3` | There is nowhere to keep settings, because setup has not chosen a location yet.                                             | Run `lemonfiber setup`.                                 |
+| Code       | What it means                                                                                                                                    | What to do                                                             |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
+| `CONFIG-1` | Your settings exist and could not be read. Nothing has been changed — lemonfiber will not guess at settings it cannot read.                      | Check the file is readable. The message names its path.                |
+| `CONFIG-2` | Your settings could not be saved. The change was not made and your existing settings are untouched.                                              | Check the location is writable and has space.                          |
+| `CONFIG-3` | There is nowhere to keep settings, because setup has not chosen a location yet.                                                                  | Run `lemonfiber setup`.                                                |
+| `CONFIG-4` | A file holding a credential can be read by somebody other than its owner. Nothing has been changed — this is the doctor reporting what it found. | Take the permissions back to their owner. The message names each file. |
 
 ## STACK — the stack description
 
@@ -337,6 +338,116 @@ Raised by the interactive surface. See [the TUI](/commands/the-tui/).
 | ------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
 | `TUI-1` | A screen could not be drawn. The terminal stopped accepting output, which usually means it was closed or resized out from under the process. | Run it again in a terminal that stays open. |
 
+## INVITE — offering somebody an account
+
+Raised while offering somebody in the house an account they can claim. See [requests and the household](/running/requests-and-the-household/).
+
+| Code       | What it means                                                                                                                                                                              | What to do                                                                                          |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
+| `INVITE-1` | This stack has no media server, so there is no account to offer. An invitation is an account somebody signs in to; without one there is nothing to invite them to.                         | Add a media server to the stack and run setup.                                                      |
+| `INVITE-2` | The media server's own account has not been set up yet. Making somebody else an account is done as the administrator, and this machine has not recorded one.                               | Run `lemonfiber setup`, so the media server's account is made and recorded.                         |
+| `INVITE-3` | This machine has no address the household could arrive at. An invitation is an address somebody else opens, and this machine answers to no name on the network and has none written down.  | Record the address the household should use, with `lemonfiber config set HOUSEHOLD_HOST <address>`. |
+| `INVITE-4` | The invitation is for nobody — the name was blank. The name is what they will sign in as, so a blank one is an account nobody could use.                                                   | Give the name they will sign in as, as in `lemonfiber invite ana`.                                  |
+| `INVITE-5` | An expired invitation could not be dated again, so its window is not real. Their account is still there and still has no password on it; what could not be written is when it was offered. | Check the media server is running, then run this again.                                             |
+| `INVITE-6` | The media server would not say what libraries it holds, so nobody was invited. Choosing what somebody may open starts by finding the libraries, and that read did not answer.              | Check the media server is running, then run this again.                                             |
+| `INVITE-7` | No library goes by a name that was given, so nobody was invited. Libraries are named the way the media server's own screens name them, though not necessarily in the same capitalisation.  | Name a library the media server holds. The message lists the ones there are.                        |
+| `INVITE-8` | The account was made and what it may watch could not be written on it. It exists and is open — every library, no age limit — so it is not one to send on yet.                              | Run this again with the same choices, or set them in the media server's own settings.               |
+
+## REISSUE — letting somebody set a new password
+
+Raised while making an account claimable again, so its holder can choose a password you never see.
+
+| Code        | What it means                                                                                                                                                                                      | What to do                                                                                                          |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `REISSUE-1` | The media server would not say who holds an account, so nothing was reset. Making an account claimable again starts by finding it, and that read did not answer.                                   | Check the media server is running, then run this again.                                                             |
+| `REISSUE-2` | Nobody by that name is in this household. Nothing was reset — the name has to match an account the media server holds, though not its capitalisation.                                              | Run `lemonfiber household` to see who is here.                                                                      |
+| `REISSUE-3` | The account named administers the media server, so its password is not one to reset. This is the account lemonfiber signs in as, and taking its password away would leave nothing to sign in with. | Reset a household member instead. To change the administrator's own password, do it in the media server's settings. |
+| `REISSUE-4` | The media server would not reset that password, so nothing changed. Their existing password still works and the account is untouched.                                                              | Check the media server is running, then run this again.                                                             |
+
+## REMOVE — taking somebody out of the household
+
+Raised while removing somebody from both services they hold an account on.
+
+| Code       | What it means                                                                                                                                                                            | What to do                                                                                                              |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `REMOVE-1` | No name was given, so there is nobody to remove. Removing somebody takes the name their account is held under.                                                                           | Name the person, as they appear in `lemonfiber household`.                                                              |
+| `REMOVE-2` | This stack has no media server, so there is no household to remove anybody from. A household member is an account on the media server; without one there is nobody to take away.         | Add a media server to the stack and run setup.                                                                          |
+| `REMOVE-3` | The media server would not say who holds an account, so nobody was removed. Removing somebody starts by finding their account, and that read did not answer.                             | Check the media server is running, then run this again.                                                                 |
+| `REMOVE-4` | Nobody by that name is in this household. Nothing was removed — the name has to match an account the media server holds, though not its capitalisation.                                  | Run `lemonfiber household` to see who is here.                                                                          |
+| `REMOVE-5` | The account named administers the media server, so it is not one to remove. The server refuses to be left without an administrator, and this is also the account lemonfiber signs in as. | Remove a household member instead. To hand the server to somebody else, do it in the media server's own settings first. |
+| `REMOVE-6` | The media server would not remove that account, so nothing was removed. Nothing else was touched: the request service is only asked once the media server's account is gone.             | Check the media server is running, then run this again.                                                                 |
+
+## QUOTA — what the household may ask for
+
+Raised while reading or changing what the household is trusted to request, and while ruling on what it has asked for.
+
+| Code      | What it means                                                                                                                                                                                                                                              | What to do                                                                              |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `QUOTA-1` | The request service would not answer, so nothing was changed. What was in force before is still in force.                                                                                                                                                  | Check the request service is running, then run this again.                              |
+| `QUOTA-2` | A policy that lives inside a limit was chosen without one. Living within a limit needs a limit.                                                                                                                                                            | Say how many requests a period allows, and how long the period is.                      |
+| `QUOTA-3` | No policy goes by the word that was given.                                                                                                                                                                                                                 | Choose one of the three the message names.                                              |
+| `QUOTA-4` | The request named is not one that is waiting on anybody, so there is nothing to rule on.                                                                                                                                                                   | Ask what the household has asked for, to see what is still waiting.                     |
+| `QUOTA-5` | A request was turned down and the reason given was blank. The reason is passed on to whoever asked, so a blank one tells them nothing.                                                                                                                     | Say why in a few words, and pass them on to whoever asked.                              |
+| `QUOTA-6` | Nobody in this household goes by the name that was given, so nothing was changed.                                                                                                                                                                          | Name somebody who is here. The message lists the household.                             |
+| `QUOTA-7` | The request service holds no account for somebody who has one here. It learns of somebody the first time they sign in to it, and until then there is no account of theirs for a limit to sit on — what the household is held to applies to them meanwhile. | Ask them to open the request service once, then set this again.                         |
+| `QUOTA-8` | A run was asked to close what has waited too long, and this household has never said how long that is. A request closed against a period nobody named is one nobody agreed to close.                                                                       | Say how many days a request may wait, as in `lemonfiber household expiring --after 30`. |
+| `QUOTA-9` | The period named would close a request nobody was ever reminded about. The reminder and the closing are one arrangement, and a request that goes before the reminder is one nobody saw waiting.                                                            | Name a period of a week or more, so the reminder is reached first.                      |
+
+## TELLING — what the household is told about
+
+Raised by the doctor, about the notices the services send on the household's behalf.
+
+| Code        | What it means                                                                                                                                                       | What to do                                                                                      |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `TELLING-1` | The household is told about less than lemonfiber now sets out to tell them, through no choice of yours. A newer version sends more than what is currently wired in. | Bring what the household is told up to what lemonfiber now sends, by running `lemonfiber seed`. |
+
+## SPACE — the disk, and letting a download go
+
+Raised while accounting for the disk, and while stopping the seeding of one completed download.
+
+| Code      | What it means                                                                                                                                                                                                               | What to do                                                                                              |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `SPACE-1` | There is no room left, so nothing new is being fetched. A service that cannot write its database can take the file with it, which turns a full disk into work that is gone — fetching more onto it is what this prevents.   | Free space, then run this again. `lemonfiber space --confirm` acts on what it offers.                   |
+| `SPACE-2` | No data location is configured, so there is no disk to account for.                                                                                                                                                         | Set the data location, with `lemonfiber setup`.                                                         |
+| `SPACE-3` | The data location is there and could not be read.                                                                                                                                                                           | Check that the account lemonfiber runs as can read the data location.                                   |
+| `SPACE-4` | There is no torrent client here to be holding a completed download. Seeding is a torrent client's business, and this stack has none lemonfiber can reach and prove itself to.                                               | Check the download client is running and lemonfiber knows its password. `lemonfiber doctor` says which. |
+| `SPACE-5` | The client answered and is holding nothing of the name given. One that has finished seeding, or was removed already, is not there to be removed again.                                                                      | Read the account and name one of the completed downloads it lists, with `lemonfiber space`.             |
+| `SPACE-6` | The agreement names an offer that is not the one standing now. What a download occupies, where it stands and the ratio it has earned are all in the name an offer goes by, so an offer that has moved is a different offer. | Read the offer again, and answer the name it prints.                                                    |
+| `SPACE-7` | The client could not be reached, or would not let the download go. It is still being seeded and the room is still spent, which is the honest reading.                                                                       | Check the download client is answering, then answer the offer again.                                    |
+
+## RATE — holding the stack to a share of the line
+
+Raised while reading or setting what the stack may take of your connection.
+
+| Code     | What it means                                                                                                             | What to do                                                                      |
+| -------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `RATE-1` | A limit was expressed as a share of a line nothing has measured, so the share is not a limit.                             | Say what the line carries, or give a figure instead of a share.                 |
+| `RATE-2` | A schedule was asked for and nothing says which zone the download clients would read it in.                               | Set the zone, then ask again.                                                   |
+| `RATE-3` | What was asked for could not be read as a limit, a window or a cap. A cap has to be told what happens when it is reached. | Say what happens at the cap: `--when-exceeded pause`, `throttle` or `continue`. |
+| `RATE-4` | There is no download client on this stack to hold to a limit.                                                             | Start a form that has a download client in it.                                  |
+
+## HOST — keeping a command running without a terminal
+
+Raised while handing a long-running command to this machine's service manager, or reading what it already holds.
+
+| Code     | What it means                                                                                                                                           | What to do                                                                                                |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `HOST-1` | This machine has no service manager lemonfiber can configure. The command can still be run, and it will still stop when the terminal running it closes. | Keep the command running yourself, or arrange it with whatever this system uses to start things at login. |
+| `HOST-2` | A service definition could not be written. Nothing was installed, so nothing is running and nothing was left behind.                                    | Check that the directory exists and belongs to you, then try again.                                       |
+| `HOST-3` | The service manager refused what it was asked. The definition that had been written was removed again, so nothing is half-installed.                    | Read what it said below, then try again once that is dealt with.                                          |
+| `HOST-4` | This machine will not say where lemonfiber keeps its own files.                                                                                         | Set a home directory for this account, then install it again.                                             |
+| `HOST-5` | This run cannot say where its own program is, so there is nothing to name in a service definition.                                                      | Run this again from an installed copy of lemonfiber rather than a piped one.                              |
+| `HOST-6` | The guard is to be hosted against nothing — it was not told what to guard.                                                                              | Name the forms to guard, as you would when running the guard yourself.                                    |
+
+## GONE — taking lemonfiber off this machine
+
+Raised while removing lemonfiber, at whichever of the four removals was asked for.
+
+| Code     | What it means                                                                                                                                        | What to do                                                                                                        |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `GONE-1` | The removal that takes the library was confirmed without its own agreement. Destroying a library takes an answer given to that reading and no other. | Read what would go, then answer that reading by its own name, as in `lemonfiber uninstall media --agreed <name>`. |
+| `GONE-2` | The agreement names a reading of this machine that is not the one standing now, so acting on it would act on something nobody saw.                   | Read it again, and answer the name it prints.                                                                     |
+
 ## Severity
 
 Every problem carries one of four levels. There are four deliberately: more would not be applied consistently, and inconsistent severity is worse than coarse severity.
@@ -348,7 +459,7 @@ Every problem carries one of four levels. There are four deliberately: more woul
 | `error`    | Something is broken.                               |
 | `critical` | Consequences outside the machine, or data at risk. |
 
-Only four codes are raised as `critical`: `VPN-1`, `RESTORE-4`, `BUNDLE-1` and `STACK-3`. Three of them are about something leaving your machine that should not.
+Only five codes are raised as `critical`: `VPN-1`, `RESTORE-4`, `BUNDLE-1`, `STACK-3` and `SPACE-1`. Three of them are about something leaving your machine that should not; the other two are about work that would be lost.
 
 Severities are ordered, so a health summary can report the worst of what it found without a comparison table.
 

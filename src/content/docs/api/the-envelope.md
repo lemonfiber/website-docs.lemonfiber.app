@@ -47,7 +47,7 @@ network instead, and is refused until a password has been set with
 `--set-password`. Nothing is installed, nothing keeps running afterwards, and the
 connection is not encrypted, which it says as it starts.
 
-Eighteen endpoints answer a question and close. Each one is a command a person
+Twenty-six endpoints answer a question and close. Each one is a command a person
 could have typed, dispatched through the same entry point the command line uses,
 so the two surfaces cannot say different things about the same stack.
 
@@ -70,9 +70,17 @@ so the two surfaces cannot say different things about the same stack.
 | `GET /api/outbound`      | Everything that leaves this machine, what each carries, and what switching it off stops |
 | `GET /api/stored`        | What lemonfiber keeps on this machine, where each thing is, and why                     |
 | `GET /api/backups`       | Which backups are here to restore from, by name                                         |
+| `GET /api/clients`       | Which app to watch on, for each kind of device somebody in the house has                |
+| `GET /api/credentials`   | Every credential the stack holds, what each is for and where it stands — never a value  |
+| `GET /api/alerts`        | What the operator is told about, and what changing that comes to                        |
+| `GET /api/space`         | Where the disk went, what is on it, and what could be got back                          |
+| `GET /api/bandwidth`     | What the line carries, what the stack is held to, and whether it is keeping to it       |
+| `GET /api/hosting`       | What this machine keeps running when no terminal is open                                |
+| `GET /api/uninstall`     | What a removal would take; the removal being read is named rather than defaulted        |
+| `GET /api/migration`     | What is already on this machine, before anything is proposed                            |
 | `GET /api/bundle/{name}` | The support bundle itself, handed over rather than described                            |
 
-The last two are not shaped like the rest. `GET /api/front-door` takes no parameters, because the question takes none: which one address the household is given is worked out from what the stack runs rather than asked for, and a parameter here would be a way for one surface to be told a different door from another. `GET /api/bundle/{name}` is the one read that does not answer with an envelope — it answers with the bundle itself, because a browser has no path on the host to be told and handing the file over is the only form `--out` can take on a screen. The name is resolved beneath the bundles directory rather than followed, so one carrying a path, or climbing out of that directory, is refused by name.
+Two of them are not shaped like the rest. `GET /api/front-door` takes no parameters, because the question takes none: which one address the household is given is worked out from what the stack runs rather than asked for, and a parameter here would be a way for one surface to be told a different door from another. `GET /api/bundle/{name}` is the one read that does not answer with an envelope — it answers with the bundle itself, because a browser has no path on the host to be told and handing the file over is the only form `--out` can take on a screen. The name is resolved beneath the bundles directory rather than followed, so one carrying a path, or climbing out of that directory, is refused by name.
 
 Query parameters are what the commands themselves take, and only what reads. A read
 looks and does not touch: narrowing a diagnosis is a parameter here, while
