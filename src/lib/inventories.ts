@@ -18,6 +18,7 @@ import {
   consumes,
   contracts,
   decisions,
+  enumAt,
   exportedBy,
   features,
   globalFlags,
@@ -51,6 +52,8 @@ const PHP_MANIFEST = "vendor/sdk-php/composer.json";
 const PHP_CONTRACT = "vendor/sdk-php/contract/web-api.contract.json";
 const TS_CONTRACT = "vendor/sdk-ts/contract/web-api.contract.json";
 const SPEC = "vendor/spec";
+const MANIFESTS = `${SPEC}/70-operations/versions/README.md`;
+const FEATURE_SCHEMA = `${SPEC}/10-functional/features/_meta/feature.schema.json`;
 
 const DOCS = "src/content/docs/";
 const ENVELOPE_PAGE = `${DOCS}api/the-envelope.md`;
@@ -61,6 +64,7 @@ const CODES_PAGE = `${DOCS}fixing/every-error-by-code.md`;
 const CLIENT_PAGE = `${DOCS}api/typescript-sdk.md`;
 const PHP_PAGE = `${DOCS}api/php-sdk.md`;
 const REPO_MAP_PAGE = `${DOCS}develop/repo-map.md`;
+const TRAIN_PAGE = `${DOCS}project/the-version-train.md`;
 
 /** One page's prose, or none when the page is not in the tree. */
 const prose = (pages: readonly Page[], path: string): string =>
@@ -315,6 +319,27 @@ export const INVENTORIES: readonly Inventory[] = [
     source: SPEC,
     members: (sources) => features(sources.spec),
     claims: [{ says: "%N% features and" }],
+  },
+  {
+    what: "fields a version manifest carries",
+    source: MANIFESTS,
+    members: (sources) => columnUnder(sources.manifests, "Field"),
+    claims: [],
+    listing: {
+      page: TRAIN_PAGE,
+      members: (text) => columnUnder(text, "Field"),
+    },
+  },
+  {
+    what: "maturities a feature stands at",
+    source: FEATURE_SCHEMA,
+    members: (sources) =>
+      enumAt(sources.featureSchema, "properties", "maturity"),
+    claims: [],
+    listing: {
+      page: TRAIN_PAGE,
+      members: (text) => columnUnder(text, "Maturity"),
+    },
   },
   {
     what: "journeys",

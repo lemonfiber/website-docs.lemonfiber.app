@@ -204,6 +204,10 @@ found.push(
       tsContract: await text("vendor/sdk-ts/contract/web-api.contract.json"),
       webManifest: await text("vendor/lemonfiber-web/package.json"),
       webRoute: await text("vendor/lemonfiber-web/src/lib/route.ts"),
+      manifests: await text("vendor/spec/70-operations/versions/README.md"),
+      featureSchema: await text(
+        "vendor/spec/10-functional/features/_meta/feature.schema.json",
+      ),
       spec: specPaths.map(rel),
     },
     prose,

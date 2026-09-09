@@ -22,6 +22,8 @@ const nothing: Sources = {
   phpContract: "",
   tsContract: "",
   phpManifest: "",
+  manifests: "",
+  featureSchema: "",
   spec: [],
 };
 

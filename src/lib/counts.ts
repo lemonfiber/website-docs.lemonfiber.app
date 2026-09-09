@@ -45,6 +45,11 @@ export interface Sources {
   readonly webManifest: string;
   /** `vendor/lemonfiber-web/src/lib/route.ts`, the console's own list of screens. */
   readonly webRoute: string;
+  /** `vendor/spec/70-operations/versions/README.md`, the manifest's contract. */
+  readonly manifests: string;
+  /** `vendor/spec/10-functional/features/_meta/feature.schema.json`, the
+   * frontmatter every feature is validated against. */
+  readonly featureSchema: string;
   /** Every path under `vendor/spec`, repository-relative. */
   readonly spec: readonly string[];
 }
