@@ -206,9 +206,12 @@ export function parseStatus(source: string): Milestone[] {
   return found;
 }
 
-const REQUIREMENT_ID = /\b([A-Z]{1,3}\d*)-R(\d+)\b/g;
-const REQUIREMENT_RANGE =
-  /\b([A-Z]{1,3}\d*)-R(\d+)\.\.(?:[A-Z]{1,3}\d*-)?R?(\d+)\b/g;
+// The prefix is unbounded, as the specification's own `patterns.py` has it. A
+// bound of three characters read `C9-R1` and `G8-R13` and could not read
+// `ARCH-R46`, so every architecture requirement was invisible here: a released
+// version's goals came back unaccounted for rather than unmet.
+const REQUIREMENT_ID = /\b([A-Z]+\d*)-R(\d+)\b/g;
+const REQUIREMENT_RANGE = /\b([A-Z]+\d*)-R(\d+)\.\.(?:[A-Z]+\d*-)?R?(\d+)\b/g;
 
 /** Every requirement a line names, expanding `C9-R1..R6` into its members. */
 export function requirementsIn(line: string): string[] {

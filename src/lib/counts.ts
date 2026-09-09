@@ -35,7 +35,7 @@ export interface Sources {
   /** `vendor/sdk-ts/src/index.ts`, the client package's entry point. */
   readonly clientIndex: string;
   /** `vendor/sdk-php/contract/web-api.contract.json`, the artefact that client
-   * was generated from — which is not the one the binary now serves. */
+   * was generated from, which is its own copy rather than the binary's. */
   readonly phpContract: string;
   /** `vendor/sdk-ts/contract/web-api.contract.json`, the same for that client. */
   readonly tsContract: string;

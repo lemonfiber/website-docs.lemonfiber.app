@@ -264,6 +264,20 @@ describe("requirementsIn", () => {
   it("names nothing where a line carries no identifier", () => {
     expect(requirementsIn("plain prose")).toEqual([]);
   });
+
+  // A prefix of four letters, which a bound of three could not read. Every
+  // `ARCH` requirement was invisible until this, so a released version's goals
+  // came back unaccounted for rather than unmet.
+  it("names an identifier whose prefix is longer than three letters", () => {
+    expect(requirementsIn("`ARCH-R46` and `REPO-R12`")).toEqual([
+      "ARCH-R46",
+      "REPO-R12",
+    ]);
+  });
+
+  it("expands a range whose prefix is longer than three letters", () => {
+    expect(requirementsIn("`ARCH-R73..R74`")).toEqual(["ARCH-R73", "ARCH-R74"]);
+  });
 });
 
 describe("featureOf", () => {

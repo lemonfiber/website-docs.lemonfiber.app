@@ -43,9 +43,10 @@ const CLIENT_INDEX = "vendor/sdk-ts/src/index.ts";
 const WEB_MANIFEST = "vendor/lemonfiber-web/package.json";
 const WEB_ROUTE = "vendor/lemonfiber-web/src/lib/route.ts";
 // Each client is generated from a copy of the contract taken when it was last
-// re-synced, and the two copies are at different revisions. Held separately from
-// the binary's for exactly that reason: a page that stated one number for all
-// three would be wrong about two of them.
+// re-synced, so a copy holds what the binary held then rather than what it holds
+// now. Held separately from the binary's: these are three facts, and one number
+// stated for all three is checkable only while they agree. Whether they agree,
+// and what the pages say about that, is `contracts.ts`.
 const PHP_MANIFEST = "vendor/sdk-php/composer.json";
 const PHP_CONTRACT = "vendor/sdk-php/contract/web-api.contract.json";
 const TS_CONTRACT = "vendor/sdk-ts/contract/web-api.contract.json";

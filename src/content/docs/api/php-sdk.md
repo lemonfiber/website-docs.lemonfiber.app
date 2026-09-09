@@ -70,12 +70,12 @@ if ($envelope->kind === Kind::Log->value) {
 `LogEnvelope::in()` refuses an envelope carrying any other kind rather than
 handing back a payload of the wrong shape.
 
-This client was generated from its own copy of the contract, and that copy is
-older than the one the binary serves, so it has a class for each of twenty-six
-kinds where [every payload kind](/api/kinds/) lists what the server sends today.
-The difference is not a version mismatch — both speak wire version 1, so the
-client reads every reply — it is that a kind added since has no class of its own
-yet, and comes back as an envelope you read the payload of directly.
+This client was generated from its own copy of the contract, and that copy
+carries the same kinds the binary this site pins serves, so it has a class for
+each of fifty-three kinds — the set [every payload kind](/api/kinds/) sets out.
+A copy taken before a kind was added is not a version mismatch: both speak wire
+version 1, so the client reads every reply, and a kind with no class of its own
+arrives as an envelope you read the payload of directly.
 
 ## Following live state
 
