@@ -47,7 +47,7 @@ network instead, and is refused until a password has been set with
 `--set-password`. Nothing is installed, nothing keeps running afterwards, and the
 connection is not encrypted, which it says as it starts.
 
-Twenty-six endpoints answer a question and close. Each one is a command a person
+Twenty-eight endpoints answer a question and close. Each one is a command a person
 could have typed, dispatched through the same entry point the command line uses,
 so the two surfaces cannot say different things about the same stack.
 
@@ -78,6 +78,8 @@ so the two surfaces cannot say different things about the same stack.
 | `GET /api/hosting`       | What this machine keeps running when no terminal is open                                |
 | `GET /api/uninstall`     | What a removal would take; the removal being read is named rather than defaulted        |
 | `GET /api/migration`     | What is already on this machine, before anything is proposed                            |
+| `GET /api/history`       | What has already been changed on this machine, and when                                 |
+| `GET /api/update`        | Where this copy stands: its own version, the stack it carries, and how it was installed |
 | `GET /api/bundle/{name}` | The support bundle itself, handed over rather than described                            |
 
 Two of them are not shaped like the rest. `GET /api/front-door` takes no parameters, because the question takes none: which one address the household is given is worked out from what the stack runs rather than asked for, and a parameter here would be a way for one surface to be told a different door from another. `GET /api/bundle/{name}` is the one read that does not answer with an envelope — it answers with the bundle itself, because a browser has no path on the host to be told and handing the file over is the only form `--out` can take on a screen. The name is resolved beneath the bundles directory rather than followed, so one carrying a path, or climbing out of that directory, is refused by name.
