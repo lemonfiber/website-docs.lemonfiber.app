@@ -4,6 +4,12 @@ import { readdir, readFile, realpath } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
 
 import { codeViolations, familyViolations } from "../src/lib/codes.ts";
+import {
+  CLIENTS,
+  contractViolations,
+  SERVED,
+  type Copy,
+} from "../src/lib/contracts.ts";
 import { countViolations, type Page } from "../src/lib/counts.ts";
 import {
   formulaViolations,
@@ -173,7 +179,16 @@ for (const entry of await readdir(join(ROOT, FORMULAE)).catch(() => []))
       text: await text(`${FORMULAE}/${entry}`),
     });
 
+// Each client generates its types from its own copy of the contract, and its
+// page says how that copy stands against the artefact the pinned binary serves.
+// The count of kinds on each page is held to that client's copy; the sentence
+// comparing the two copies is held here.
+const copies: Copy[] = [];
+for (const client of CLIENTS)
+  copies.push({ ...client, text: await text(client.source) });
+
 found.push(
+  ...contractViolations(await text(SERVED), copies, prose),
   ...formulaViolations(formulae, prose),
   ...countViolations(
     INVENTORIES,
