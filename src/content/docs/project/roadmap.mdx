@@ -33,14 +33,13 @@ before the work starts, and a gate that refuses to tag until every goal is
 demonstrably built. [The version train](/project/the-version-train/) explains
 the mechanism; this is the train itself.
 
-Two epochs carry it. **v1** is the product: the binary, its surfaces and the
-trust checks under them, closing at `1.0.0`. **v2** is the ecosystem: running
-without Docker, remote access, the platform and everything built on top,
-closing at `2.0.0`. A major closes its epoch and ships no stubs.
+It is one sequence, and it ends at `1.0.0` — the point where everything
+specified is built and the interfaces stop moving. No version ships a stub: a
+release refuses while a feature it locks is not yet built.
 
 Each version below names the milestone it serves, how many of its locked
-requirements the status file marks done, and the features it carries. Expand one
-to see them.
+requirements the status file marks done, and the features it carries, each with
+how far the catalogue says it is built. Expand one to see them.
 
 <VersionTrain />
 
@@ -63,7 +62,7 @@ are what has been written down here.
 - [What is built](/project/whats-built/) — the status file itself, rendered whole
 - [The version train](/project/the-version-train/) — how a release is staged and gated
 - [The roadmap in the specification](/spec/00-overview/roadmap/) — the narrative behind the sequence
-- [The feature board](/spec/10-functional/features/) — every feature, its area and its track
+- [The feature board](/spec/10-functional/features/) — every feature, its area and how far it is built
 - [The version manifests](/spec/70-operations/versions/) — the contract each file above obeys
 
 <Pinned />

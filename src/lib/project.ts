@@ -29,6 +29,7 @@ import {
   parseBoard,
   parseManifest,
   trainOf,
+  type BoardFeature,
   type Counts,
   type Manifest,
   type TrainVersion,
@@ -47,22 +48,23 @@ export interface Release {
   readonly built: Rollup;
 }
 
-/** One major-version arc: its versions, how many shipped, and how much is built. */
-export interface Epoch {
-  readonly id: string;
-  readonly versions: readonly Release[];
+/** The train taken whole: how far along it is, and how much of it exists. */
+export interface Sequence {
+  /** How many of its versions have been released. */
   readonly released: number;
-  /** Implementation progress across the milestones the epoch's versions serve. */
-  readonly built: Rollup;
-  /** Those milestones, in the order the status file records them. */
-  readonly milestones: readonly string[];
+  /** How many versions it runs to. */
+  readonly versions: number;
+  /** How many features the catalogue marks as shipped. */
+  readonly shipped: number;
+  /** How many features the catalogue holds. */
+  readonly features: number;
 }
 
 /** Everything both project pages render. */
 export interface Project {
   readonly counts: Counts;
   readonly train: readonly Release[];
-  readonly epochs: readonly Epoch[];
+  readonly sequence: Sequence;
   readonly milestones: readonly Milestone[];
   readonly features: ReadonlyMap<string, FeatureProgress>;
   readonly requirements: ReadonlyMap<string, Progress>;
@@ -122,39 +124,25 @@ export function pinsIn(root: string): Pin[] {
   return found;
 }
 
-/** The epochs the train runs in, in the order their versions appear. */
-export function epochsOf(
+/**
+ * Where the train stands, counted from the two files behind it.
+ *
+ * One serial sequence rather than a set of arcs: the manifests declare the
+ * order and nothing above a version groups them. What a reader wants of the
+ * whole is how much of it has shipped, which each file answers for its own
+ * half — the manifests for the versions, the catalogue for the features.
+ */
+export function sequenceOf(
   train: readonly Release[],
-  milestones: readonly Milestone[],
-): Epoch[] {
-  // A map keeps the order its keys were first set in, which is the order the
-  // epochs appear in the train.
-  const byEpoch = new Map<string, Release[]>();
-  for (const release of train) {
-    const carried = byEpoch.get(release.version.epoch) ?? [];
-    carried.push(release);
-    byEpoch.set(release.version.epoch, carried);
-  }
-
-  const byId = new Map(milestones.map((one) => [one.id, one]));
-
-  return [...byEpoch].map(([id, versions]) => {
-    const served: Milestone[] = [];
-    for (const { version } of versions) {
-      const milestone = byId.get(version.milestone);
-      if (milestone !== undefined && !served.includes(milestone))
-        served.push(milestone);
-    }
-
-    return {
-      id,
-      versions,
-      released: versions.filter(({ version }) => version.status === "released")
-        .length,
-      built: rollup(served.flatMap((milestone) => milestone.deliverables)),
-      milestones: served.map((milestone) => milestone.id),
-    };
-  });
+  features: readonly BoardFeature[],
+): Sequence {
+  return {
+    released: train.filter(({ version }) => version.status === "released")
+      .length,
+    versions: train.length,
+    shipped: features.filter((one) => one.maturity === "shipped").length,
+    features: features.length,
+  };
 }
 
 const missing = (path: string): Error =>
@@ -192,7 +180,7 @@ export function project(root: string): Project {
   return {
     counts: board.counts,
     train,
-    epochs: epochsOf(train, milestones),
+    sequence: sequenceOf(train, board.features),
     milestones,
     features: featureProgress(statusFile),
     requirements,

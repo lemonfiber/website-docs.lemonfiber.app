@@ -4,16 +4,15 @@ import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import {
-  epochsOf,
   manifestsIn,
   pinsIn,
   project,
   revisionOf,
+  sequenceOf,
   theProject,
   type Release,
 } from "./project.ts";
-import { parseStatus, type Milestone } from "./status.ts";
-import { parseBoard, trainOf } from "./train.ts";
+import { parseBoard, trainOf, type BoardFeature } from "./train.ts";
 
 const DONE = "✅";
 const PARTIAL = "◐";
@@ -23,26 +22,20 @@ const board = {
   versions: [
     {
       version: "0.1.0",
-      epoch: "v1",
       status: "released",
       milestone: "M2",
-      closes_epoch: null,
       goals: 2,
     },
     {
       version: "0.2.0",
-      epoch: "v1",
       status: "planned",
       milestone: "M2",
-      closes_epoch: null,
       goals: 1,
     },
     {
-      version: "2.0.0",
-      epoch: "v2",
+      version: "0.3.0",
       status: "planned",
       milestone: "M9",
-      closes_epoch: null,
       goals: 0,
     },
   ],
@@ -52,6 +45,8 @@ const board = {
       title: "Prerequisites",
       area: "A",
       path: "a-getting-started/a1-prerequisites.md",
+      maturity: "shipped",
+      shipped: "0.1.0",
       versions: [{ version: "0.1.0", status: "released" }],
     },
   ],
@@ -131,17 +126,11 @@ describe("pinsIn", () => {
 });
 
 /** A train of one version, for the cases that need a shape rather than a file. */
-const release = (
-  version: string,
-  epoch: string,
-  milestone: string,
-): Release => ({
+const release = (version: string, milestone: string): Release => ({
   version: {
     version,
-    epoch,
     status: "planned",
     milestone,
-    closesEpoch: null,
     headline: "",
     delivers: "",
     goals: [],
@@ -152,53 +141,52 @@ const release = (
   built: { done: 0, total: 0, pct: 0, status: "todo" },
 });
 
-describe("epochsOf", () => {
-  const milestones: readonly Milestone[] = parseStatus(status);
+/** A catalogue entry, for the same reason. */
+const feature = (id: string, maturity: string): BoardFeature => ({
+  id,
+  title: id,
+  area: id.slice(0, 1),
+  path: `${id.toLowerCase()}.md`,
+  maturity,
+  shipped: maturity === "shipped" ? "0.1.0" : null,
+  versions: [],
+});
 
-  it("groups the versions by epoch, in the order the epochs appear", () => {
-    const epochs = epochsOf(
+describe("sequenceOf", () => {
+  it("counts the versions the train runs to, and those that shipped", () => {
+    const shipped = release("0.1.0", "M2");
+    const sequence = sequenceOf(
       [
-        release("0.1.0", "v1", "M2"),
-        release("2.0.0", "v2", "M9"),
-        release("0.2.0", "v1", "M2"),
+        { ...shipped, version: { ...shipped.version, status: "released" } },
+        release("0.2.0", "M2"),
+        release("1.0.0", "M9"),
       ],
-      milestones,
+      [],
     );
-    expect(epochs.map((epoch) => epoch.id)).toEqual(["v1", "v2"]);
-    expect(epochs[0]?.versions).toHaveLength(2);
+    expect(sequence.released).toBe(1);
+    expect(sequence.versions).toBe(3);
   });
 
-  it("counts a milestone two of its versions serve only once", () => {
-    const [epoch] = epochsOf(
-      [release("0.1.0", "v1", "M2"), release("0.2.0", "v1", "M2")],
-      milestones,
+  it("counts the catalogue's features, and those it marks shipped", () => {
+    const sequence = sequenceOf(
+      [],
+      [
+        feature("A1", "shipped"),
+        feature("A2", "building"),
+        feature("A3", "planned"),
+      ],
     );
-    expect(epoch?.milestones).toEqual(["M2"]);
-    expect(epoch?.built).toEqual({
-      done: 1,
-      total: 2,
-      pct: 50,
-      status: "partial",
+    expect(sequence.shipped).toBe(1);
+    expect(sequence.features).toBe(3);
+  });
+
+  it("counts nothing out of an empty train and an empty catalogue", () => {
+    expect(sequenceOf([], [])).toEqual({
+      released: 0,
+      versions: 0,
+      shipped: 0,
+      features: 0,
     });
-  });
-
-  it("counts nothing for an epoch whose milestones are not tracked", () => {
-    const [epoch] = epochsOf([release("2.0.0", "v2", "M9")], milestones);
-    expect(epoch?.milestones).toEqual([]);
-    expect(epoch?.built.total).toBe(0);
-  });
-
-  it("counts the versions that have shipped", () => {
-    const shipped = release("0.1.0", "v1", "M2");
-    const [epoch] = epochsOf(
-      [{ ...shipped, version: { ...shipped.version, status: "released" } }],
-      milestones,
-    );
-    expect(epoch?.released).toBe(1);
-  });
-
-  it("reads no epoch out of an empty train", () => {
-    expect(epochsOf([], milestones)).toEqual([]);
   });
 });
 
@@ -209,7 +197,7 @@ describe("project", () => {
     expect(read.train.map((one) => one.version.version)).toEqual([
       "0.1.0",
       "0.2.0",
-      "2.0.0",
+      "0.3.0",
     ]);
     expect(read.train[0]?.built).toEqual({
       done: 1,
@@ -218,7 +206,12 @@ describe("project", () => {
       status: "partial",
     });
     expect(read.train[0]?.version.pins).toEqual({ "media-stack": "aaabfbb" });
-    expect(read.epochs.map((epoch) => epoch.id)).toEqual(["v1", "v2"]);
+    expect(read.sequence).toEqual({
+      released: 1,
+      versions: 3,
+      shipped: 1,
+      features: 1,
+    });
     expect(read.milestones.map((one) => one.id)).toEqual(["M2"]);
     expect(read.features.get("A1")?.done).toBe(1);
     expect(read.requirements.get("A1-R2")).toBe("partial");
@@ -274,6 +267,14 @@ describe("the board this repository pins", () => {
     expect(counts.areas).not.toBe("");
   });
 
+  // `project/the-version-train` and `project/roadmap` both state in prose that
+  // the train is one sequence ending at `1.0.0`. Nothing in the components can
+  // say so: they render whatever the manifests declare, in the order declared.
+  it("ends where both project pages say it ends", () => {
+    const train = theProject().train;
+    expect(train.at(-1)?.version.version).toBe("1.0.0");
+  });
+
   it("names a version for every manifest the specification holds", () => {
     const board = parseBoard(theProjectBoard());
     expect(trainOf(board, new Map())).toHaveLength(board.versions.length);
@@ -286,10 +287,8 @@ function theProjectBoard(): string {
     counts: theProject().counts,
     versions: theProject().train.map((one) => ({
       version: one.version.version,
-      epoch: one.version.epoch,
       status: one.version.status,
       milestone: one.version.milestone,
-      closes_epoch: one.version.closesEpoch,
       goals: one.version.goals.length,
     })),
     features: [],

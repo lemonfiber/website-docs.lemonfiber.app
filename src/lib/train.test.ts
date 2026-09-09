@@ -15,18 +15,14 @@ const board = {
   versions: [
     {
       version: "0.1.0",
-      epoch: "v1",
       status: "released",
       milestone: "M2",
-      closes_epoch: null,
       goals: 3,
     },
     {
       version: "1.0.0",
-      epoch: "v1",
       status: "planned",
       milestone: "M6",
-      closes_epoch: "v1",
       goals: 0,
     },
   ],
@@ -36,6 +32,8 @@ const board = {
       title: "Getting started",
       area: "A",
       path: "a-getting-started/A1-prerequisites.md",
+      maturity: "shipped",
+      shipped: "0.1.0",
       versions: [{ version: "0.1.0", status: "released" }],
     },
     {
@@ -43,6 +41,8 @@ const board = {
       title: "Forms",
       area: "B",
       path: "b-running/b1-forms.md",
+      maturity: "planned",
+      shipped: null,
       versions: [],
     },
   ],
@@ -71,8 +71,8 @@ describe("parseBoard", () => {
       areas: "A–B",
     });
     expect(parsed.versions).toHaveLength(2);
-    expect(parsed.versions[0]?.closesEpoch).toBeNull();
-    expect(parsed.versions[1]?.closesEpoch).toBe("v1");
+    expect(parsed.versions[0]?.status).toBe("released");
+    expect(parsed.versions[1]?.milestone).toBe("M6");
     expect(parsed.features[0]?.versions).toEqual(["0.1.0"]);
     expect(parsed.features[1]?.versions).toEqual([]);
   });
@@ -104,12 +104,28 @@ describe("parseBoard", () => {
   it("drops an entry that is not the shape a board entry has", () => {
     const parsed = parseBoard(
       JSON.stringify({
-        versions: ["a string", { epoch: "v1" }, board.versions[0]],
+        versions: ["a string", { status: "planned" }, board.versions[0]],
         features: [7, { title: "no id" }, board.features[0]],
       }),
     );
     expect(parsed.versions.map((one) => one.version)).toEqual(["0.1.0"]);
     expect(parsed.features.map((one) => one.id)).toEqual(["A1"]);
+  });
+
+  it("reads how far each feature is built, and what carried it", () => {
+    const parsed = parseBoard(JSON.stringify(board));
+    expect(parsed.features[0]?.maturity).toBe("shipped");
+    expect(parsed.features[0]?.shipped).toBe("0.1.0");
+    expect(parsed.features[1]?.maturity).toBe("planned");
+    expect(parsed.features[1]?.shipped).toBeNull();
+  });
+
+  it("names no version for a feature whose board entry gives one that is not text", () => {
+    const parsed = parseBoard(
+      JSON.stringify({ features: [{ id: "A1", shipped: 3 }] }),
+    );
+    expect(parsed.features[0]?.shipped).toBeNull();
+    expect(parsed.features[0]?.maturity).toBe("");
   });
 
   it("drops a version membership that names no version", () => {
@@ -136,7 +152,6 @@ const manifest = `# The bootstrap release — the baseline the train governs fro
 #
 # 3 goals, frozen at stage-version.
 version = "0.1.0"
-epoch   = "v1"
 delivers  = "Core: **manifest**, compose driver, CLI"
 status  = "released"
 repos   = ["lemonfiber"]
@@ -216,6 +231,8 @@ describe("trainOf", () => {
     expect(train[0]?.features[0]?.href).toBe(
       "/spec/10-functional/features/a-getting-started/a1-prerequisites/",
     );
+    expect(train[0]?.features[0]?.maturity).toBe("shipped");
+    expect(train[0]?.features[0]?.shipped).toBe("0.1.0");
     expect(train[0]?.headline).toBe("The bootstrap release.");
     expect(train[0]?.goals).toEqual(["A1-R1"]);
     expect(train[0]?.pins).toEqual({ "media-stack": "aaabfbb" });
@@ -241,6 +258,8 @@ describe("trainOf", () => {
           title: "Forms",
           area: "B",
           path: "b-running/b1-forms.md",
+          maturity: "planned",
+          shipped: null,
           versions: [{ version: "0.1.0", status: "released" }],
         },
       ],

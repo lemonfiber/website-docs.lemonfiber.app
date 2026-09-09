@@ -1,120 +1,102 @@
 ---
-import StatusPill from "./StatusPill.astro";
+import MaturityPill from "./MaturityPill.astro";
 import VersionPill from "./VersionPill.astro";
 import { theProject } from "../lib/project";
 import * as m from "../paraglide/messages.js";
 
 const project = theProject();
 
-/** Every epoch, with the sentence that goes under its heading. */
-const epochs = project.epochs.map((epoch) => ({
-  id: epoch.id,
-  heading: m.project_epoch({ id: epoch.id }),
-  released: m.project_versions({
-    done: epoch.released,
-    total: epoch.versions.length,
+/** Where the whole train stands: its versions, and the catalogue behind them. */
+const summary = [
+  m.project_versions({
+    done: project.sequence.released,
+    total: project.sequence.versions,
   }),
-  built:
-    epoch.built.total === 0
-      ? m.project_epoch_untracked()
-      : m.project_deliverables({
-          done: epoch.built.done,
-          total: epoch.built.total,
-        }),
-  versions: epoch.versions.map(({ version, built }) => ({
-    id: version.version,
-    status: version.status,
-    open: version.status !== "planned",
-    milestone: m.project_milestone({ id: version.milestone }),
-    closes:
-      version.closesEpoch === null
-        ? null
-        : m.version_closes({ epoch: version.closesEpoch }),
-    delivers: version.delivers,
-    goals:
-      built.total === 0
-        ? m.project_no_goals()
-        : m.project_goals({ done: built.done, total: built.total }),
-    featuresLabel:
-      version.features.length === 0
-        ? m.project_no_features()
-        : m.project_features(),
-    features: version.features.map((feature) => {
-      const progress = project.features.get(feature.id);
-      return {
-        ...feature,
-        status: progress?.status ?? "todo",
-        note:
-          progress === undefined
-            ? m.project_feature_untracked()
-            : m.project_feature_built({
-                done: progress.done,
-                total: progress.total,
-              }),
-      };
-    }),
-  })),
+  m.project_shipped({
+    done: project.sequence.shipped,
+    total: project.sequence.features,
+  }),
+];
+
+/** Every version, in the order the manifests sequence them. */
+const versions = project.train.map(({ version, built }) => ({
+  id: version.version,
+  status: version.status,
+  open: version.status !== "planned",
+  milestone: m.project_milestone({ id: version.milestone }),
+  delivers: version.delivers,
+  goals:
+    built.total === 0
+      ? m.project_no_goals()
+      : m.project_goals({ done: built.done, total: built.total }),
+  featuresLabel:
+    version.features.length === 0
+      ? m.project_no_features()
+      : m.project_features(),
+  features: version.features.map((feature) => {
+    const progress = project.features.get(feature.id);
+    return {
+      ...feature,
+      carried:
+        feature.shipped === null
+          ? null
+          : m.project_feature_shipped({ version: feature.shipped }),
+      note:
+        progress === undefined
+          ? m.project_feature_untracked()
+          : m.project_feature_built({
+              done: progress.done,
+              total: progress.total,
+            }),
+    };
+  }),
 }));
 ---
 
 <div class="train">
-  {
-    epochs.map((epoch) => (
-      <section class="epoch">
-        <h3 class="epoch__h">{epoch.heading}</h3>
-        <p class="epoch__meta">
-          <span>{epoch.released}</span>
-          <span>{epoch.built}</span>
-        </p>
-        <ul class="vlist">
-          {epoch.versions.map((version) => (
-            <li>
-              <details class="ver" open={version.open}>
-                <summary class="ver__sum">
-                  <code class="ver__id">{version.id}</code>
-                  <VersionPill status={version.status} />
-                  <span class="ver__delivers">{version.delivers}</span>
-                </summary>
-                <p class="ver__meta">
-                  <span>{version.milestone}</span>
-                  <span>{version.goals}</span>
-                  {version.closes && <span>{version.closes}</span>}
-                </p>
-                <p class="ver__feath">{version.featuresLabel}</p>
-                <ul class="feats">
-                  {version.features.map((feature) => (
-                    <li class="feat">
-                      <a class="feat__link" href={feature.href}>
-                        <code class="feat__id">{feature.id}</code>
-                        <span>{feature.title}</span>
-                      </a>
-                      <StatusPill status={feature.status} />
-                      <span class="feat__note">{feature.note}</span>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            </li>
-          ))}
-        </ul>
-      </section>
-    ))
-  }
+  <p class="train__meta">{summary.map((figure) => <span>{figure}</span>)}</p>
+  <ul class="vlist">
+    {
+      versions.map((version) => (
+        <li>
+          <details class="ver" open={version.open}>
+            <summary class="ver__sum">
+              <code class="ver__id">{version.id}</code>
+              <VersionPill status={version.status} />
+              <span class="ver__delivers">{version.delivers}</span>
+            </summary>
+            <p class="ver__meta">
+              <span>{version.milestone}</span>
+              <span>{version.goals}</span>
+            </p>
+            <p class="ver__feath">{version.featuresLabel}</p>
+            <ul class="feats">
+              {version.features.map((feature) => (
+                <li class="feat">
+                  <a class="feat__link" href={feature.href}>
+                    <code class="feat__id">{feature.id}</code>
+                    <span>{feature.title}</span>
+                  </a>
+                  <MaturityPill maturity={feature.maturity} />
+                  {feature.carried && (
+                    <span class="feat__note">{feature.carried}</span>
+                  )}
+                  <span class="feat__note">{feature.note}</span>
+                </li>
+              ))}
+            </ul>
+          </details>
+        </li>
+      ))
+    }
+  </ul>
 </div>
 
 <style>
   .train {
     margin-top: var(--sp-5);
   }
-  .epoch {
-    margin-bottom: var(--sp-6);
-  }
-  .epoch__h {
-    font-family: var(--brandface);
-    letter-spacing: var(--lf-tracking-display);
-    margin: 0;
-  }
-  .epoch__meta,
+  .train__meta,
   .ver__meta {
     display: flex;
     flex-wrap: wrap;

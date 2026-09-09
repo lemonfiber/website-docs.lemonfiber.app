@@ -22,10 +22,8 @@ export interface Counts {
 /** One version, as the board records it. */
 export interface BoardVersion {
   readonly version: string;
-  readonly epoch: string;
   readonly status: string;
   readonly milestone: string;
-  readonly closesEpoch: string | null;
   readonly goals: number;
 }
 
@@ -35,6 +33,10 @@ export interface BoardFeature {
   readonly title: string;
   readonly area: string;
   readonly path: string;
+  /** How far the implementation has got, in the catalogue's own vocabulary. */
+  readonly maturity: string;
+  /** The version that carried it, where one has. */
+  readonly shipped: string | null;
   readonly versions: readonly string[];
 }
 
@@ -65,15 +67,15 @@ export interface TrainFeature {
   readonly title: string;
   readonly area: string;
   readonly href: string;
+  readonly maturity: string;
+  readonly shipped: string | null;
 }
 
 /** One version of the train, with everything both files know about it. */
 export interface TrainVersion {
   readonly version: string;
-  readonly epoch: string;
   readonly status: string;
   readonly milestone: string;
-  readonly closesEpoch: string | null;
   readonly headline: string;
   readonly delivers: string;
   readonly goals: readonly string[];
@@ -114,13 +116,10 @@ function toCounts(value: unknown): Counts {
 function toVersion(value: unknown): BoardVersion | null {
   const node = record(value);
   if (node === null || text(node["version"]) === "") return null;
-  const closes = node["closes_epoch"];
   return {
     version: text(node["version"]),
-    epoch: text(node["epoch"]),
     status: text(node["status"]),
     milestone: text(node["milestone"]),
-    closesEpoch: typeof closes === "string" ? closes : null,
     goals: whole(node["goals"]),
   };
 }
@@ -140,11 +139,14 @@ function memberships(value: unknown): string[] {
 function toFeature(value: unknown): BoardFeature | null {
   const node = record(value);
   if (node === null || text(node["id"]) === "") return null;
+  const shipped = node["shipped"];
   return {
     id: text(node["id"]),
     title: text(node["title"]),
     area: text(node["area"]),
     path: text(node["path"]),
+    maturity: text(node["maturity"]),
+    shipped: typeof shipped === "string" ? shipped : null,
     versions: memberships(node["versions"]),
   };
 }
@@ -304,6 +306,8 @@ export function trainOf(
         title: feature.title,
         area: feature.area,
         href: featureHref(feature.path),
+        maturity: feature.maturity,
+        shipped: feature.shipped,
       });
       byVersion.set(version, carried);
     }
