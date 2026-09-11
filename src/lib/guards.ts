@@ -6,6 +6,23 @@ export interface Violation {
   readonly where: string;
   readonly line: number | null;
   readonly message: string;
+  /**
+   * How to correct it, where the correction has exactly one right answer.
+   *
+   * Only a violation whose fix is computable carries one. A transcribed count is:
+   * the true number is known, its spelled form is already produced for the message,
+   * and the span it replaces is a single token inside a sentence nothing else
+   * touches. A missing page or a broken link has no such answer and carries none.
+   */
+  readonly fix?: Fix;
+}
+
+/** A replacement for one span of one file. */
+export interface Fix {
+  readonly path: string;
+  readonly start: number;
+  readonly end: number;
+  readonly replacement: string;
 }
 
 export interface SourceFile {

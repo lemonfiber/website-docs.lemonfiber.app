@@ -141,6 +141,18 @@ export function inWords(count: number): string {
   return SPELLED.get(count) ?? String(count);
 }
 
+/**
+ * The same word, opening a sentence.
+ *
+ * Prose here spells these numbers out, so a replacement has to match the case it
+ * is replacing — "Seventy-seven features" opens a sentence and "seventy-seven
+ * features" sits inside one, and writing the wrong one is a visible mistake in
+ * the very sentence the guard exists to keep correct.
+ */
+export function capitalised(word: string): string {
+  return word.charAt(0).toUpperCase() + word.slice(1);
+}
+
 /** The number a sentence said, whether it spelled it or wrote digits. */
 export function asNumber(said: string): number {
   return NUMBERS.get(said.toLowerCase()) ?? Number(said);
@@ -199,7 +211,7 @@ function claimViolations(
   // and "All\nnineteen are open source" states the same number either way.
   const pattern = new RegExp(
     claim.says.replaceAll(" ", String.raw`\s+`).replaceAll("%N%", NUMBER),
-    "gim",
+    "gimd",
   );
   const found: Violation[] = [];
   let stated = 0;
@@ -209,13 +221,30 @@ function claimViolations(
       stated += 1;
       const said = captured(match, 1);
       if (asNumber(said) === expected) continue;
-      found.push(
-        at(
+      // The correct word is already known here, and was previously used only to
+      // phrase the complaint. Carrying its span too lets `--fix` write it.
+      const span = match.indices?.[1];
+      const correct =
+        said === said.toLowerCase()
+          ? inWords(expected)
+          : capitalised(inWords(expected));
+      found.push({
+        ...at(
           page.path,
           lineAt(page.text, match.index),
           `says ${said} where ${inventory.source} has ${inWords(expected)} ${inventory.what}`,
         ),
-      );
+        ...(span
+          ? {
+              fix: {
+                path: page.path,
+                start: span[0],
+                end: span[1],
+                replacement: correct,
+              },
+            }
+          : {}),
+      });
     }
 
   if (stated === 0)

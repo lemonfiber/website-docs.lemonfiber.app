@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /** Reads the tree and applies the rules in src/lib/guards.ts. */
-import { readdir, readFile, realpath } from "node:fs/promises";
+import { readdir, readFile, realpath, writeFile } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
 
 import { codeViolations, familyViolations } from "../src/lib/codes.ts";
@@ -34,6 +34,7 @@ import {
   type Declared,
   type MirrorState,
   type SourceFile,
+  type Fix,
   type Violation,
 } from "../src/lib/guards.ts";
 
@@ -215,9 +216,53 @@ found.push(
   ...familyViolations(errorCodes, prose),
 );
 
+/**
+ * Write the corrections that have exactly one right answer.
+ *
+ * Applied last-first within each file so an earlier edit does not move a later
+ * one's span, and the caller re-runs afterwards: a page may state the same count
+ * twice, and one pass corrects each occurrence the pattern matched on that read.
+ */
+async function repair(violations: readonly Violation[]): Promise<number> {
+  const byFile = new Map<string, Fix[]>();
+  for (const violation of violations)
+    if (violation.fix)
+      byFile.set(violation.fix.path, [
+        ...(byFile.get(violation.fix.path) ?? []),
+        violation.fix,
+      ]);
+
+  let written = 0;
+  for (const [path, fixes] of byFile) {
+    let text = await readFile(path, "utf8");
+    for (const fix of [...fixes].sort((a, b) => b.start - a.start))
+      text = text.slice(0, fix.start) + fix.replacement + text.slice(fix.end);
+    await writeFile(path, text, "utf8");
+    written += fixes.length;
+  }
+  return written;
+}
+
 if (found.length > 0) {
+  if (process.argv.includes("--fix")) {
+    const written = await repair(found);
+    if (written > 0) {
+      console.log(
+        `guards: wrote ${String(written)} correction(s). Run again to confirm.`,
+      );
+      process.exit(0);
+    }
+    console.error(
+      "guards: nothing here has a single correct answer, so none was written.\n",
+    );
+  }
   console.error(`guards: ${String(found.length)} violation(s)\n`);
   console.error(format(found));
+  const fixable = found.filter((violation) => violation.fix).length;
+  if (fixable > 0)
+    console.error(
+      `\n${String(fixable)} of these can be written by \`npm run guard -- --fix\`.`,
+    );
   process.exit(1);
 }
 console.log(
