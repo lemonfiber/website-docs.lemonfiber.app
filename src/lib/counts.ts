@@ -141,6 +141,18 @@ export function inWords(count: number): string {
   return SPELLED.get(count) ?? String(count);
 }
 
+/**
+ * The same word, opening a sentence.
+ *
+ * Prose here spells these numbers out, so a replacement has to match the case it
+ * is replacing — "Seventy-seven features" opens a sentence and "seventy-seven
+ * features" sits inside one, and writing the wrong one is a visible mistake in
+ * the very sentence the guard exists to keep correct.
+ */
+export function capitalised(word: string): string {
+  return word.charAt(0).toUpperCase() + word.slice(1);
+}
+
 /** The number a sentence said, whether it spelled it or wrote digits. */
 export function asNumber(said: string): number {
   return NUMBERS.get(said.toLowerCase()) ?? Number(said);
@@ -209,13 +221,27 @@ function claimViolations(
       stated += 1;
       const said = captured(match, 1);
       if (asNumber(said) === expected) continue;
-      found.push(
-        at(
+      // The correct word is already known here, and phrasing the complaint was
+      // all it was used for. Locating the number too lets `--fix` write it: a
+      // claim carries exactly one `%N%`, so the first occurrence of what was
+      // said is the number that was matched.
+      const start = match.index + match[0].indexOf(said);
+      found.push({
+        ...at(
           page.path,
           lineAt(page.text, match.index),
           `says ${said} where ${inventory.source} has ${inWords(expected)} ${inventory.what}`,
         ),
-      );
+        fix: {
+          path: page.path,
+          start,
+          end: start + said.length,
+          replacement:
+            said === said.toLowerCase()
+              ? inWords(expected)
+              : capitalised(inWords(expected)),
+        },
+      });
     }
 
   if (stated === 0)

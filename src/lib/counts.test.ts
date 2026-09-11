@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   asNumber,
   countViolations,
+  capitalised,
   inWords,
   matches,
   type Inventory,
@@ -162,6 +163,46 @@ describe("countViolations", () => {
     );
     expect(found).toHaveLength(1);
     expect(found[0]?.message).toContain("says five");
+  });
+});
+
+describe("the correction a violation carries", () => {
+  it("offers the word the message already names", () => {
+    const [found] = against(widgets(), [page("It ships the four widgets.")]);
+    expect(found?.fix?.replacement).toBe("three");
+  });
+
+  it("replaces only the number, leaving the sentence around it", () => {
+    const text = "A heading\n\nIt ships the four widgets.\n";
+    const [found] = against(widgets(), [page(text)]);
+    const fix = found?.fix;
+    if (!fix) throw new Error("expected a fix");
+    expect(
+      text.slice(0, fix.start) + fix.replacement + text.slice(fix.end),
+    ).toBe("A heading\n\nIt ships the three widgets.\n");
+  });
+
+  it("keeps the case it is replacing, so a sentence still opens with a capital", () => {
+    const [found] = against(
+      widgets({ claims: [{ says: "%N% widgets ship" }] }),
+      [page("Four widgets ship.")],
+    );
+    expect(found?.fix?.replacement).toBe("Three");
+  });
+
+  it("writes digits back as digits are read, in words", () => {
+    const [found] = against(widgets(), [page("It ships the 4 widgets.")]);
+    expect(found?.fix?.replacement).toBe("three");
+  });
+});
+
+describe("capitalised", () => {
+  it("raises the first letter and leaves the rest", () => {
+    expect(capitalised("seventy-seven")).toBe("Seventy-seven");
+  });
+
+  it("has nothing to raise in an empty word", () => {
+    expect(capitalised("")).toBe("");
   });
 });
 
