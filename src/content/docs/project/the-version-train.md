@@ -134,11 +134,23 @@ whichever is asked less often.
 | ----------- | --------------------------------------------------------- |
 | `planned`   | Specified, and nobody has built it                        |
 | `building`  | Work has started, or a version in flight locks it         |
+| `built`     | Finished and verified, waiting on a version to carry it   |
 | `shipped`   | Built and out, in the version the feature names beside it |
 | `withdrawn` | No longer to be built                                     |
 
 A shipped feature names the version that carried it, so the gate reads a mark
 written before the tag rather than one inferred from it.
+
+`built` sits between `building` and `shipped` because the two on either side
+cannot describe a finished feature waiting for a release. A feature whose work
+is complete and verified is no longer `building`, and it is not `shipped` either
+— nothing has carried it yet, and the field that names the version would be
+empty. Without a state for that moment, a bar demanding every locked feature be
+`shipped` before a release can be cut is one no release can ever clear: the mark
+it asks for is written by the release it is blocking.
+
+So `built` is what a feature claims when the work is done and the tag is not.
+The release turns it into `shipped` and writes the version beside it.
 
 ## Hotfixes and the trunk
 
