@@ -8,7 +8,15 @@ permissions:
   contents: read
 
 jobs:
+  # `pull-requests: write` is what lets the gate close a pull request whose
+  # citation is missing or names an identifier that does not exist, rather than
+  # only going red at it. The workflow-level `contents: read` above is the
+  # default for a job that declares nothing; a job-level block replaces that
+  # default outright, so `contents: read` is restated here rather than inherited.
   spec-check:
+    permissions:
+      contents: read
+      pull-requests: write
     uses: lemonfiber/spec/.github/workflows/spec-check.yml@718ef921411ed5823745aeb2e4efb7d842cca06e # main
   hygiene:
     uses: lemonfiber/spec/.github/workflows/hygiene.yml@718ef921411ed5823745aeb2e4efb7d842cca06e # main
