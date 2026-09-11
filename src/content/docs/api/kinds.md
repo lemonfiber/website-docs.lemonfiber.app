@@ -1,13 +1,13 @@
 ---
 title: Every payload kind
-description: The fifty-three payload kinds the contract artefact describes, and every field the six most-used ones carry.
+description: The fifty-six payload kinds the contract artefact describes, and every field the six most-used ones carry.
 sidebar:
   order: 2
 ---
 
 `kind` says which payload an [envelope](/api/the-envelope/) carries, so a
 consumer can branch before parsing `data`. The contract artefact describes
-fifty-three of them, and each entry is the whole envelope with that kind's
+fifty-six of them, and each entry is the whole envelope with that kind's
 payload in place rather than the payload alone — a generator wants the shape it
 will actually parse.
 
@@ -35,6 +35,7 @@ kind nobody emits, fails the build rather than reaching a client.
 | `forms`        | The form catalogue       | Every form the stack declares                                                       |
 | `front-door`   | A front-door report      | The one address to send somebody who lives here, and why the others are not it      |
 | `glossary`     | The whole vocabulary     | Every word this product explains, for somebody who asked what there is to ask about |
+| `history`      | The record of changes    | Every change lemonfiber made, newest first, and how far each could be put back      |
 | `hosting`      | A hosting report         | What this machine keeps running on lemonfiber's behalf                              |
 | `household`    | A household view         | What the household asked for, member by member                                      |
 | `import`       | An import report         | What copying an operator's own records across came to, or would come to             |
@@ -54,6 +55,7 @@ kind nobody emits, fails the build rather than reaching a client.
 | `reset`        | A reset report           | What a full reset did, or would do                                                  |
 | `restore`      | A restoration            | What restoring an archive would overwrite, and whether it did                       |
 | `seed`         | A seeding report         | What seeding wired, and what it left for a re-run                                   |
+| `self-update`  | Where this copy stands   | Whether anything newer was released, and the exact command for whatever owns this   |
 | `setup`        | A setup report           | What setup settled on                                                               |
 | `space`        | A reckoning of the disk  | Where the disk stands, what is on it, and what could be got back                    |
 | `start`        | A line of text           | One line the container engine wrote while starting services                         |
@@ -65,6 +67,7 @@ kind nobody emits, fails the build rather than reaching a client.
 | `trace`        | One item's progress      | Where one item is in the pipeline                                                   |
 | `undo`         | A reversal               | What putting back the last repair came to                                           |
 | `uninstall`    | A removal                | What taking lemonfiber off this machine would take, or took                         |
+| `update`       | A stack update report    | What each service would move to, how large the step is, and which cannot be undone  |
 | `upgrade`      | An upgrade report        | What upgrading existing content did, or would do                                    |
 | `version`      | The versions in play     | The binary, and the stack it can operate                                            |
 | `walkthrough`  | A walkthrough report     | What a first-content walk did, narrated line by line                                |
@@ -77,7 +80,7 @@ string: one line the container engine wrote, emitted as it was written, because 
 pull that takes ten minutes has to say something before it ends.
 
 Six of them are set out field by field below — the ones a client meets first, and
-the ones whose payloads are small enough to read as a table. The other forty-seven
+the ones whose payloads are small enough to read as a table. The other fifty
 are in the artefact in full, and both SDKs generate a type per kind from it, so
 nothing here is the only place their shapes are written down. Everything below is
 generated from the types that serialise the reply, so a field here is a field on
@@ -306,10 +309,10 @@ A word this product uses, and what somebody meeting it needs to know.
 moving between their screens should not have to work out that two of them are
 one.
 
-## The other forty-seven
+## The other fifty
 
 Every kind in the table above is in the contract artefact with its full schema,
-including the forty-seven not expanded here. Their payloads are larger — a
+including the fifty not expanded here. Their payloads are larger — a
 `dashboard` carries eleven panels, each with its own shape; a `lifecycle` report
 carries ten fields — and transcribing them into this page would create a second
 place their shapes are written down, which is the one thing the artefact exists to
