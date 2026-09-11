@@ -52,14 +52,16 @@ Raised when the settings file cannot be read, written, or kept anywhere.
 
 Raised about the manifest that describes what would be started. See [the stack manifest](/advanced/the-stack-manifest/).
 
-| Code      | What it means                                                                                                                             | What to do                                                                          |
-| --------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `STACK-1` | No readable manifest was found where a stack was expected. A stack directory holds a `stack.toml` beside its compose files.               | Point at a directory containing `stack.toml`, with `lemonfiber --stack-dir <path>`. |
-| `STACK-2` | The manifest is readable and was written for a different version of lemonfiber.                                                           | Update lemonfiber, or point at a stack this version reads.                          |
-| `STACK-3` | This build of lemonfiber is not intact: the stack that ships inside the binary is missing. The build is supposed to make this impossible. | Nothing is known to fix this. Send a [support bundle](/fixing/the-support-bundle/). |
-| `STACK-4` | There is nowhere to write the stack, because no location has been chosen.                                                                 | Run `lemonfiber setup`.                                                             |
-| `STACK-5` | The stack could not be written to disk, so nothing can start. Usually a permission problem or a full disk.                                | Check the location is writable and has space.                                       |
-| `STACK-6` | The manifest parses and contradicts itself: it says things about itself that cannot all be true.                                          | Fix the faults listed under the message. All of them were found in one pass.        |
+| Code      | What it means                                                                                                                                                                                                                                 | What to do                                                                                                                 |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `STACK-1` | No readable manifest was found where a stack was expected. A stack directory holds a `stack.toml` beside its compose files.                                                                                                                   | Point at a directory containing `stack.toml`, with `lemonfiber --stack-dir <path>`.                                        |
+| `STACK-2` | The manifest is readable and was written for a different version of lemonfiber.                                                                                                                                                               | Update lemonfiber, or point at a stack this version reads.                                                                 |
+| `STACK-3` | This build of lemonfiber is not intact: the stack that ships inside the binary is missing. The build is supposed to make this impossible.                                                                                                     | Nothing is known to fix this. Send a [support bundle](/fixing/the-support-bundle/).                                        |
+| `STACK-4` | There is nowhere to write the stack, because no location has been chosen.                                                                                                                                                                     | Run `lemonfiber setup`.                                                                                                    |
+| `STACK-5` | The stack could not be written to disk, so nothing can start. Usually a permission problem or a full disk.                                                                                                                                    | Check the location is writable and has space.                                                                              |
+| `STACK-6` | The manifest parses and contradicts itself: it says things about itself that cannot all be true.                                                                                                                                              | Fix the faults listed under the message. All of them were found in one pass.                                               |
+| `STACK-7` | The file is not written in the format a `stack.toml` uses, so nothing in it has been read. The message names the line the reader stopped on.                                                                                                  | Fix the file at the line the message names.                                                                                |
+| `STACK-8` | The file is well formed and declares things in words this version of lemonfiber has no meaning for — usually a stack from a newer lemonfiber, or one with something of its own added. Starting it would quietly leave out whatever was named. | Update lemonfiber, or change the named declarations to ones it knows. Every one of them is listed, found in a single pass. |
 
 ## FORM — choosing what to run
 
@@ -509,7 +511,7 @@ Codes map onto exits deliberately:
 
 - `LIFE-1` exits `4`.
 - `PROC-1` and `DOCKER-1` exit `3` — the engine is not lemonfiber's to fix.
-- `STACK-1`, `STACK-6` and `CONFIG-1` exit `5` — they are about what you wrote.
+- `STACK-1`, `STACK-6`, `STACK-7`, `STACK-8` and `CONFIG-1` exit `5` — they are about what you wrote.
 - Everything else exits `1`.
 
 Some commands decide their exit from their result rather than from a problem:
