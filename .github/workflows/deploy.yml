@@ -6,6 +6,17 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # The sibling repositories ask for a rebuild through `rebuild-site` in the spec
+  # repository, whose `site` input exists so a second site can call it rather
+  # than copy it. Without this trigger that input is a promise this repository
+  # cannot keep: `POST /dispatches` answers 204 whether or not anything is
+  # listening, so a dispatch aimed here would be accepted and do nothing.
+  #
+  # A rebuild renders the revisions this repository already pins, so it
+  # republishes rather than refreshes — which is the whole design (ADR-0015).
+  # Fresh content comes from advancing a pin, and that is a push to `main`.
+  repository_dispatch:
+    types: [rebuild-site]
 
 # Nothing by default, rather than nothing written down: an absent `permissions`
 # key falls back to the repository's setting, which can be wider than this. Each
