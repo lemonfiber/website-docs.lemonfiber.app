@@ -211,7 +211,7 @@ function claimViolations(
   // and "All\nnineteen are open source" states the same number either way.
   const pattern = new RegExp(
     claim.says.replaceAll(" ", String.raw`\s+`).replaceAll("%N%", NUMBER),
-    "gimd",
+    "gim",
   );
   const found: Violation[] = [];
   let stated = 0;
@@ -221,29 +221,26 @@ function claimViolations(
       stated += 1;
       const said = captured(match, 1);
       if (asNumber(said) === expected) continue;
-      // The correct word is already known here, and was previously used only to
-      // phrase the complaint. Carrying its span too lets `--fix` write it.
-      const span = match.indices?.[1];
-      const correct =
-        said === said.toLowerCase()
-          ? inWords(expected)
-          : capitalised(inWords(expected));
+      // The correct word is already known here, and phrasing the complaint was
+      // all it was used for. Locating the number too lets `--fix` write it: a
+      // claim carries exactly one `%N%`, so the first occurrence of what was
+      // said is the number that was matched.
+      const start = match.index + match[0].indexOf(said);
       found.push({
         ...at(
           page.path,
           lineAt(page.text, match.index),
           `says ${said} where ${inventory.source} has ${inWords(expected)} ${inventory.what}`,
         ),
-        ...(span
-          ? {
-              fix: {
-                path: page.path,
-                start: span[0],
-                end: span[1],
-                replacement: correct,
-              },
-            }
-          : {}),
+        fix: {
+          path: page.path,
+          start,
+          end: start + said.length,
+          replacement:
+            said === said.toLowerCase()
+              ? inWords(expected)
+              : capitalised(inWords(expected)),
+        },
       });
     }
 
