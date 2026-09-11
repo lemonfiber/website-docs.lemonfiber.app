@@ -59,6 +59,7 @@ binary at the revision this site pins, which that page names at its foot.
 | `switch`  | Makes these forms the active set, leaving shared services running        | You are changing shape and do not want a running download interrupted for it                                |
 | `restart` | Restarts services without touching the rest                              | One service is misbehaving and the rest is fine                                                             |
 | `pull`    | Fetches newer images without applying them                               | You want the download done now and the change made later                                                    |
+| `update`  | Moves something onto a newer version — `stack` or `self`                 | You want the services on the versions this build pins, or want to know where this copy of lemonfiber stands |
 | `watch`   | Guards the data location while forms run, stopping them if it disappears | The library lives on a disk that can go away, and you would rather stop than write to the wrong place       |
 | `hosting` | Says what this machine keeps running when no terminal is open            | You want a long-running command to survive the terminal you started it in, and to know whether it really is |
 
@@ -107,9 +108,10 @@ binary at the revision this site pins, which that page names at its foot.
 
 ## Checking and repairing
 
-| Command  | What it does                                                 | Reach for it when                                                                                                                                         |
-| -------- | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `doctor` | Runs the checks that prove the stack is doing what it should | Anything is wrong, or nothing is and you want that established rather than assumed. `--fix` offers repairs one at a time; `--undo` puts the last one back |
+| Command   | What it does                                                           | Reach for it when                                                                                                                                         |
+| --------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `doctor`  | Runs the checks that prove the stack is doing what it should           | Anything is wrong, or nothing is and you want that established rather than assumed. `--fix` offers repairs one at a time; `--undo` puts the last one back |
+| `history` | Lists every change lemonfiber made, and how far each could be put back | You want to know what changed, when, and whether it can be undone                                                                                         |
 
 ## Wiring, and your own edits
 
