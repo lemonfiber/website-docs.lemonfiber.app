@@ -283,6 +283,13 @@ describe("the trees a mirror renders", () => {
     ]);
   });
 
+  it("names the whole tree where a mirror states no path at all", () => {
+    // `path` is optional in the manifest and absent is the same claim as empty:
+    // the mirror renders the repository. Read as a path, `undefined` would put
+    // the string "undefined" in the middle of one.
+    expect(mirrored(manifest({ repo: "org" }))).toEqual(["vendor/org"]);
+  });
+
   it("names each tree once however many routes render it", () => {
     expect(
       mirrored(
