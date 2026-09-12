@@ -7,6 +7,7 @@
 import { describe, expect, it } from "vitest";
 
 import { chromeProse } from "./guards.ts";
+import { rendered } from "./maturity.ts";
 import { rewriteLinks, type Mirror, type Revision } from "./mirror.ts";
 import { headingOf } from "./status.ts";
 
@@ -63,5 +64,15 @@ describe("a parse of prose this repository does not own", () => {
 
   it("rewrites a run of unclosed destinations in step with its length", () => {
     expect(written("[](".repeat(LENGTH))).toBeLessThan(BUDGET_MS);
+  });
+
+  it("reads a label map padded with whitespace in step with its length", () => {
+    const block = `const LABEL = {\n${" ".repeat(LENGTH)}\n};`;
+    expect(took(() => rendered(block))).toBeLessThan(BUDGET_MS);
+  });
+
+  it("reads a label map of near-misses in step with its length", () => {
+    const block = `const LABEL = {\n${"  shipped: m.\n".repeat(1_000)}};`;
+    expect(took(() => rendered(block))).toBeLessThan(BUDGET_MS);
   });
 });

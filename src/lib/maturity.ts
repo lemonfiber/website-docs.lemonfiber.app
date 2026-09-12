@@ -28,8 +28,14 @@ export const PILL = "src/components/MaturityPill.astro";
 export const SCHEMA =
   "vendor/spec/10-functional/features/_meta/feature.schema.json";
 
-/** One `name: m.message_name,` line of the component's label map. */
-const LABELLED = /^\s*([a-z][a-z0-9_]*):\s*m\.[A-Za-z0-9_]+\s*,/gm;
+/**
+ * One `name: m.message_name,` line of the component's label map.
+ *
+ * Indentation is `[ \t]*` rather than `\s*`: `\s` matches a newline, so under `m`
+ * the run at the front of one line can reach back over the one before it and the
+ * pass stops being linear in the file's length.
+ */
+const LABELLED = /^[ \t]*([a-z][a-z0-9_]*):[ \t]*m\.\w+[ \t]*,/gm;
 
 /**
  * The maturities the component has a label for, in the order it declares them.
