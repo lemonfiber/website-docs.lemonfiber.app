@@ -19,6 +19,7 @@
  * the artefact rather than on a copy of it.
  */
 
+import { captured } from "./mirror.ts";
 import { enumAt } from "./sources.ts";
 
 /** Where the pill's labels are declared, by repository-relative path. */
@@ -50,7 +51,7 @@ export function rendered(component: string): string[] {
   const closed = component.indexOf("};", opened);
   if (closed === -1) return [];
   const block = component.slice(opened, closed);
-  return [...block.matchAll(LABELLED)].map((one) => one[1] ?? "");
+  return [...block.matchAll(LABELLED)].map((one) => captured(one, 1));
 }
 
 /** The maturities the catalogue's schema allows a feature to stand at. */
