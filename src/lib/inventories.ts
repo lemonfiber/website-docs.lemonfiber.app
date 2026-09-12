@@ -211,7 +211,13 @@ export const INVENTORIES: readonly Inventory[] = [
     what: "diagnostic categories",
     source: CONTRACT,
     members: (sources) =>
-      variantsAt(sources.contract, "kinds", "doctor", "$defs", "Category"),
+      variantsAt(
+        sources.contract,
+        "kinds",
+        "doctor",
+        "$defs",
+        "DoctorCategory",
+      ),
     claims: [],
     listing: {
       page: `${DOCS}fixing/run-the-doctor.md`,
@@ -222,7 +228,7 @@ export const INVENTORIES: readonly Inventory[] = [
     what: "verdicts a check comes back as",
     source: CONTRACT,
     members: (sources) =>
-      variantsAt(sources.contract, "kinds", "doctor", "$defs", "Verdict"),
+      variantsAt(sources.contract, "kinds", "doctor", "$defs", "DoctorVerdict"),
     claims: [{ says: "comes back as one of %N%" }],
     listing: {
       page: `${DOCS}fixing/run-the-doctor.md`,
@@ -244,7 +250,13 @@ export const INVENTORIES: readonly Inventory[] = [
     what: "levels of severity",
     source: CONTRACT,
     members: (sources) =>
-      variantsAt(sources.contract, "kinds", "error", "$defs", "Severity"),
+      variantsAt(
+        sources.contract,
+        "kinds",
+        "error",
+        "$defs",
+        "ProblemSeverity",
+      ),
     claims: [
       { says: "%N% levels, deliberately" },
       { says: "one of %N% levels" },
@@ -259,7 +271,7 @@ export const INVENTORIES: readonly Inventory[] = [
     what: "states a problem stands in",
     source: CONTRACT,
     members: (sources) =>
-      variantsAt(sources.contract, "kinds", "error", "$defs", "State"),
+      variantsAt(sources.contract, "kinds", "error", "$defs", "ProblemState"),
     claims: [],
     listing: {
       page: CODES_PAGE,

@@ -20,16 +20,17 @@ Each version is a machine-readable manifest, and it is the single source of
 truth. Staging writes it, the tracker reads it, the gate checks it, and the
 release finalises it.
 
-| Field          | What it holds                                                                  |
-| -------------- | ------------------------------------------------------------------------------ |
-| `version`      | The semantic version, matching the tag it will eventually carry                |
-| `status`       | Where the version is in its lifecycle                                          |
-| `released_on`  | The day it was published, written by the release rather than typed             |
-| `repos`        | The release streams this version cuts                                          |
-| `satisfied_in` | Where the gate searches for citations; absent, it searches the streams it cuts |
-| `goals`        | The locked list of accepted requirement identifiers it must satisfy            |
-| `released_as`  | The tag the goals actually shipped under, where a patch closed the line        |
-| `pins`         | The exact submodule commits embedded, recorded when it ships                   |
+| Field               | What it holds                                                                                                 |
+| ------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `version`           | The semantic version, matching the tag it will eventually carry                                               |
+| `status`            | Where the version is in its lifecycle                                                                         |
+| `released_on`       | The day it was published, written by the release rather than typed                                            |
+| `repos`             | The release streams this version cuts                                                                         |
+| `satisfied_in`      | Where the gate searches for citations; absent, it searches the streams it cuts                                |
+| `goals`             | The locked list of accepted requirement identifiers it must satisfy                                           |
+| `released_as`       | The tag the goals actually shipped under, where a patch closed the line                                       |
+| `withdrawn_because` | Why a shipped release was taken back, in one sentence — required on a yanked manifest and present on no other |
+| `pins`              | The exact submodule commits embedded, recorded when it ships                                                  |
 
 The file, not the CI history, answers "where is this version": you read its
 status. The manifests and their contract are in

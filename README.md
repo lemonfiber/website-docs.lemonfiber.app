@@ -140,7 +140,7 @@ renders there.
 ### Counts, against what is counted
 
 This site's pages state numbers about the trees under `vendor/`: the nineteen
-services, fifty-six payload kinds, seventy-seven features and nine end-to-end
+services, fifty-six payload kinds, eighty features and nine end-to-end
 journeys. Each one is a transcription of something machine-readable, and goes
 false when a pin moves.
 
