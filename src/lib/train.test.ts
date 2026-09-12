@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  expanded,
   featureHref,
   manifestName,
   parseBoard,
@@ -287,5 +288,20 @@ describe("released", () => {
       "1.0.0",
       "0.1.0",
     ]);
+  });
+});
+
+describe("expanded", () => {
+  it("collapses a version that has shipped", () => {
+    expect(expanded("released")).toBe(false);
+  });
+
+  it("opens every version that has not", () => {
+    for (const status of ["planned", "staged", "in_progress", "releasable"])
+      expect(expanded(status)).toBe(true);
+  });
+
+  it("opens a status it has never seen, rather than hiding it", () => {
+    expect(expanded("")).toBe(true);
   });
 });
