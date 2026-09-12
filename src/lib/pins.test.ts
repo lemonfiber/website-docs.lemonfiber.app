@@ -8,6 +8,7 @@ import { TOKENS } from "./tokens.ts";
 import {
   declaredBranches,
   GUARDED,
+  mirrored,
   parseCommits,
   pinnedRevisions,
   report,
@@ -261,5 +262,61 @@ describe("report", () => {
         "    aaaaaaa 2026-08-25 feat: aaaaaaa",
       ].join("\n"),
     );
+  });
+});
+
+describe("the trees a mirror renders", () => {
+  const manifest = (...entries: unknown[]): string =>
+    JSON.stringify({ mirrors: entries });
+
+  it("names a mirrored file inside the repository holding it", () => {
+    expect(
+      mirrored(
+        manifest({ repo: "lemonfiber", path: "IMPLEMENTATION-STATUS.md" }),
+      ),
+    ).toEqual(["vendor/lemonfiber/IMPLEMENTATION-STATUS.md"]);
+  });
+
+  it("names the whole tree where a mirror takes one", () => {
+    expect(mirrored(manifest({ repo: "spec", path: "" }))).toEqual([
+      "vendor/spec",
+    ]);
+  });
+
+  it("names each tree once however many routes render it", () => {
+    expect(
+      mirrored(
+        manifest(
+          { repo: "org", path: "CONTRIBUTING.md" },
+          { repo: "org", path: "CONTRIBUTING.md" },
+          { repo: "org", path: "SECURITY.md" },
+        ),
+      ),
+    ).toEqual(["vendor/org/CONTRIBUTING.md", "vendor/org/SECURITY.md"]);
+  });
+
+  it("reads nothing out of a manifest it cannot parse", () => {
+    expect(mirrored("{ not json")).toEqual([]);
+    expect(mirrored(JSON.stringify({}))).toEqual([]);
+    expect(mirrored(JSON.stringify({ mirrors: "some" }))).toEqual([]);
+  });
+
+  it("passes over an entry naming no repository", () => {
+    expect(
+      mirrored(manifest({ path: "README.md" }, null, { repo: "" })),
+    ).toEqual([]);
+  });
+
+  it("is the half `GUARDED` cannot hold", () => {
+    // A guard reads a source to hold this site's own prose to it; a mirrored page
+    // has no prose of its own, so no guard names one and `GUARDED` knows nothing
+    // about any of them. The tracker below is the one that cost the roadmap.
+    const tracker = "vendor/lemonfiber/IMPLEMENTATION-STATUS.md";
+    expect(GUARDED).not.toContain(tracker);
+    expect(
+      mirrored(
+        manifest({ repo: "lemonfiber", path: "IMPLEMENTATION-STATUS.md" }),
+      ),
+    ).toContain(tracker);
   });
 });
