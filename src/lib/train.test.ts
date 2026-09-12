@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   expanded,
   featureHref,
+  isReleased,
   manifestName,
   parseBoard,
   parseManifest,
@@ -267,6 +268,14 @@ describe("trainOf", () => {
     };
     const train = trainOf(parseBoard(JSON.stringify(two)), new Map());
     expect(train[0]?.features.map((one) => one.id)).toEqual(["A1", "B1"]);
+  });
+});
+
+describe("isReleased", () => {
+  it("is the one status the board gives a shipped version", () => {
+    expect(isReleased("released")).toBe(true);
+    for (const status of ["planned", "staged", "in_progress", "releasable", ""])
+      expect(isReleased(status)).toBe(false);
   });
 });
 

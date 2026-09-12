@@ -329,9 +329,14 @@ export function trainOf(
 /** The status the board gives a version once it has shipped. */
 const RELEASED = "released";
 
+/** Whether a version has shipped. */
+export function isReleased(status: string): boolean {
+  return status === RELEASED;
+}
+
 /** The versions that have shipped, newest first. */
 export function released(train: readonly TrainVersion[]): TrainVersion[] {
-  return train.filter((version) => version.status === RELEASED).reverse();
+  return train.filter((version) => isReleased(version.status)).reverse();
 }
 
 /**
@@ -342,5 +347,5 @@ export function released(train: readonly TrainVersion[]): TrainVersion[] {
  * summary names the version, and opening it is one click or one keystroke.
  */
 export function expanded(status: string): boolean {
-  return status !== RELEASED;
+  return !isReleased(status);
 }
