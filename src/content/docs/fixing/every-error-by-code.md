@@ -480,6 +480,21 @@ Raised while removing lemonfiber, at whichever of the four removals was asked fo
 | `GONE-2` | The agreement names a reading of this machine that is not the one standing now, so acting on it would act on something nobody saw.                                                             | Read it again, and answer the name it prints.                                                                     |
 | `GONE-3` | The backup that comes before a destructive removal could not be taken, so nothing was removed. What these removals destroy cannot be made again, so it is taken behind a backup or not at all. | Deal with whatever stopped the backup — the message carries its reason — then ask for the removal again.          |
 
+## REHEARSE — asking what a command would do
+
+Raised when `--dry-run` is given to a command that cannot answer it. Both refuse
+rather than going ahead, which is the point of them: the flag used to be accepted and
+ignored, so a command that changed things did so and reported a rehearsal.
+
+The two are separate facts and an operator can act on the difference. `REHEARSE-1` is
+permanent — finding out what the command would do means doing it. `REHEARSE-2` is a gap
+somebody is closing.
+
+| Code         | What it means                                                                                                                                                                                                           | What to do                                                            |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `REHEARSE-1` | This command cannot be rehearsed and never will be: what it would find out is only knowable by doing it, so a rehearsal would be a report with nothing in it. Nothing was done. The message says which command and why. | Run the command without `--dry-run` when you mean it.                 |
+| `REHEARSE-2` | This command changes things and has not been taught to say what it would change, so it refuses the flag rather than accepting it and going ahead. Nothing was done.                                                     | Run the command without `--dry-run` when you mean it, or wait for it. |
+
 ## Severity
 
 Every problem carries one of four levels. There are four deliberately: more would not be applied consistently, and inconsistent severity is worse than coarse severity.
