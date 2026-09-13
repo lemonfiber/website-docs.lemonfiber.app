@@ -1,6 +1,7 @@
 ---
 import { shortSha } from "../lib/mirror";
 import { theProject } from "../lib/project";
+import { isReleased } from "../lib/train";
 import * as m from "../paraglide/messages.js";
 
 const project = theProject();
@@ -14,7 +15,7 @@ const project = theProject();
  * release gate itself checked before the tag was cut.
  */
 const releases = project.train
-  .filter(({ version }) => version.status === "released")
+  .filter(({ version }) => isReleased(version.status))
   .reverse()
   .map(({ version, built }) => ({
     id: version.version,
