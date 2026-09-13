@@ -71,6 +71,27 @@ await walk(join(ROOT, "scripts"), paths, links);
 const kept = paths.filter((p) => !GENERATED.some((d) => p.includes(d)));
 const authored = kept.filter((p) => !p.startsWith(CONTENT + sep));
 
+/**
+ * Refuse a list nothing is in, before anything is claimed about what is in it.
+ *
+ * Nearly every rule below is a claim about an absence — no page without a route,
+ * no link that resolves nowhere, no count that disagrees with the thing counted
+ * — and a claim about an absence is satisfied by having looked at nothing.
+ *
+ * `walk` swallows the error a missing directory raises, on purpose: several of
+ * the trees it is pointed at are optional. What that makes silent is the tree
+ * that is not optional having moved. The counts printed on success would show
+ * it, and nobody reads a count on a green run.
+ */
+const readSomething = (what: string, how_many: number): void => {
+  if (how_many === 0)
+    found.push({
+      where: what,
+      line: null,
+      message: "holds nothing, so every rule over it passed on nothing",
+    });
+};
+
 const found: Violation[] = [];
 for (const path of authored) {
   const file: SourceFile = {
@@ -101,6 +122,9 @@ for (const link of links.filter((l) => l.startsWith(CONTENT + sep))) {
   });
 }
 found.push(...mirrorViolations(declared, state));
+
+readSomething("src", authored.length);
+readSomething("src/content/docs", kept.length - authored.length);
 
 // The community health files GitHub serves for every repository in the org.
 // The mirror rule above catches a symlink pointing at a file that is not
@@ -168,6 +192,12 @@ prose.push({ path: "README.md", text: await text("README.md") });
 const specPaths: string[] = [];
 const specLinks: string[] = [];
 await walk(join(ROOT, "vendor", "spec"), specPaths, specLinks);
+
+// An unchecked-out submodule leaves this empty, and every rule reading the spec
+// then passes on nothing — which is the same shape as the checked-out one being
+// clean, and the reason the error-code page's claim is checked rather than
+// maintained in the first place.
+readSomething("vendor/spec", specPaths.length);
 
 // The formulae the tap serves. `brew install lemonfiber/tap/<name>` loads
 // `Formula/<name>.rb` from that repository, so the file name is the name the
