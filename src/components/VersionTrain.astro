@@ -2,6 +2,7 @@
 import MaturityPill from "./MaturityPill.astro";
 import VersionPill from "./VersionPill.astro";
 import { theProject } from "../lib/project";
+import { expanded } from "../lib/train";
 import * as m from "../paraglide/messages.js";
 
 const project = theProject();
@@ -22,7 +23,7 @@ const summary = [
 const versions = project.train.map(({ version, built }) => ({
   id: version.version,
   status: version.status,
-  open: version.status !== "planned",
+  open: expanded(version.status),
   milestone: m.project_milestone({ id: version.milestone }),
   delivers: version.delivers,
   goals:

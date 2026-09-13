@@ -1,4 +1,5 @@
 ---
+import { isReleased } from "../lib/train";
 import * as m from "../paraglide/messages.js";
 
 interface Props {
@@ -15,7 +16,7 @@ const LABEL: Record<string, () => string> = {
 
 const { status } = Astro.props;
 const label = (LABEL[status] ?? m.version_planned)();
-const shipped = status === "released";
+const shipped = isReleased(status);
 ---
 
 <span class:list={["vpill", { "vpill--shipped": shipped }]}>{label}</span>

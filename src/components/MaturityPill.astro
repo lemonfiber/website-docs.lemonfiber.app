@@ -7,20 +7,26 @@ interface Props {
 
 const LABEL: Record<string, () => string> = {
   shipped: m.maturity_shipped,
+  built: m.maturity_built,
   building: m.maturity_building,
   planned: m.maturity_planned,
   withdrawn: m.maturity_withdrawn,
 };
 
 const { maturity } = Astro.props;
-const label = (LABEL[maturity] ?? m.maturity_planned)();
+// A maturity with no label of its own is drawn as the word the catalogue used.
+// It read `planned` before, which is the most wrong of the five answers: every
+// feature whose every requirement was met and merged appeared as not started,
+// on the page whose whole subject is how far each has got. An untranslated word
+// is a reader noticing something; a confident wrong one is nobody noticing.
+const label = LABEL[maturity]?.() ?? maturity;
 ---
 
 <span class:list={["mpill", `mpill--${maturity}`]}>{label}</span>
 
 <style>
   /* The mark is a shape as well as a word: a reader who cannot separate the
-     accents still sees four different pills. */
+     accents still sees five different pills. */
   .mpill {
     display: inline-flex;
     align-items: center;
@@ -48,6 +54,14 @@ const label = (LABEL[maturity] ?? m.maturity_planned)();
   }
   .mpill--shipped::before {
     background: currentColor;
+  }
+  /* Finished, and waiting on a version to carry it — so the weight of `shipped`
+     with a dot that is not yet filled to its edge. */
+  .mpill--built {
+    color: var(--text);
+  }
+  .mpill--built::before {
+    background: radial-gradient(currentColor 0 45%, transparent 45% 100%);
   }
   .mpill--building {
     color: var(--fiber-deep);
