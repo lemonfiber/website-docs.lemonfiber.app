@@ -36,6 +36,7 @@
   "version_planned": "Planned",
   "maturity_shipped": "Shipped",
   "maturity_building": "Building",
+  "maturity_built": "Built",
   "maturity_planned": "Planned",
   "maturity_withdrawn": "Withdrawn",
   "project_scale": "{features} features and {requirements} requirements, in areas {areas}",
