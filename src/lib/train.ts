@@ -326,7 +326,26 @@ export function trainOf(
   });
 }
 
+/** The status the board gives a version once it has shipped. */
+const RELEASED = "released";
+
+/** Whether a version has shipped. */
+export function isReleased(status: string): boolean {
+  return status === RELEASED;
+}
+
 /** The versions that have shipped, newest first. */
 export function released(train: readonly TrainVersion[]): TrainVersion[] {
-  return train.filter((version) => version.status === "released").reverse();
+  return train.filter((version) => isReleased(version.status)).reverse();
+}
+
+/**
+ * Whether a version's entry on the train renders expanded.
+ *
+ * A released version renders collapsed and every other status renders open.
+ * Collapsed is not hidden: the entry keeps its place in the sequence, its
+ * summary names the version, and opening it is one click or one keystroke.
+ */
+export function expanded(status: string): boolean {
+  return !isReleased(status);
 }
