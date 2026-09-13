@@ -82,6 +82,45 @@ export const GUARDED: readonly string[] = [
 ].sort((a, b) => a.localeCompare(b));
 
 /**
+ * Every tree a mirror renders, as a path inside the repository holding it.
+ *
+ * A guard reads a source to hold this site's *own* prose to it. A mirror has no
+ * prose of its own — the upstream file is the page — so no guard names one, and
+ * `GUARDED` therefore knew nothing about any of them. That is most of what this
+ * site publishes.
+ *
+ * It cost the roadmap. `IMPLEMENTATION-STATUS.md` is mirrored at
+ * `/project/whats-built/` and is half of what the version train counts, and the
+ * only thing watching `vendor/lemonfiber` was three artefacts under `contract/`
+ * and `reference/`. A release moved the tracker and the site went on serving the
+ * week before it, with nothing in a position to say so.
+ *
+ * `mirrors.json` already names each one. Read from there rather than listed
+ * again, so a mirror added tomorrow is watched the day it is declared.
+ */
+export function mirrored(manifest: string): string[] {
+  let read: unknown;
+  try {
+    read = JSON.parse(manifest);
+  } catch {
+    return [];
+  }
+  const entries = (read as { mirrors?: unknown }).mirrors;
+  if (!Array.isArray(entries)) return [];
+  const found = new Set<string>();
+  for (const entry of entries) {
+    if (typeof entry !== "object" || entry === null) continue;
+    const { repo, path } = entry as { repo?: unknown; path?: unknown };
+    if (typeof repo !== "string" || repo === "") continue;
+    const inside = typeof path === "string" ? path : "";
+    found.add(
+      inside === "" ? `${VENDOR}${repo}` : `${VENDOR}${repo}/${inside}`,
+    );
+  }
+  return [...found].sort((a, b) => a.localeCompare(b));
+}
+
+/**
  * Each guarded path against the submodule holding it, in path order.
  *
  * The longest declared module wins, so a submodule nested inside another owns

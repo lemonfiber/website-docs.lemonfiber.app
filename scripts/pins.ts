@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 /** Fetches the pinned repositories and applies the rules in src/lib/pins.ts. */
 import { spawnSync } from "node:child_process";
-import { appendFileSync, existsSync } from "node:fs";
+import { appendFileSync, existsSync, readFileSync } from "node:fs";
 
 import {
   declaredBranches,
   DEFAULT_BRANCH,
   GUARDED,
+  mirrored,
   parseCommits,
   pinnedRevisions,
   report,
@@ -93,7 +94,11 @@ const branches = declaredBranches(
   git("config", "-f", ".gitmodules", "--get-regexp", String.raw`^submodule\.`)
     .out,
 );
-const reads = watched(GUARDED, [...pinned.keys()]);
+// The guards' own sources, and every tree a mirror renders. The second list is
+// most of this site: a mirrored page is the upstream file, so no guard names it
+// and `GUARDED` alone knew nothing about any of them.
+const mirrors = readFileSync(`${ROOT}mirrors.json`, "utf8");
+const reads = watched([...GUARDED, ...mirrored(mirrors)], [...pinned.keys()]);
 
 // A guard whose source resolves to no pinned repository is a guard this check
 // is not watching, and an empty list would read as a clean run.

@@ -38,9 +38,15 @@ name: pins
 on:
   workflow_dispatch:
   schedule:
-    # Weekly. A pin is bumped deliberately, so a daily nag would mostly report
-    # the same considered decision back at whoever made it.
-    - cron: "40 7 * * 1"
+    # Daily. It was weekly, on the reasoning that a pin is bumped deliberately and
+    # a daily nag would mostly report the same considered decision back at whoever
+    # made it. That holds for `age`, which measures abandonment in weeks. It does
+    # not hold for `sources`: a release moves the version manifests and the
+    # implementation status on the day it happens, and this site then serves the
+    # state before it. `0.14.0` was published on a Saturday and the next run that
+    # could have said so was the Monday. Reporting the same decision back is a
+    # smaller cost than a roadmap two days wrong about which version is out.
+    - cron: "40 7 * * *"
 
 permissions:
   contents: read
