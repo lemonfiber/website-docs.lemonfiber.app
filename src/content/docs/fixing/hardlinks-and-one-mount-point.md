@@ -102,7 +102,7 @@ What you should know before settling for it is the third cost — you cannot see
 
 ## Related
 
-- [Every error by code](/fixing/every-error-by-code/) — the six `STORAGE` codes, side by side
+- [Every error by code](/fixing/every-error-by-code/) — the seven `STORAGE` codes, side by side
 - [Run the doctor](/fixing/run-the-doctor/) — running just the storage category
 - [Your first stack](/start/your-first-stack/) — choosing a data location in the first place
 - [C5, storage and hardlink management](/spec/10-functional/features/c-trust/c5-storage/) — the requirement this is written against
