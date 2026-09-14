@@ -22,7 +22,9 @@ const figures = [
 ---
 
 <ul class="summary">
-  {figures.map((figure) => <li class="summary__cell">{figure}</li>)}
+  {figures.map((figure) => (
+    <li class="summary__cell">{figure}</li>
+  ))}
 </ul>
 
 <style>

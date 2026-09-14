@@ -33,40 +33,38 @@ const releases = project.train
   }));
 ---
 
-{
-  releases.length === 0 ? (
-    <p class="rel__none">{m.releases_none()}</p>
-  ) : (
-    <ol class="rels">
-      {releases.map((release) => (
-        <li class="rel" id={release.id}>
-          <div class="rel__head">
-            <code class="rel__id">{release.id}</code>
-            <span class="rel__ms">{release.milestone}</span>
-            <span class="rel__on">{release.releasedOn}</span>
-          </div>
-          <p class="rel__headline">{release.headline}</p>
-          <p class="rel__meta">
-            <span>{release.proved}</span>
-            {release.embedded.map((pin) => (
-              <span>{pin}</span>
-            ))}
-          </p>
-          <ul class="rel__feats">
-            {release.features.map((feature) => (
-              <li>
-                <a href={feature.href}>
-                  <code class="rel__fid">{feature.id}</code>
-                  <span>{feature.title}</span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </li>
-      ))}
-    </ol>
-  )
-}
+{releases.length === 0 ? (
+  <p class="rel__none">{m.releases_none()}</p>
+) : (
+  <ol class="rels">
+    {releases.map((release) => (
+      <li class="rel" id={release.id}>
+        <div class="rel__head">
+          <code class="rel__id">{release.id}</code>
+          <span class="rel__ms">{release.milestone}</span>
+          <span class="rel__on">{release.releasedOn}</span>
+        </div>
+        <p class="rel__headline">{release.headline}</p>
+        <p class="rel__meta">
+          <span>{release.proved}</span>
+          {release.embedded.map((pin) => (
+            <span>{pin}</span>
+          ))}
+        </p>
+        <ul class="rel__feats">
+          {release.features.map((feature) => (
+            <li>
+              <a href={feature.href}>
+                <code class="rel__fid">{feature.id}</code>
+                <span>{feature.title}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </li>
+    ))}
+  </ol>
+)}
 
 <style>
   .rels {

@@ -55,41 +55,43 @@ const versions = project.train.map(({ version, built }) => ({
 ---
 
 <div class="train">
-  <p class="train__meta">{summary.map((figure) => <span>{figure}</span>)}</p>
+  <p class="train__meta">
+    {summary.map((figure) => (
+      <span>{figure}</span>
+    ))}
+  </p>
   <ul class="vlist">
-    {
-      versions.map((version) => (
-        <li>
-          <details class="ver" open={version.open}>
-            <summary class="ver__sum">
-              <code class="ver__id">{version.id}</code>
-              <VersionPill status={version.status} />
-              <span class="ver__delivers">{version.delivers}</span>
-            </summary>
-            <p class="ver__meta">
-              <span>{version.milestone}</span>
-              <span>{version.goals}</span>
-            </p>
-            <p class="ver__feath">{version.featuresLabel}</p>
-            <ul class="feats">
-              {version.features.map((feature) => (
-                <li class="feat">
-                  <a class="feat__link" href={feature.href}>
-                    <code class="feat__id">{feature.id}</code>
-                    <span>{feature.title}</span>
-                  </a>
-                  <MaturityPill maturity={feature.maturity} />
-                  {feature.carried && (
-                    <span class="feat__note">{feature.carried}</span>
-                  )}
-                  <span class="feat__note">{feature.note}</span>
-                </li>
-              ))}
-            </ul>
-          </details>
-        </li>
-      ))
-    }
+    {versions.map((version) => (
+      <li>
+        <details class="ver" open={version.open}>
+          <summary class="ver__sum">
+            <code class="ver__id">{version.id}</code>
+            <VersionPill status={version.status} />
+            <span class="ver__delivers">{version.delivers}</span>
+          </summary>
+          <p class="ver__meta">
+            <span>{version.milestone}</span>
+            <span>{version.goals}</span>
+          </p>
+          <p class="ver__feath">{version.featuresLabel}</p>
+          <ul class="feats">
+            {version.features.map((feature) => (
+              <li class="feat">
+                <a class="feat__link" href={feature.href}>
+                  <code class="feat__id">{feature.id}</code>
+                  <span>{feature.title}</span>
+                </a>
+                <MaturityPill maturity={feature.maturity} />
+                {feature.carried && (
+                  <span class="feat__note">{feature.carried}</span>
+                )}
+                <span class="feat__note">{feature.note}</span>
+              </li>
+            ))}
+          </ul>
+        </details>
+      </li>
+    ))}
   </ul>
 </div>
 
