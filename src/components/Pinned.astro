@@ -19,14 +19,12 @@ const stamps = theProject().pinned.map((pin) =>
 );
 ---
 
-{
-  stamps.length > 0 && (
-    <p class="pinned">
-      <strong>{m.pinned_lead()}</strong>
-      <span>{stamps.join(" · ")}</span>
-    </p>
-  )
-}
+{stamps.length > 0 && (
+  <p class="pinned">
+    <strong>{m.pinned_lead()}</strong>
+    <span>{stamps.join(" · ")}</span>
+  </p>
+)}
 
 <style>
   .pinned {

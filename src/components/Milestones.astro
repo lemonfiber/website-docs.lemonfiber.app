@@ -29,31 +29,29 @@ const milestones = theProject().milestones.map((milestone) => ({
 ---
 
 <ol class="ms">
-  {
-    milestones.map((milestone) => (
-      <li class="ms__item" id={milestone.id}>
-        <div class="ms__head">
-          <code class="ms__id">{milestone.id}</code>
-          <h3 class="ms__title">{milestone.title}</h3>
-          <StatusPill status={milestone.status} />
-        </div>
-        <p class="ms__blurb">{milestone.blurb}</p>
-        <p class="ms__count">{milestone.recorded}</p>
-        {milestone.heading && <p class="ms__deliverh">{milestone.heading}</p>}
-        <ul class="dels">
-          {milestone.deliverables.map((deliverable) => (
-            <li class:list={["del", { "del--group": deliverable.group }]}>
-              <span class="del__title">{deliverable.title}</span>
-              {deliverable.marked && <StatusPill status={deliverable.status} />}
-              {deliverable.spec && (
-                <code class="del__spec">{deliverable.spec}</code>
-              )}
-            </li>
-          ))}
-        </ul>
-      </li>
-    ))
-  }
+  {milestones.map((milestone) => (
+    <li class="ms__item" id={milestone.id}>
+      <div class="ms__head">
+        <code class="ms__id">{milestone.id}</code>
+        <h3 class="ms__title">{milestone.title}</h3>
+        <StatusPill status={milestone.status} />
+      </div>
+      <p class="ms__blurb">{milestone.blurb}</p>
+      <p class="ms__count">{milestone.recorded}</p>
+      {milestone.heading && <p class="ms__deliverh">{milestone.heading}</p>}
+      <ul class="dels">
+        {milestone.deliverables.map((deliverable) => (
+          <li class:list={["del", { "del--group": deliverable.group }]}>
+            <span class="del__title">{deliverable.title}</span>
+            {deliverable.marked && <StatusPill status={deliverable.status} />}
+            {deliverable.spec && (
+              <code class="del__spec">{deliverable.spec}</code>
+            )}
+          </li>
+        ))}
+      </ul>
+    </li>
+  ))}
 </ol>
 
 <style>

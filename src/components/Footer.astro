@@ -23,14 +23,14 @@ const stamped =
       };
 ---
 
-<Default><slot /></Default>
-{
-  stamped && (
-    <p class="mirror-stamp">
-      <strong>{stamped.heading}</strong> {stamped.stamp}{" "}
-      <a href={stamped.href} rel="noreferrer">
-        {stamped.source}
-      </a>
-    </p>
-  )
-}
+<Default>
+  <slot />
+</Default>
+{stamped && (
+  <p class="mirror-stamp">
+    <strong>{stamped.heading}</strong> {stamped.stamp}{" "}
+    <a href={stamped.href} rel="noreferrer">
+      {stamped.source}
+    </a>
+  </p>
+)}
