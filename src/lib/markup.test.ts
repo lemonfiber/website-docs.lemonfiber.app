@@ -12,9 +12,7 @@ describe("without", () => {
   });
 
   it("takes out what the first pass spelled", () => {
-    expect(without("<scr<script>ipt>alert()", /<(script)[\s\S]*?>/g)).toBe(
-      "alert()",
-    );
+    expect(without("<a<b>c>text", /<[^<>]*>/g)).toBe("text");
   });
 
   it("takes out a comment the first pass spelled", () => {
