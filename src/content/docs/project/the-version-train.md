@@ -84,10 +84,23 @@ file alone.
 | **Staged train** | A planned minor                                | Full, with a staging period and tracked progress               |
 | **Fast lane**    | Spec and sub-repos are already in sync         | Full, run once — only the staging period is skipped            |
 | **Hotfix**       | An urgent patch to an already-released version | Bypassed, replaced by a cited fix and maintainer authorisation |
-| **Raw tag**      | The primitive underneath all of them           | None                                                           |
+| **Raw tag**      | The primitive underneath all of them           | Full — a lane that cuts a release tag runs it or refuses       |
 
 Even the fast lane runs the gate. A one-shot release still has to prove its
 claimed goals shipped.
+
+The raw tag is no longer a way around it. A release tag starts the pipeline and
+produces the same release whichever lane put it there, so the obligation belongs
+to **cutting the tag** rather than to the workflow that usually does it. The
+verdict is taken at the commit being tagged — one from last week says nothing
+about this tree — it names the goals that are unmet, and a lane that cannot run
+the gate refuses rather than tags, because a gate that quietly does not run reads
+as one that passed.
+
+That rule was written after a release went out without it, which is the only kind
+of evidence this project trusts about a gate. Hotfixes stay exempt: a patch to an
+already-released version delivers no goals of its own, so there is no goal set to
+prove.
 
 ## What a version number means
 
