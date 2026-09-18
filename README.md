@@ -50,7 +50,16 @@ it, so `npm install` serves too. A clone nobody has installed into has no hook:
 it is `git config core.hooksPath .githooks`, per clone, and git cannot read
 `.githooks/` on its own.
 
-`npm run ci` is the whole gate, and it is what CI runs:
+`npm run ci` is the whole gate, and it is what CI runs — after one step that is
+not in it. `gate.yml` runs `npm run browser` first, which installs the Chromium
+the accessibility sweep drives, so on a clone where that has not happened
+`npm run ci` reaches `a11y` and fails there. Run it once:
+
+```sh
+npm run browser
+```
+
+Everything else in the chain needs nothing CI has that a clone does not:
 
 | Step           | What it checks                                                |
 | -------------- | ------------------------------------------------------------- |
@@ -271,12 +280,18 @@ and a gap there stays visible rather than being masked by a local literal.
 Brand's dark theme is `[data-lf-theme="ink"]` and Starlight's is
 `[data-theme="dark"]`. `astro.config.ts` mirrors the second onto the first.
 
-The accessibility sweep is what keeps that honest: `npm run a11y` builds the
-site, serves it, and runs axe over every route in both themes at WCAG 2.1 AA.
-It is part of `npm run ci`, and it covers one route of each kind the site
-serves: the landing page, an authored page, a section landing page, a mirrored
-page, a mirrored page from a repository other than the specification, and a long
-reference table.
+The accessibility sweep is what keeps that honest. `npm run a11y` serves what
+`npm run build` last wrote to `dist/` — it does not build, and run on its own
+against a stale or absent `dist/` it sweeps that instead — and runs axe over the
+routes named in `a11y/contrast.spec.ts`, in both themes, at WCAG 2.1 AA. In
+`npm run ci` the build immediately precedes it, which is what makes the site it
+serves the one this run produced.
+
+Those routes are one of each kind the site serves rather than all of them: the
+landing page, an authored page, a section landing page, a mirrored page, a
+mirrored page from a repository other than the specification, and a long
+reference table. Adding a kind of page means adding a route to that list; adding
+a page of a kind already there does not.
 
 ## Licence
 
