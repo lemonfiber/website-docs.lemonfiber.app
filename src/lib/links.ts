@@ -14,6 +14,8 @@
  * `scripts/links.ts`.
  */
 
+import { without } from "./markup.ts";
+
 /** A repository this build rendered from, and the paths its revision holds. */
 export interface Checkout {
   /** The repository's web home, without a trailing slash. */
@@ -92,7 +94,7 @@ export function decoded(text: string): string {
 export function examples(html: string): string[] {
   const found: string[] = [];
   html.replace(PRE, (block: string): string => {
-    found.push(decoded(block.replace(TAG, "")));
+    found.push(decoded(without(block, TAG)));
     return "";
   });
   return found;

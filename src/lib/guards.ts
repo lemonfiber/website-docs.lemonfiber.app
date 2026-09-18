@@ -1,5 +1,6 @@
 /** The structural rules, as pure functions over a described tree. */
 
+import { without } from "./markup.ts";
 import type { Mirror } from "./mirror";
 
 export interface Violation {
@@ -64,11 +65,10 @@ const at = (path: string, line: number | null, message: string): Violation => ({
 /** The prose a reader sees in a chrome template, one chunk per text run. */
 export function chromeProse(source: string): string[] {
   const template = source.replace(/^---[\s\S]*?\n---/, "");
-  const stripped = template
-    .replace(/<!--[\s\S]*?-->/g, "")
-    .replace(/<(style|script)[\s\S]*?<\/\1>/g, "")
-    .replace(/\{[^{}]*\}/g, "")
-    .replace(/<[^<>]*>/g, "\n");
+  const noComments = without(template, /<!--[\s\S]*?-->/g);
+  const noScripts = without(noComments, /<(style|script)[\s\S]*?<\/\1>/g);
+  const noExpressions = without(noScripts, /\{[^{}]*\}/g);
+  const stripped = without(noExpressions, /<[^<>]*>/g, "\n");
 
   const found: string[] = [];
   for (const chunk of stripped.split("\n")) {
