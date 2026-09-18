@@ -68,7 +68,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       red: ${{ steps.report.outputs.red }}
-      report: ${{ steps.report.outputs.report }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -251,19 +250,22 @@ jobs:
           leave(1 if stale or unread else 0)
           PY
           verdict=$?
-          # The verdict and the summary both leave this step, so the job that
-          # sends the finding on reads what the run page shows rather than a
-          # second rendering of it. The step itself succeeds either way: a step
-          # that fails is a step whose outputs a later job has to hope for.
-          # A random edge, because the report is prose from nine repositories and
-          # a fixed marker is a line one of them could one day write.
-          edge="PINS_REPORT_$(openssl rand -hex 8)"
-          {
-            printf 'red=%s\n' "$([ "$verdict" -eq 0 ] && echo false || echo true)"
-            printf 'report<<%s\n' "$edge"
-            cat -- "$GITHUB_STEP_SUMMARY"
-            printf '%s\n' "$edge"
-          } >> "$GITHUB_OUTPUT"
+          # The verdict and the summary leave this step as files, not as job
+          # outputs: a job that fails hands its outputs to nobody, and this job
+          # is meant to fail exactly when it has something to say. The artifact
+          # survives what the outputs would not.
+          mkdir -p "$RUNNER_TEMP/finding"
+          printf '%s\n' "$([ "$verdict" -eq 0 ] && echo false || echo true)" \
+            > "$RUNNER_TEMP/finding/verdict"
+          cp -- "$GITHUB_STEP_SUMMARY" "$RUNNER_TEMP/finding/report.md"
+          echo "red=$(cat "$RUNNER_TEMP/finding/verdict")" >> "$GITHUB_OUTPUT"
+
+      - name: Keep the finding where a failed job cannot lose it
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: pins-age
+          path: ${{ runner.temp }}/finding
+          retention-days: 1
 
       # Red where it has always been red. The finding is news about a repository
       # this site renders, so the job that found it is the job that carries it.
@@ -275,7 +277,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       red: ${{ steps.report.outputs.red }}
-      report: ${{ steps.report.outputs.report }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -298,15 +299,21 @@ jobs:
           set -uo pipefail
           node scripts/pins.ts
           verdict=$?
-          # A random edge, because the report is prose from nine repositories and
-          # a fixed marker is a line one of them could one day write.
-          edge="PINS_REPORT_$(openssl rand -hex 8)"
-          {
-            printf 'red=%s\n' "$([ "$verdict" -eq 0 ] && echo false || echo true)"
-            printf 'report<<%s\n' "$edge"
-            cat -- "$GITHUB_STEP_SUMMARY"
-            printf '%s\n' "$edge"
-          } >> "$GITHUB_OUTPUT"
+          # Files rather than job outputs, for the reason `age` needs them: a job
+          # that fails hands its outputs to nobody, and this job fails precisely
+          # when it has a finding to hand on.
+          mkdir -p "$RUNNER_TEMP/finding"
+          printf '%s\n' "$([ "$verdict" -eq 0 ] && echo false || echo true)" \
+            > "$RUNNER_TEMP/finding/verdict"
+          cp -- "$GITHUB_STEP_SUMMARY" "$RUNNER_TEMP/finding/report.md"
+          echo "red=$(cat "$RUNNER_TEMP/finding/verdict")" >> "$GITHUB_OUTPUT"
+
+      - name: Keep the finding where a failed job cannot lose it
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: pins-sources
+          path: ${{ runner.temp }}/finding
+          retention-days: 1
 
       - name: A guard is reading a source its pin has gone behind on
         if: steps.report.outputs.red == 'true'
@@ -324,18 +331,34 @@ jobs:
       red: ${{ steps.compose.outputs.red }}
       body: ${{ steps.compose.outputs.body }}
     steps:
+      # Each finding arrives as the artifact its job left behind rather than as
+      # a job output, because a job that fails hands its outputs to nobody and
+      # both of these fail exactly when they have something to say. An artifact
+      # that is absent is therefore a job that never reached a verdict, which is
+      # a finding of its own and is reported as one.
+      - name: What `age` found, if it got that far
+        continue-on-error: true
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: pins-age
+          path: findings/age
+
+      - name: What `sources` found, if it got that far
+        continue-on-error: true
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: pins-sources
+          path: findings/sources
+
       - name: What this run has to say
         id: compose
         env:
-          # Every value arrives through the environment. The reports carry commit
-          # subjects from nine other repositories, which is text somebody else
-          # wrote, and it is never interpolated into a command (OPS-R28).
+          # Every value arrives through the environment or off disk. The reports
+          # carry commit subjects from nine other repositories, which is text
+          # somebody else wrote, and none of it is interpolated into a command
+          # (OPS-R28).
           AGE_RESULT: ${{ needs.age.result }}
-          AGE_RED: ${{ needs.age.outputs.red }}
-          AGE_REPORT: ${{ needs.age.outputs.report }}
           SOURCES_RESULT: ${{ needs.sources.result }}
-          SOURCES_RED: ${{ needs.sources.outputs.red }}
-          SOURCES_REPORT: ${{ needs.sources.outputs.report }}
         run: |
           set -euo pipefail
           python3 - <<'PY'
@@ -355,14 +378,15 @@ jobs:
 
           for name in ("age", "sources"):
               result = os.environ[f"{name.upper()}_RESULT"]
-              says = os.environ[f"{name.upper()}_RED"]
-              report = os.environ[f"{name.upper()}_REPORT"]
+              found = pathlib.Path("findings") / name
+              verdict = found / "verdict"
+              report = found / "report.md"
 
               # No verdict at all. Reporting nothing because there was nothing to
               # report and reporting nothing because the check never got that far
               # are the same silence from outside, and the second is the case this
               # whole workflow exists to make legible.
-              if says == "":
+              if not verdict.is_file():
                   red = True
                   parts.append(
                       f"**{name}** ended `{result}` without reaching a verdict, so "
@@ -370,6 +394,7 @@ jobs:
                   )
                   continue
 
+              says = verdict.read_text(encoding="utf-8").strip()
               if says != "true":
                   if result == "success":
                       continue
@@ -381,14 +406,14 @@ jobs:
                   continue
 
               red = True
-              head = report.strip()
+              head = report.read_text(encoding="utf-8").strip() if report.is_file() else ""
               if head == "":
                   head = f"**{name}** found something and wrote no summary of it."
               elif len(head) > ROOM:
                   head = head[:ROOM].rstrip() + "\n\n… cut here; the run page has the rest."
               parts.append(head)
 
-          body = "\n\n---\n\n".join(parts) if parts else ""
+          body = "\n\n---\n\n".join(parts)
 
           out = pathlib.Path(os.environ["GITHUB_OUTPUT"])
           edge = f"PINS_BODY_{secrets.token_hex(8)}"
