@@ -86,8 +86,11 @@ jobs:
           # Days a pin may lag before it is staleness rather than a decision.
           ALLOWED_DAYS: "21"
         run: |
-          set -uo pipefail
-          python3 - <<'PY'
+          # `||` rather than a bare call: the step's shell is `bash -e`, so a
+          # refusal would end the step before the finding could be carried out
+          # of it, and the job that sends it on would have nothing to read.
+          verdict=0
+          python3 - <<'PY' || verdict=$?
           import os
           import pathlib
           import re
@@ -249,7 +252,6 @@ jobs:
 
           leave(1 if stale or unread else 0)
           PY
-          verdict=$?
           # The verdict and the summary leave this step as files, not as job
           # outputs: a job that fails hands its outputs to nobody, and this job
           # is meant to fail exactly when it has something to say. The artifact
@@ -296,9 +298,11 @@ jobs:
       - name: Which pins have gone behind on a source a guard reads
         id: report
         run: |
-          set -uo pipefail
-          node scripts/pins.ts
-          verdict=$?
+          # `||` rather than a bare call, for the reason `age` needs it: the
+          # step's shell is `bash -e` and a refusal would end the step before
+          # the finding left it.
+          verdict=0
+          node scripts/pins.ts || verdict=$?
           # Files rather than job outputs, for the reason `age` needs them: a job
           # that fails hands its outputs to nobody, and this job fails precisely
           # when it has a finding to hand on.
