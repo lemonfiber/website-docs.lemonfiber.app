@@ -33,6 +33,18 @@
 # that has been red for days, is otherwise indistinguishable from a check that
 # is broken, and the only reader who can tell them apart is one who already
 # knew.
+#
+# And that reader has to be reached. Both checks wrote their finding to the run
+# summary and to `::error::`, which is a place somebody has to already be
+# standing in front of to read — so `sources` was correct and red on every
+# scheduled run for three weeks and told nobody, while the file it named went on
+# rendering a page nothing said was out of date. The finding now goes to the
+# maintainers' Discord, in full, on the same run that raises it.
+#
+# The destination is part of the check, not a courtesy beside it. `telling`
+# refuses a red run it has nowhere to send, and it refuses a job that ended
+# without composing a finding at all — a reporter nobody reads and a reporter
+# that says nothing are the same silence, and this one has already been both.
 name: pins
 
 on:
@@ -54,6 +66,9 @@ permissions:
 jobs:
   age:
     runs-on: ubuntu-latest
+    outputs:
+      red: ${{ steps.report.outputs.red }}
+      report: ${{ steps.report.outputs.report }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -67,11 +82,12 @@ jobs:
           persist-credentials: false
 
       - name: How long each pin has been behind
+        id: report
         env:
           # Days a pin may lag before it is staleness rather than a decision.
           ALLOWED_DAYS: "21"
         run: |
-          set -euo pipefail
+          set -uo pipefail
           python3 - <<'PY'
           import os
           import pathlib
@@ -159,6 +175,23 @@ jobs:
                       [f"{name}: {behind} commits not taken, oldest {days} days old", *listed]
                   )
 
+          if len(rows) == 1:
+              # Nothing was compared. "Every pin is within the window" is true of
+              # no pins and reads exactly like it is true of nine, and the reader
+              # of a green tick cannot tell those apart. The submodules did not
+              # check out, or none is configured any more.
+              say("## No pinned repository was found to compare")
+              say()
+              say("**This check reports; it gates nothing.** It is not saying a pin")
+              say("is current: `git submodule status` named none, so nothing was")
+              say("compared and this run knows nothing about any revision this site")
+              say("renders from.")
+              print(
+                  "::error::no submodule was found, so no pin was compared — this "
+                  "check reports it and gates nothing"
+              )
+              leave(1)
+
           if stale:
               say("## A pin has been behind for longer than the window")
               say()
@@ -217,9 +250,32 @@ jobs:
 
           leave(1 if stale or unread else 0)
           PY
+          verdict=$?
+          # The verdict and the summary both leave this step, so the job that
+          # sends the finding on reads what the run page shows rather than a
+          # second rendering of it. The step itself succeeds either way: a step
+          # that fails is a step whose outputs a later job has to hope for.
+          # A random edge, because the report is prose from nine repositories and
+          # a fixed marker is a line one of them could one day write.
+          edge="PINS_REPORT_$(openssl rand -hex 8)"
+          {
+            printf 'red=%s\n' "$([ "$verdict" -eq 0 ] && echo false || echo true)"
+            printf 'report<<%s\n' "$edge"
+            cat -- "$GITHUB_STEP_SUMMARY"
+            printf '%s\n' "$edge"
+          } >> "$GITHUB_OUTPUT"
+
+      # Red where it has always been red. The finding is news about a repository
+      # this site renders, so the job that found it is the job that carries it.
+      - name: A pin has been behind for longer than the window
+        if: steps.report.outputs.red == 'true'
+        run: exit 1
 
   sources:
     runs-on: ubuntu-latest
+    outputs:
+      red: ${{ steps.report.outputs.red }}
+      report: ${{ steps.report.outputs.report }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -237,4 +293,135 @@ jobs:
       # nothing from `node_modules`, so the node this repository declares is
       # the whole of what it needs.
       - name: Which pins have gone behind on a source a guard reads
-        run: node scripts/pins.ts
+        id: report
+        run: |
+          set -uo pipefail
+          node scripts/pins.ts
+          verdict=$?
+          # A random edge, because the report is prose from nine repositories and
+          # a fixed marker is a line one of them could one day write.
+          edge="PINS_REPORT_$(openssl rand -hex 8)"
+          {
+            printf 'red=%s\n' "$([ "$verdict" -eq 0 ] && echo false || echo true)"
+            printf 'report<<%s\n' "$edge"
+            cat -- "$GITHUB_STEP_SUMMARY"
+            printf '%s\n' "$edge"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: A guard is reading a source its pin has gone behind on
+        if: steps.report.outputs.red == 'true'
+        run: exit 1
+
+  # Where the finding goes. Both checks above have always written it to the run
+  # summary; what neither had was a reader. `sources` was red on every scheduled
+  # run for three weeks, correct every time, and the file it named went on being
+  # rendered stale.
+  telling:
+    needs: [age, sources]
+    if: always()
+    runs-on: ubuntu-latest
+    outputs:
+      red: ${{ steps.compose.outputs.red }}
+      body: ${{ steps.compose.outputs.body }}
+    steps:
+      - name: What this run has to say
+        id: compose
+        env:
+          # Every value arrives through the environment. The reports carry commit
+          # subjects from nine other repositories, which is text somebody else
+          # wrote, and it is never interpolated into a command (OPS-R28).
+          AGE_RESULT: ${{ needs.age.result }}
+          AGE_RED: ${{ needs.age.outputs.red }}
+          AGE_REPORT: ${{ needs.age.outputs.report }}
+          SOURCES_RESULT: ${{ needs.sources.result }}
+          SOURCES_RED: ${{ needs.sources.outputs.red }}
+          SOURCES_REPORT: ${{ needs.sources.outputs.report }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os
+          import pathlib
+          import secrets
+
+          # Discord takes 4096 characters in an embed description and the
+          # notifier splits a longer body across a thread. A pin behind on
+          # thirty commits would arrive as a wall, so the message carries the
+          # verdict and the head of each report, and the run page carries the
+          # rest. What is cut is said, rather than trailing off.
+          ROOM = 1600
+
+          parts = []
+          red = False
+
+          for name in ("age", "sources"):
+              result = os.environ[f"{name.upper()}_RESULT"]
+              says = os.environ[f"{name.upper()}_RED"]
+              report = os.environ[f"{name.upper()}_REPORT"]
+
+              # No verdict at all. Reporting nothing because there was nothing to
+              # report and reporting nothing because the check never got that far
+              # are the same silence from outside, and the second is the case this
+              # whole workflow exists to make legible.
+              if says == "":
+                  red = True
+                  parts.append(
+                      f"**{name}** ended `{result}` without reaching a verdict, so "
+                      "this run says nothing about the pins it reads."
+                  )
+                  continue
+
+              if says != "true":
+                  if result == "success":
+                      continue
+                  red = True
+                  parts.append(
+                      f"**{name}** found nothing behind and then ended `{result}`, "
+                      "which is not a verdict about any pin either."
+                  )
+                  continue
+
+              red = True
+              head = report.strip()
+              if head == "":
+                  head = f"**{name}** found something and wrote no summary of it."
+              elif len(head) > ROOM:
+                  head = head[:ROOM].rstrip() + "\n\n… cut here; the run page has the rest."
+              parts.append(head)
+
+          body = "\n\n---\n\n".join(parts) if parts else ""
+
+          out = pathlib.Path(os.environ["GITHUB_OUTPUT"])
+          edge = f"PINS_BODY_{secrets.token_hex(8)}"
+          with out.open("a", encoding="utf-8") as handle:
+              handle.write(f"red={'true' if red else 'false'}\n")
+              handle.write(f"body<<{edge}\n{body}\n{edge}\n")
+          PY
+
+      # The floor. A finding with nowhere to go is the state this step exists to
+      # end, and a run that reaches it having quietly sent nothing would be that
+      # state wearing a green tick.
+      - name: A finding with nowhere to send it
+        if: steps.compose.outputs.red == 'true'
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_MAINTAINERS_WEBHOOK }}
+        run: |
+          if [ -n "$WEBHOOK" ]; then
+            echo "the maintainers' webhook is configured; the finding goes out"
+            exit 0
+          fi
+          echo "::error::this run found something and has nowhere to send it, so nobody is being told — configure DISCORD_MAINTAINERS_WEBHOOK, or take the notification out rather than leaving a reporter whose destination is absent"
+          exit 1
+
+  notify:
+    needs: telling
+    if: always() && needs.telling.outputs.red == 'true'
+    uses: lemonfiber/spec/.github/workflows/discord-notify.yml@04447ba64dbbdbce7af81cace90b69e89601fdac # main
+    with:
+      title: "📌 pins · ${{ github.event.repository.name }}"
+      body: ${{ needs.telling.outputs.body }}
+      url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      # Red, because it is something being blocked rather than an announcement —
+      # the same colour train-stalled uses for the same reason.
+      color: "15158332"
+    secrets:
+      webhook: ${{ secrets.DISCORD_MAINTAINERS_WEBHOOK }}
