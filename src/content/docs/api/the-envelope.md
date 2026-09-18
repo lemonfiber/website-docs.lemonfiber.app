@@ -47,40 +47,42 @@ network instead, and is refused until a password has been set with
 `--set-password`. Nothing is installed, nothing keeps running afterwards, and the
 connection is not encrypted, which it says as it starts.
 
-Twenty-eight endpoints answer a question and close. Each one is a command a person
+Thirty endpoints answer a question and close. Each one is a command a person
 could have typed, dispatched through the same entry point the command line uses,
 so the two surfaces cannot say different things about the same stack.
 
-| Endpoint                 | What it answers                                                                         |
-| ------------------------ | --------------------------------------------------------------------------------------- |
-| `GET /api/status`        | What the whole stack is doing                                                           |
-| `GET /api/services`      | The same reading, narrowed to the forms named in `?form=`                               |
-| `GET /api/forms`         | Every form the stack declares, or what the ones named in `?form=` would come to         |
-| `GET /api/checks`        | What the diagnostic checks found, or the one group named in `?only=`                    |
-| `GET /api/storage`       | The checks about the disk                                                               |
-| `GET /api/logs`          | The scrollback, one envelope per line; takes `?form=`, `?service=` and `?tail=`         |
-| `GET /api/requests`      | What the household has asked for, narrowed to `?member=`                                |
-| `GET /api/trace`         | Where one item got to; `?term=` names it as you would say it, `?season=` narrows to one |
-| `GET /api/stuck`         | The items whose downloads have stopped, each named the way `?term=` asks for one        |
-| `GET /api/config`        | Every setting, credentials withheld, or the one named in `?key=`                        |
-| `GET /api/quality`       | The preset in force, what each preset means, and what it costs                          |
-| `GET /api/version`       | The versions in play: lemonfiber, the stack it operates, and the container engine       |
-| `GET /api/explain`       | Every word this product explains, or what the one named in `?word=` means               |
-| `GET /api/front-door`    | The one address to hand somebody who lives here, and why nothing else listed is it      |
-| `GET /api/outbound`      | Everything that leaves this machine, what each carries, and what switching it off stops |
-| `GET /api/stored`        | What lemonfiber keeps on this machine, where each thing is, and why                     |
-| `GET /api/backups`       | Which backups are here to restore from, by name                                         |
-| `GET /api/clients`       | Which app to watch on, for each kind of device somebody in the house has                |
-| `GET /api/credentials`   | Every credential the stack holds, what each is for and where it stands — never a value  |
-| `GET /api/alerts`        | What the operator is told about, and what changing that comes to                        |
-| `GET /api/space`         | Where the disk went, what is on it, and what could be got back                          |
-| `GET /api/bandwidth`     | What the line carries, what the stack is held to, and whether it is keeping to it       |
-| `GET /api/hosting`       | What this machine keeps running when no terminal is open                                |
-| `GET /api/uninstall`     | What a removal would take; the removal being read is named rather than defaulted        |
-| `GET /api/migration`     | What is already on this machine, before anything is proposed                            |
-| `GET /api/history`       | What has already been changed on this machine, and when                                 |
-| `GET /api/update`        | Where this copy stands: its own version, the stack it carries, and how it was installed |
-| `GET /api/bundle/{name}` | The support bundle itself, handed over rather than described                            |
+| Endpoint                 | What it answers                                                                          |
+| ------------------------ | ---------------------------------------------------------------------------------------- |
+| `GET /api/status`        | What the whole stack is doing                                                            |
+| `GET /api/services`      | The same reading, narrowed to the forms named in `?form=`                                |
+| `GET /api/forms`         | Every form the stack declares, or what the ones named in `?form=` would come to          |
+| `GET /api/checks`        | What the diagnostic checks found, or the one group named in `?only=`                     |
+| `GET /api/storage`       | The checks about the disk                                                                |
+| `GET /api/logs`          | The scrollback, one envelope per line; takes `?form=`, `?service=` and `?tail=`          |
+| `GET /api/requests`      | What the household has asked for, narrowed to `?member=`                                 |
+| `GET /api/trace`         | Where one item got to; `?term=` names it as you would say it, `?season=` narrows to one  |
+| `GET /api/stuck`         | The items whose downloads have stopped, each named the way `?term=` asks for one         |
+| `GET /api/config`        | Every setting, credentials withheld, or the one named in `?key=`                         |
+| `GET /api/quality`       | The preset in force, what each preset means, and what it costs                           |
+| `GET /api/version`       | The versions in play: lemonfiber, the stack it operates, and the container engine        |
+| `GET /api/explain`       | Every word this product explains, or what the one named in `?word=` means                |
+| `GET /api/front-door`    | The one address to hand somebody who lives here, and why nothing else listed is it       |
+| `GET /api/provenance`    | Where each service comes from: its licence, its project, and the version this stack pins |
+| `GET /api/catalogue`     | What each service is for, what its loss costs, and what became of any the stack dropped  |
+| `GET /api/outbound`      | Everything that leaves this machine, what each carries, and what switching it off stops  |
+| `GET /api/stored`        | What lemonfiber keeps on this machine, where each thing is, and why                      |
+| `GET /api/backups`       | Which backups are here to restore from, by name                                          |
+| `GET /api/clients`       | Which app to watch on, for each kind of device somebody in the house has                 |
+| `GET /api/credentials`   | Every credential the stack holds, what each is for and where it stands — never a value   |
+| `GET /api/alerts`        | What the operator is told about, and what changing that comes to                         |
+| `GET /api/space`         | Where the disk went, what is on it, and what could be got back                           |
+| `GET /api/bandwidth`     | What the line carries, what the stack is held to, and whether it is keeping to it        |
+| `GET /api/hosting`       | What this machine keeps running when no terminal is open                                 |
+| `GET /api/uninstall`     | What a removal would take; the removal being read is named rather than defaulted         |
+| `GET /api/migration`     | What is already on this machine, before anything is proposed                             |
+| `GET /api/history`       | What has already been changed on this machine, and when                                  |
+| `GET /api/update`        | Where this copy stands: its own version, the stack it carries, and how it was installed  |
+| `GET /api/bundle/{name}` | The support bundle itself, handed over rather than described                             |
 
 Two of them are not shaped like the rest. `GET /api/front-door` takes no parameters, because the question takes none: which one address the household is given is worked out from what the stack runs rather than asked for, and a parameter here would be a way for one surface to be told a different door from another. `GET /api/bundle/{name}` is the one read that does not answer with an envelope — it answers with the bundle itself, because a browser has no path on the host to be told and handing the file over is the only form `--out` can take on a screen. The name is resolved beneath the bundles directory rather than followed, so one carrying a path, or climbing out of that directory, is refused by name.
 

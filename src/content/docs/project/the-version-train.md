@@ -31,6 +31,7 @@ release finalises it.
 | `released_as`       | The tag the goals actually shipped under, where a patch closed the line                                       |
 | `withdrawn_because` | Why a shipped release was taken back, in one sentence — required on a yanked manifest and present on no other |
 | `pins`              | The exact submodule commits embedded, recorded when it ships                                                  |
+| `prerelease`        | One record per pre-release cut from this version, in the order they were cut                                  |
 
 The file, not the CI history, answers "where is this version": you read its
 status. The manifests and their contract are in
@@ -113,16 +114,21 @@ something you can say in a sentence.
 ## No version ships a stub
 
 A version proves its goals one requirement at a time, and that is not the whole
-of what it claims. A requirement can be met while the feature around it is half
+of what it claims. A requirement can be met while the thing around it is half
 built: a `1.0.0` announcing a dashboard whose panels are stubs would satisfy
-every goal it locked and still be the release nobody wanted. **The feature is
-the unit a reader understands, so the feature is what the gate asks about.**
+every goal it locked and still be the release nobody wanted.
 
-Executing a release refuses while any feature the manifest locks — one whose
-requirements its `goals` name — is not `shipped` in the feature catalogue, and
-the refusal names them. That is the whole of what "a major ships no stubs"
-means: a rule about every version, of which a major is only where it bites
-hardest.
+Executing a release refuses while any requirement the manifest locks is not
+built, and the refusal names those requirements. That is the whole of what "a
+major ships no stubs" means: a rule about every version, of which a major is
+only where it bites hardest.
+
+The subject is the requirements a version **carries**, not the whole of every
+feature it touches. The rule once asked the feature-level question — is every
+feature this manifest locks finished — and nothing could ever satisfy it:
+partial locking is the norm, most manifests lock part of at least one feature,
+so a feature spanning two versions could never be finished when the first of
+them shipped.
 
 ### How far a feature is built
 
@@ -141,6 +147,14 @@ whichever is asked less often.
 
 A shipped feature names the version that carried it, so the gate reads a mark
 written before the tag rather than one inferred from it.
+
+Two of those states answer for every requirement the feature holds and two
+answer for none, which leaves `building` — some are built and some are not, and
+the catalogue does not say which. There the implementation status is asked
+instead, requirement by requirement. The two records are then held against each
+other: a `planned` feature whose requirements the status file ticks is refused
+outright, because a catalogue calling a feature untouched and a status file
+calling its requirements done cannot both be right.
 
 `built` sits between `building` and `shipped` because the two on either side
 cannot describe a finished feature waiting for a release. A feature whose work

@@ -1,20 +1,22 @@
 ---
 title: Global flags
-description: The four flags every lemonfiber subcommand accepts, the ones that only look global, and what the environment decides.
+description: The six flags every lemonfiber subcommand accepts, the ones that only look global, and what the environment decides.
 sidebar:
   order: 1
 ---
 
-Four flags are declared once on `lemonfiber` itself and inherited by every
+Six flags are declared once on `lemonfiber` itself and inherited by every
 subcommand. You may type them before the subcommand or after it, and they mean
 the same thing either way.
 
-| Flag                 | What it does                                                        |
-| -------------------- | ------------------------------------------------------------------- |
-| `--json`             | Prints machine-readable output                                      |
-| `--dry-run`          | Says what would happen, and changes nothing                         |
-| `--force`            | Takes the stack from a run that claimed it and did not give it back |
-| `--stack-dir <PATH>` | Operates a stack directory of your own instead of the built-in one  |
+| Flag                  | What it does                                                        |
+| --------------------- | ------------------------------------------------------------------- |
+| `--json`              | Prints machine-readable output                                      |
+| `--dry-run`           | Says what would happen, and changes nothing                         |
+| `--force`             | Takes the stack from a run that claimed it and did not give it back |
+| `--stack-dir <PATH>`  | Operates a stack directory of your own instead of the built-in one  |
+| `--config-dir <PATH>` | Keeps lemonfiber's own configuration under a directory of your own  |
+| `--data-dir <PATH>`   | Keeps lemonfiber's own data under a directory of your own           |
 
 `lemonfiber --help` and `lemonfiber -h` print help, and `lemonfiber --version`
 or `-V` prints the binary's version. Subcommands take `-h` and `--help`; the
@@ -72,6 +74,21 @@ pass, each naming its location, rather than one per attempt.
 This is the escape hatch that makes a fork possible without a lemonfiber
 release. What the manifest has to contain is
 [the stack manifest](/advanced/the-stack-manifest/).
+
+## `--config-dir <PATH>` and `--data-dir <PATH>`
+
+Where lemonfiber keeps its **own** two directories — the settings file and
+journal it writes, and the data it keeps about itself. Each defaults to the
+conventional place for the platform, and each can be named on its own.
+
+Neither is the data location your library goes to. That is a setting, written by
+`lemonfiber config set` and read by the stack; these two are lemonfiber's own
+housekeeping and nothing the services ever see.
+
+Naming **both** is the one case where the platform is not consulted at all, and
+that is deliberate rather than incidental: a machine whose home directory cannot
+be resolved is exactly the machine somebody reaches for these flags on, and
+falling back would answer it with the absence the flags were given to fill.
 
 ## Flags that only look global
 
