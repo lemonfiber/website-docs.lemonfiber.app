@@ -1,6 +1,6 @@
 ---
 title: The gates
-description: Every check a pull request meets before it can merge, what each one defends, and why none of them is advisory.
+description: Every check a pull request meets before it can merge, what each one defends, and which of them report rather than block.
 sidebar: { order: 2 }
 ---
 
@@ -8,7 +8,15 @@ Every rule this project holds code to is either mechanically enforced or
 explicitly marked as a matter of judgment. A standard that is neither is
 decoration: it gets cited when convenient, ignored under deadline pressure, and
 produces the inconsistency it was written to prevent. So most of what follows is
-a check, and every check blocks the merge.
+a check, and a check that decides whether a change is correct blocks the merge.
+
+A few deliberately do not, and they are the ones about **another repository's
+state** rather than about this change. A pin is meant to trail the thing it
+points at; a check that reddens the moment anything lands upstream refuses work
+that has nothing to do with it, and gets routed around. Those report — daily or
+weekly, naming the commits not taken — and the repository's own gates stay
+blocking. A label sync is not a gate either, for the same reason: it changes
+nothing a reviewer reads.
 
 ## The order they run in
 
@@ -28,7 +36,14 @@ a compile.
 | Dependency audit | Any advisory, disallowed licence, banned crate, or telemetry?                      |
 | Coverage         | Is every applicable line covered?                                                  |
 | Static analysis  | Did the analyser find anything at all?                                             |
+| Mutation         | Do the tests fail when the code is wrong, or only run over it?                     |
+| Accessibility    | Does axe find a violation on any route or story, in either theme?                  |
 | End-to-end       | Where Docker is available, do the forms actually boot?                             |
+
+Not every repository runs every stage, and the two below the analyser are the
+clearest case: mutation testing gates the two PHP surfaces, and the accessibility
+sweep gates the two sites. Both are required checks where they run, which is what
+makes them stages rather than aspirations.
 
 The full pipeline and its requirements are in
 [CI and CD](/spec/40-quality/ci-cd/).
@@ -117,9 +132,16 @@ left to a person:
    premature abstraction, a runtime check where a type would do. None are
    machine-detectable; all block a review.
 
-Every repository carries a task runner with the same named tasks, so you run
-locally what the pipeline runs, and the pre-commit hooks mirror CI exactly
-without enforcing anything CI does not. A clean local run means something.
+Every repository carries a task runner with the same named tasks — `just ci`,
+`npm run ci`, `composer ci` — so you are not reading a workflow to find out what
+to type. None of them is the whole of CI, and each says which parts it leaves
+out: most of what a pull request starts is forge-side, and no clone runs the
+citation gate, the sign-off, the secret scan or the analyser. A check holds each
+repository's own command to saying so.
+
+What the commit hook covers is exactly the four rules a commit message is held
+to, before the push rather than after it, and it enforces nothing CI does not.
+A clean local run means the part a machine here can decide.
 
 ## Related
 
