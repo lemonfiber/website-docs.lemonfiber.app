@@ -1,0 +1,1 @@
+../../../../vendor/plugin-template/README.md

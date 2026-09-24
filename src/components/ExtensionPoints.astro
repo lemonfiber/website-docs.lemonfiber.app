@@ -1,0 +1,87 @@
+---
+import { points } from "../lib/plugins";
+import { artefact } from "../lib/schema-source";
+import * as m from "../paraglide/messages.js";
+
+/** Every extension point, read out of `contract/extension-points.json`. */
+const published = points(artefact("extension-points.json"));
+---
+
+{published.map((point) => (
+  <section class="point" id={`point-${point.name}`}>
+    <h3>
+      <code>{point.name}</code>
+    </h3>
+    <p>{point.summary}</p>
+    <dl>
+      <dt>{m.point_requires()}</dt>
+      <dd>
+        <code>{point.requires}</code>
+      </dd>
+      <dt>{m.point_register()}</dt>
+      <dd>{point.register}</dd>
+      <dt>{m.point_engine()}</dt>
+      <dd>{point.engine}</dd>
+      <dt>{m.point_required()}</dt>
+      <dd>
+        {point.required.map((field) => (
+          <code class="point__field">{field}</code>
+        ))}
+      </dd>
+      {point.optional.length > 0 && (
+        <>
+          <dt>{m.point_optional()}</dt>
+          <dd>
+            {point.optional.map((field) => (
+              <code class="point__field">{field}</code>
+            ))}
+          </dd>
+        </>
+      )}
+    </dl>
+    {point.bounds.map((bound) => (
+      <p>
+        {m.point_bounds({
+          field: bound.field,
+          min: bound.min,
+          max: bound.max,
+          default: bound.default,
+        })}
+      </p>
+    ))}
+    {point.choices.map((choice) => (
+      <p>
+        {m.point_closed({ field: choice.field })}{" "}
+        {choice.values.map((value) => (
+          <code class="point__field">{value}</code>
+        ))}
+      </p>
+    ))}
+    <details>
+      <summary>{m.point_occupied()}</summary>
+      {point.occupied.length === 0 ? (
+        <p>{m.point_occupied_none()}</p>
+      ) : (
+        <ul class="point__occupied">
+          {point.occupied.map((id) => (
+            <li>
+              <code>{id}</code>
+            </li>
+          ))}
+        </ul>
+      )}
+    </details>
+  </section>
+))}
+
+<style>
+  .point {
+    scroll-margin-top: 6rem;
+  }
+  .point__field {
+    margin-right: 0.4em;
+  }
+  .point__occupied {
+    columns: 2;
+  }
+</style>

@@ -33,20 +33,81 @@ a header and never puts it in an address.
 
 ```php
 use Lemonfiber\Sdk\Client;
-use Lemonfiber\Sdk\Time\Duration;
+use Lemonfiber\Sdk\Contract\Api;
 
 $client = Client::onPort(9000, $tokenLemonfiberPrinted);
 
-$status = $client->read('/api/status');
+$status = $client->read(Api::STATUS_ENDPOINT);
 $status->kind;        // 'status'
 $status->data;        // the payload, shaped by kind
 
-$client->act('/api/actions/restart', ['forms' => ['tv'], 'services' => ['sonarr']]);
+$client->act(Api::action('restart'), ['forms' => ['tv'], 'services' => ['sonarr']]);
 ```
+
+`Api` carries the path of every read the client knows — `Api::HELD_ENDPOINT`,
+`Api::REQUESTS_ENDPOINT` and the rest — because the contract describes envelope
+kinds and no endpoints, so the paths are the client's to hold. `Api::action()`,
+`Api::job()` and `Api::bundle()` compose the three paths that carry a name. A read
+refuses a parameter it has no name for rather than dropping it: a dropped narrowing
+answers a wider question than the one asked.
 
 An action's name and its arguments are the command line's own. A name this
 surface does not offer is refused rather than invented, and a field no action
 takes is refused rather than ignored.
+
+`act()` and `repair()` take an optional idempotency key, sent as
+`Idempotency-Key`. The binary this site pins does not read that header yet, so
+for now it changes nothing about what a repeated request does.
+
+## Signing in with a password
+
+A client that is not on the machine has no printed token. `Admission` is the door
+a password is exchanged at, once, for a session:
+
+```php
+use Lemonfiber\Sdk\Admission;
+
+$admitted = Admission::at($address, $certificateDigest)->open($password);
+
+$admitted->token;               // what the client carries from here on
+$admitted->untilEpochSeconds;   // when it stops being one
+$admitted->member;              // null for the operator
+```
+
+`Admission::at()` is pinned to the server's certificate and has no unpinned
+counterpart, because it is the one request that carries the password;
+`Admission::onPort()` is the loopback door. A wrong password is
+`PasswordWasRefused`, and too many of them `TooManyAttempts`. `open()` takes the
+machine's password only, so it admits the operator; the server also admits a
+household member by name and password, which this client does not yet ask for.
+
+## Repairs, and work that outlives the request
+
+The repair is the one action with a method of its own, because its two halves are
+one request read twice — the offer, and the yes that names the offer it answers:
+
+```php
+use Lemonfiber\Sdk\Repair;
+
+$client->repair(Repair::offer());                                 // says what it would do
+$client->repair(Repair::agreedTo($agreement, 'vpn.killswitch'));  // carries out that one
+```
+
+An action that reaches the services answers with a name for the work rather than
+its outcome. The name is redeemed with `whatBecameOf()` and stopped with
+`letGoOf()`, and both answer with a `JobStanding`:
+
+```php
+$client->whatBecameOf($job)->answering(
+    stillRunning: fn() => 'ask again in a moment',
+    finished: fn(Envelope $outcome) => $outcome,
+    ended: fn() => 'this one stopped before it got there',
+);
+```
+
+Still going, finished and ended are three standings across two statuses, which is
+why the reading lives in one type with an arm for each and no default. A name
+this run never minted arrives as `NoSuchJob`.
 
 ## One class per kind
 
@@ -56,29 +117,50 @@ the way through:
 
 ```php
 use Lemonfiber\Sdk\Generated\Kind;
-use Lemonfiber\Sdk\Generated\LogEnvelope;
+use Lemonfiber\Sdk\Generated\StatusEnvelope;
 
-$envelope = $client->read('/api/logs');   // Envelope<mixed>
+$envelope = $client->read(Api::STATUS_ENDPOINT);   // Envelope<mixed>
 
-if ($envelope->kind === Kind::Log->value) {
-    $log = LogEnvelope::in($envelope);    // Envelope<the shape the contract gives `log`>
+if ($envelope->kind === Kind::Status->value) {
+    $status = StatusEnvelope::in($envelope);   // Envelope<the shape the contract gives `status`>
 
-    $log->data;   // typed by that shape, and checked by static analysis
+    $status->data;   // typed by that shape, and checked by static analysis
 }
 ```
 
-`LogEnvelope::in()` refuses an envelope carrying any other kind rather than
+`StatusEnvelope::in()` refuses an envelope carrying any other kind rather than
 handing back a payload of the wrong shape.
 
 This client was generated from its own copy of the contract, and that copy
-carries a different set of kinds from the one the binary this site pins serves:
-it has a class for each of fifty-six kinds, and the binary has since grown
-`catalogue` and `provenance`. The set [every payload kind](/api/kinds/) sets out
-is the binary's.
+carries the same kinds the binary this site pins serves: it has a class for each
+of sixty-two kinds, which is the set [every payload kind](/api/kinds/) sets out.
 
 A copy taken before a kind was added is not a version mismatch: both speak wire
 version 1, so the client reads every reply, and a kind with no class of its own
 arrives as an envelope you read the payload of directly.
+
+## Logs, as a window
+
+`/api/logs` is the one read whose answer is not a single envelope — it is one
+`log` envelope per line — so it is asked for through a type:
+
+```php
+use Lemonfiber\Sdk\Logs;
+
+$window = $client->logs(Logs::ofService('sonarr', 200));
+
+$window->count();            // how many lines came back
+$window->reachedTheBound();  // whether the view stops where it was told to
+
+foreach ($window->lines() as $line) {
+    $line->data['line'];
+}
+```
+
+There is no default line count, and no `follow`: asking lemonfiber to keep
+reading turns the answer into a name for work that does not end, with the lines on
+the event stream instead. Nothing on the wire says how much was left behind a
+window, so `reachedTheBound()` compares what was asked for with what arrived.
 
 ## Following live state
 
@@ -86,6 +168,8 @@ Live updates arrive as envelopes. Anything gathered before a break in the
 connection is marked out of date rather than shown as current:
 
 ```php
+use Lemonfiber\Sdk\Time\Duration;
+
 $feed = $client->events(heartbeat: Duration::ofSeconds(15));
 
 foreach ($feed->follow() as $envelope) {
@@ -130,6 +214,9 @@ Everything else in `src/` is behaviour no schema expresses.
 | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `Http\RunToken`           | The per-run token travels in a header, never in an address                                                                                             |
 | `Http\BaseUrl`            | Loopback only; any other host is refused before anything is sent, and a loopback address is not refused for being named rather than numeric            |
+| `Repair`                  | The offer and the yes are one request read twice, and the arrangements the surface refuses cannot be written                                           |
+| `JobStanding`             | Still going, finished and ended are three standings across two statuses, and none of them is a fall-through                                            |
+| `Logs`, `LogWindow`       | A log read names a service and a number of lines, and a window says only what it can know about what it cut                                            |
 | `Envelope\EnvelopeReader` | A version mismatch is refused plainly, naming both versions, rather than rendering part of an answer                                                   |
 | `Envelope\Payload`        | An envelope is read as the kind it carries, or not at all                                                                                              |
 | `Events\EventStream`      | A stream quiet for twice the agreed heartbeat is reported as broken, not as calm; one missed beat is not                                               |

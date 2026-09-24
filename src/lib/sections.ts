@@ -30,13 +30,14 @@ const specification: Group = {
   ],
 };
 
-/** The ten top-level sections, in reading order. */
+/** The eleven top-level sections, in reading order. */
 export const sections: Sidebar = [
   group(m.nav_start(), "start", false),
   group(m.nav_running(), "running", false),
   group(m.nav_fixing(), "fixing"),
   group(m.nav_commands(), "commands"),
   group(m.nav_api(), "api"),
+  group(m.nav_plugins(), "plugins"),
   group(m.nav_advanced(), "advanced"),
   group(m.nav_contributing(), "contributing"),
   group(m.nav_building(), "develop"),

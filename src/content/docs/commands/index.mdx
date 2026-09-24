@@ -65,14 +65,15 @@ binary at the revision this site pins, which that page names at its foot.
 
 ## Seeing what is happening
 
-| Command      | What it does                                                      | Reach for it when                                                                           |
-| ------------ | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `ps`         | Reports what each service is actually doing                       | You want the state of the stack in one screen                                               |
-| `logs`       | Shows what services are saying                                    | You want the lines. `--follow` keeps reading; `--watch` opens the scrollable viewer         |
-| `trace`      | Follows one show or film across the services                      | You are asking "where is my show?" and want the answer step by step                         |
-| `household`  | Shows what the household asked for, and where each request stands | You want the queue grouped by whoever asked for it                                          |
-| `stuck`      | Lists the items whose downloads are stuck                         | Something reported a count of stuck items and you want them named                           |
-| `front-door` | Names the one address to send somebody who lives here             | Somebody in the house asks where to go, and you want one answer rather than a list of ports |
+| Command      | What it does                                                                 | Reach for it when                                                                                                    |
+| ------------ | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `ps`         | Reports what each service is actually doing                                  | You want the state of the stack in one screen                                                                        |
+| `logs`       | Shows what services are saying                                               | You want the lines. `--follow` keeps reading; `--watch` opens the scrollable viewer                                  |
+| `trace`      | Follows one show or film across the services                                 | You are asking "where is my show?" and want the answer step by step                                                  |
+| `household`  | Shows what the household asked for, and where each request stands            | You want the queue grouped by whoever asked for it                                                                   |
+| `held`       | Shows what one member can actually watch, read from the media server as them | You want to see what an age limit or a library restriction comes to, as the list it produces rather than the setting |
+| `stuck`      | Lists the items whose downloads are stuck                                    | Something reported a count of stuck items and you want them named                                                    |
+| `front-door` | Names the one address to send somebody who lives here                        | Somebody in the house asks where to go, and you want one answer rather than a list of ports                          |
 
 ## The household
 
@@ -116,11 +117,12 @@ binary at the revision this site pins, which that page names at its foot.
 
 ## Wiring, and your own edits
 
-| Command | What it does                                                                 | Reach for it when                                                                                                  |
-| ------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `seed`  | Wires the stack's services to each other, idempotently                       | A service has just joined the running set, or you want the wiring re-checked. It never overwrites what you changed |
-| `adopt` | Adopts your current edits as lemonfiber's expected state                     | You are happy with a change you made by hand and want it kept across future seeds and restores                     |
-| `reset` | Puts the stack back to lemonfiber's own state, reverting every edit you made | You want your edits gone. It names what will be lost and does nothing until `--confirm`                            |
+| Command  | What it does                                                                                                             | Reach for it when                                                                                                                               |
+| -------- | ------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `seed`   | Wires the stack's services to each other, idempotently                                                                   | A service has just joined the running set, or you want the wiring re-checked. It never overwrites what you changed                              |
+| `wiring` | Says what the stack wires to what, and how each link was settled; `wiring fill` chooses which service fills a capability | Two services could answer the same need, or something asks for a capability nothing provides. The choice is journalled, and `undo` puts it back |
+| `adopt`  | Adopts your current edits as lemonfiber's expected state                                                                 | You are happy with a change you made by hand and want it kept across future seeds and restores                                                  |
+| `reset`  | Puts the stack back to lemonfiber's own state, reverting every edit you made                                             | You want your edits gone. It names what will be lost and does nothing until `--confirm`                                                         |
 
 ## Keeping and sharing your configuration
 
@@ -134,7 +136,7 @@ binary at the revision this site pins, which that page names at its foot.
 
 | Command       | What it does                                                                         | Reach for it when                                                                                                                                               |
 | ------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `catalogue`   | Says what each service in this stack is for, and what became of any it dropped       | Nineteen names convey nothing on their own and you want a sentence for each: what it does for you, what you lose while it is down, and how much that costs      |
+| `catalogue`   | Says what each service in this stack is for, and what became of any it dropped       | The service names convey nothing on their own and you want a sentence for each: what it does for you, what you lose while it is down, and how much that costs   |
 | `provenance`  | Says where each service comes from: its licence, its project, and the version pinned | You want to check that what is bundled here is open source rather than take it on faith. It reads the stack description, so it answers with the containers down |
 | `outbound`    | Lists everything that leaves this machine, and what refusing each of it costs        | You want to know what lemonfiber asks the internet for, what the services ask for on their own account, and what switching each off would stop                  |
 | `stored`      | Lists what lemonfiber keeps on this machine, where it is, and why                    | You want to know what is on your disk because of lemonfiber, and to be sure your library is not part of it                                                      |
@@ -156,18 +158,20 @@ lists it with everything else.
 | ------- | ---------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ui`    | Serves the JSON API on a loopback socket for as long as you leave it running, printing the address and a token minted for that run | You are driving lemonfiber from a browser, a client or a script rather than a terminal. `--assets <dir>` serves a built web app beside it; `--lan` offers it to your network, once `--set-password` has set one |
 
-## Writing a plugin
+## Plugins
 
-| Command  | What it does                                                                   | Reach for it when                                                                                                                                                                                                        |
-| -------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `plugin` | Reads what a plugin may claim, where it may contribute, and how one is written | You are writing a plugin rather than running a stack. `capabilities`, `extension-points` and `schema` print the documents this build publishes; `claims` reads a manifest on a path and says what this build makes of it |
+| Command  | What it does                                                          | Reach for it when                                                                                                                                                                                                                                                       |
+| -------- | --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `plugin` | Installs, updates and removes plugins, and reads what one may declare | You are adding a service the stack does not bundle, or writing one. `install`, `update` and `remove` change the machine and take `--dry-run`; `installed` lists what is here; `capabilities`, `extension-points`, `schema`, `claims` and `provenance` are for an author |
 
-Everything under this word is a read. It answers with no network, no catalogue
-and no stack running, and each answer says which generation it is reporting — so
-an author comparing two of them can tell whether the difference is their build or
-their manifest. Nothing here installs a plugin: that is
-[F6](/spec/10-functional/features/f-extensibility/f6-plugin-lifecycle/), and it
-is not built yet.
+`install` and `update` take a path — the plugin's directory, or the `plugin.toml`
+inside it. Neither is kept unless the plugin's own proofs hold against its running
+service and the stack's checks still pass afterwards; if either fails, the install
+is put back. There is no disable: a plugin is installed or it is not, and `remove`
+takes its id. The author's reads need no network, no catalogue and no running
+stack, and each names the generation it reports — except `provenance`, the one
+read that asks a registry about an image's signature.
+[Plugins](/plugins/) is the whole of it.
 
 ## Words, and help
 

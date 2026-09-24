@@ -1,0 +1,10 @@
+---
+import { artefact } from "../lib/schema-source";
+import { standalone } from "../lib/schema";
+import Definitions from "./Definitions.astro";
+
+/** The plugin manifest, read out of `contract/plugin-manifest.schema.json`. */
+const definitions = standalone(artefact("plugin-manifest.schema.json"));
+---
+
+<Definitions definitions={definitions} prefix="manifest-" />

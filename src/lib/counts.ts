@@ -26,10 +26,18 @@ export interface Sources {
   readonly stack: string;
   /** `vendor/lemonfiber/contract/web-api.contract.json`. */
   readonly contract: string;
-  /** `vendor/lemonfiber/reference/commands.md`. */
+  /** `vendor/lemonfiber/reference/commands.md`, the index of every command. */
   readonly commands: string;
+  /** `vendor/lemonfiber/reference/commands/quality.md`, one command's page. */
+  readonly quality: string;
+  /** `vendor/lemonfiber/contract/extension-points.json`. */
+  readonly extensionPoints: string;
+  /** `vendor/lemonfiber/contract/capability-vocabulary.json`. */
+  readonly vocabulary: string;
   /** `vendor/spec/20-architecture/contracts/web-api.md`. */
   readonly webApi: string;
+  /** `vendor/spec/30-repos/repos.toml`, every repository in the org. */
+  readonly repos: string;
   /** `mirrors.json`. */
   readonly mirrors: string;
   /** `vendor/sdk-ts/src/index.ts`, the client package's entry point. */

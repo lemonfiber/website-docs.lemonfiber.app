@@ -21,7 +21,7 @@ directly, each because Compose is the wrong instrument for it.
 
 | What is asked                    | Why not Compose                                               |
 | -------------------------------- | ------------------------------------------------------------- |
-| List containers                  | One poll per second across nineteen services                  |
+| List containers                  | One poll per second across twenty services                    |
 | Read logs                        | It streams, and Compose cannot narrow to a service list       |
 | Read resource statistics         | Compose has no equivalent                                     |
 | Run a command inside a container | The leak test runs the same command in two network namespaces |

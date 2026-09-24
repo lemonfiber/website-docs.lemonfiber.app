@@ -90,15 +90,28 @@ failure.
 
 ## Household accounts
 
-Getting people accounts is Jellyfin user administration today. lemonfiber has no
-command for creating a household member, issuing an invitation or resetting
-somebody's password — the behaviour is specified in [D6 Household identity and
-invitations](/spec/10-functional/features/d-content/d6-household-identity/), and
-it is not built yet.
+Three commands look after the people in the house, and none of them has you
+choosing or seeing anybody's password — the shape
+[D6 Household identity and invitations](/spec/10-functional/features/d-content/d6-household-identity/)
+asks for.
 
-What that specification asks for is worth knowing about even so, because it sets
-the shape: you create an invitation, the household member sets their own
-password, and you never choose or transmit somebody else's credentials.
+- [`lemonfiber invite <name>`](/commands/reference/invite/) makes them an
+  account on the media server with no password on it, and prints the one
+  address to send them. Whoever sets the first password claims it, and an
+  invitation nobody takes up is withdrawn. `--library` and `--age-limit` narrow
+  what the account can watch from the start.
+- [`lemonfiber reissue <name>`](/commands/reference/reissue/) is how somebody who
+  has forgotten their password gets back in. Their account goes back to having
+  no password, their old one stops working at once, and what it prints is a
+  fresh invitation to send them.
+- [`lemonfiber remove <name>`](/commands/reference/remove/) takes them out of the
+  household in both places they have an account, the media server and the
+  request service. Their watch history and their requests go with it and cannot
+  be got back, so it says what would go and does nothing until `--confirm`.
+
+To see what one member can actually watch — their age limit, blocked kinds and
+libraries applied, as the media server answers for them —
+[`lemonfiber held --member <name>`](/commands/reference/held/) reads their shelf.
 
 ## The household never touches lemonfiber
 

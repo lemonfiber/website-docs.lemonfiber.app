@@ -1,0 +1,41 @@
+---
+title: The payload reference
+description: Every payload kind the pinned binary serves, and every type its data is built from, field by field — rendered from the contract artefact rather than written down.
+sidebar:
+  order: 3
+---
+
+import Payloads from "../../../components/Payloads.astro";
+import Pinned from "../../../components/Pinned.astro";
+
+This page is not written. It is `contract/web-api.contract.json`, the artefact
+lemonfiber generates from the Rust types that actually serialise each reply,
+read at the revision named at its foot and set out as tables. A field added
+upstream appears here when the pin moves, and nothing on this page can say a
+field exists that the artefact does not.
+
+That is also its limit. The artefact knows shapes and the doc comments written
+on them; it does not know which endpoint answers which kind, or what a client
+has to do that no schema can express. Those are [the envelope](/api/the-envelope/)
+and [every payload kind](/api/kinds/), which is where to start. Come here for
+the exact shape of a field.
+
+## How to read it
+
+The first table maps each `kind` to the type its `data` is. Every type is then
+set out once, by name, however many kinds use it, and a type named in a field
+links to its own entry.
+
+- A **required** field is always present. One that is not may be absent, and a
+  type that includes `null` may also be present and empty — the two are
+  different, and a client keeps them apart.
+- A type that is **one of** several things is closed: a client reads the value
+  it names, and a value it does not know is refused plainly rather than guessed
+  at. Where the choices are objects, the field that tells them apart is shown
+  with the value that selects each one.
+- Numbers carry the width the Rust type has, such as `uint16`, and the bounds
+  that follow from it.
+
+<Payloads />
+
+<Pinned />
