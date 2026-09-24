@@ -229,6 +229,33 @@ export interface Payloads {
 const byName = <T extends { readonly name: string }>(a: T, b: T): number =>
   a.name.localeCompare(b.name);
 
+/** What the kinds read so far have defined, by name, as it was printed. */
+interface Merged {
+  readonly printed: Map<string, string>;
+  readonly definitions: Definition[];
+  readonly disagreeing: Set<string>;
+}
+
+/** One kind's `$defs`, folded into what the kinds before it defined. */
+const merge = (defs: Node, into: Merged): void => {
+  for (const [defined, node] of Object.entries(defs)) {
+    if (!isNode(node)) continue;
+    const printed = JSON.stringify(node);
+    const before = into.printed.get(defined);
+    if (before === undefined) {
+      into.printed.set(defined, printed);
+      into.definitions.push(definitionOf(defined, node));
+    } else if (before !== printed) into.disagreeing.add(defined);
+  }
+};
+
+/** A kind's name and what its `data` is. */
+const kindOf = (name: string, schema: Node): Kind => {
+  const properties = isNode(schema["properties"]) ? schema["properties"] : {};
+  const data = isNode(properties["data"]) ? properties["data"] : {};
+  return { name, data: typeOf(data) };
+};
+
 /**
  * The web-API contract, read as one reference.
  *
@@ -240,34 +267,24 @@ const byName = <T extends { readonly name: string }>(a: T, b: T): number =>
 export function payloads(contract: unknown): Payloads {
   const kinds =
     isNode(contract) && isNode(contract["kinds"]) ? contract["kinds"] : {};
-  const seen = new Map<string, string>();
-  const definitions: Definition[] = [];
-  const disagreeing = new Set<string>();
+  const merged: Merged = {
+    printed: new Map(),
+    definitions: [],
+    disagreeing: new Set(),
+  };
   const described: Kind[] = [];
 
   for (const [name, schema] of Object.entries(kinds)) {
     if (!isNode(schema)) continue;
-    const properties = isNode(schema["properties"]) ? schema["properties"] : {};
-    const data = isNode(properties["data"]) ? properties["data"] : {};
-    described.push({ name, data: typeOf(data) });
-
-    const defs = isNode(schema["$defs"]) ? schema["$defs"] : {};
-    for (const [defined, node] of Object.entries(defs)) {
-      if (!isNode(node)) continue;
-      const printed = JSON.stringify(node);
-      const before = seen.get(defined);
-      if (before === undefined) {
-        seen.set(defined, printed);
-        definitions.push(definitionOf(defined, node));
-      } else if (before !== printed) disagreeing.add(defined);
-    }
+    described.push(kindOf(name, schema));
+    merge(isNode(schema["$defs"]) ? schema["$defs"] : {}, merged);
   }
 
-  return {
-    kinds: described.sort(byName),
-    definitions: definitions.sort(byName),
-    disagreeing: [...disagreeing].sort((a, b) => a.localeCompare(b)),
-  };
+  described.sort(byName);
+  merged.definitions.sort(byName);
+  const disagreeing = [...merged.disagreeing];
+  disagreeing.sort((a, b) => a.localeCompare(b));
+  return { kinds: described, definitions: merged.definitions, disagreeing };
 }
 
 /**
@@ -279,7 +296,9 @@ export function payloads(contract: unknown): Payloads {
 export function standalone(schema: unknown): Definition[] {
   if (!isNode(schema)) return [];
   const root = definitionOf(text(schema, "title"), schema);
-  return [root, ...definitionsIn(schema).sort(byName)];
+  const rest = definitionsIn(schema);
+  rest.sort(byName);
+  return [root, ...rest];
 }
 
 /** Parsed JSON, or nothing where the text is not JSON. */
