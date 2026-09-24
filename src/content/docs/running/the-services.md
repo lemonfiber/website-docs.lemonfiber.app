@@ -1,10 +1,10 @@
 ---
 title: The services
-description: All nineteen services in the stack, what each one does, what you lose without it, and which form starts it.
+description: All twenty services in the stack, what each one does, what you lose without it, and which form starts it.
 sidebar: { order: 2 }
 ---
 
-The stack is nineteen services. You will rarely run all of them at once —
+The stack is twenty services. You will rarely run all of them at once —
 [forms](/running/forms-and-slices/) exist precisely so you do not have to — but
 it is worth knowing what each one is for, because every diagnostic and every
 trace names them.
@@ -35,6 +35,7 @@ include it as well: anything in `search` is also started by `hunt`, `tv`,
 | Seerr                 | Where the household asks for things                                           | Requests come to you in person                    | `library`     |
 | Calibre-Web-Automated | Reading and organising your ebook library                                     | No ebook reader                                   | `library`     |
 | Audiobookshelf        | Listening to audiobooks, with progress synced                                 | No audiobook player                               | `library`     |
+| Navidrome             | Plays your music library in a browser, on a phone, and in any Subsonic client | Music arrives and nothing plays it                | `library`     |
 | Recyclarr             | Keeps quality settings in line with community guidance                        | Tune quality profiles by hand                     | `auto`        |
 | Unpackerr             | Extracts archived releases so they can be imported                            | Some downloads never import                       | `auto`        |
 | Homepage              | One page linking everything, with live status                                 | Remember a dozen URLs and ports                   | `full`        |
@@ -66,7 +67,8 @@ any business reaching them.
 
 **Household-facing surfaces bind to the LAN**, because they are useless if a
 television cannot reach them: Jellyfin on `8096`, Seerr on `5055`,
-Calibre-Web-Automated on `8083`, and Audiobookshelf on `13378`. Homepage joins
+Calibre-Web-Automated on `8083`, Audiobookshelf on `13378`, and Navidrome on
+`4533`. Homepage joins
 them on `3000` — a dashboard nobody else can open is not much of a dashboard —
 and Caddy answers on `80` when you run the `proxy` form.
 
@@ -95,13 +97,13 @@ cover it, so it consumes indexer endpoints directly.
 The manifest grades each service, and lemonfiber's health summary uses that
 grading rather than counting containers:
 
-| Grade     | Meaning                                      | Examples                                                                                               |
-| --------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| Critical  | Failure has consequences outside the machine | Gluetun                                                                                                |
-| Core      | The stack cannot do its job without it       | Prowlarr, SABnzbd, qBittorrent, Sonarr, Radarr, Lidarr, Bindery                                        |
-| Important | The household notices immediately            | Jellyfin, Seerr                                                                                        |
-| Enhancing | Something works less well                    | FlareSolverr, NZBHydra2, Bazarr, Calibre-Web-Automated, Audiobookshelf, Recyclarr, Unpackerr, Homepage |
-| Optional  | Convenience only                             | Caddy                                                                                                  |
+| Grade     | Meaning                                      | Examples                                                                                                          |
+| --------- | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Critical  | Failure has consequences outside the machine | Gluetun                                                                                                           |
+| Core      | The stack cannot do its job without it       | Prowlarr, SABnzbd, qBittorrent, Sonarr, Radarr, Lidarr, Bindery                                                   |
+| Important | The household notices immediately            | Jellyfin, Seerr                                                                                                   |
+| Enhancing | Something works less well                    | FlareSolverr, NZBHydra2, Bazarr, Calibre-Web-Automated, Audiobookshelf, Navidrome, Recyclarr, Unpackerr, Homepage |
+| Optional  | Convenience only                             | Caddy                                                                                                             |
 
 This is why a stack with every container running and a leaking VPN does not
 report that everything is fine.
@@ -113,11 +115,11 @@ because time passed — an update happens when you decide it should. See
 [Updating](/running/updating/).
 
 The manifest also records each service's licence and upstream project. All
-nineteen are open source; lemonfiber's own licence is separate and stricter.
+twenty are open source; lemonfiber's own licence is separate and stricter.
 
 ## Related
 
 - [Forms and slices](/running/forms-and-slices/) — how these group into slices
 - [The stack manifest](/advanced/the-stack-manifest/) — the file this page is drawn from
-- [Adding a service](/advanced/adding-a-service/) — making the list twenty
+- [Adding a service](/advanced/adding-a-service/) — making the list twenty-one
 - [F2 Service catalogue](/spec/10-functional/features/f-extensibility/f2-service-catalogue/) — the requirement behind it

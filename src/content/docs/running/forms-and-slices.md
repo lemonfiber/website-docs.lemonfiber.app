@@ -132,6 +132,6 @@ service](/advanced/adding-a-service/).
 
 ## Related
 
-- [The services](/running/the-services/) — what each of the nineteen actually does
+- [The services](/running/the-services/) — what each of the twenty actually does
 - [Starting and stopping](/running/starting-and-stopping/) — what happens once you name a form
 - [B1 Forms and partial stacks](/spec/10-functional/features/b-running/b1-forms/) — the requirements this page describes

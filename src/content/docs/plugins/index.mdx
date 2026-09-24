@@ -1,0 +1,108 @@
+---
+title: Plugins
+description: What a plugin is, what it may and may not do, and how much of the plugin system this site's pinned revision has built.
+sidebar:
+  order: 0
+---
+
+import { CardGrid, LinkCard } from "@astrojs/starlight/components";
+
+A plugin adds a service to your stack that lemonfiber does not ship. It is
+**data**: one `plugin.toml` describing a service, what it can be relied on to do,
+how the stack reaches it, and what must be true before it counts as installed.
+It contributes no code to lemonfiber's own process.
+
+lemonfiber writes the container. A manifest names an image pinned to its digest,
+a port and whether that port is for this machine or your network, and whether
+the service needs your media library mounted. The Compose entry, the proxy
+address and the dashboard link are generated from that, and there is no field
+in which a plugin could ask for more — no environment, no devices, no kernel
+capabilities, no network mode, no fragment of Compose. A service that needs any
+of that cannot be a plugin; fork the stack with `--stack-dir` instead. The
+reasoning is
+[ADR-0021](/spec/00-overview/decisions/0021-a-plugin-is-data-and-lemonfiber-writes-its-container/).
+
+A plugin **adds and never overrides**. A check it contributes to the doctor runs
+beside the bundled ones under the plugin's own name, and cannot replace,
+reorder or silence one of them. It gets no dashboard panel and no command of its
+own, and a remedy it offers is shown to you, never run.
+
+Nothing is installed half-way. A manifest with anything wrong in it is refused
+whole, with every fault listed at once; an install whose own proofs or whose
+effect on the stack's checks do not hold is put back.
+
+## What is built, and what is not
+
+Everything on this section describes the lemonfiber revision this site pins,
+which is ahead of every release: the plugin commands are staged for the next
+release and are in no released version yet. At that revision:
+
+- **Built:** installing, listing, updating and removing a plugin from a
+  directory on this machine; the proofs and the stack's own checks that gate an
+  install, and the reversal when either fails; contributed doctor checks and
+  remedies; capability wiring and choosing what fills one; the author's reads
+  and `plugin provenance`.
+- **Not built:** installing from a git address, and the reviewed catalogue that
+  would mark an install _reviewed_ — every install today is recorded as
+  unreviewed. Recipes can be declared and checked but are refused, because this
+  build offers a plugin nothing that would run one. Of what a manifest may ask
+  for in `[requires]`, this build offers only what its
+  [extension points](/plugins/extension-points/) need — the names printed
+  there under _a plugin declares_ — and refuses any other.
+
+[What is built](/project/whats-built/) is the per-requirement record and
+[the roadmap](/project/roadmap/) says which version carries the rest.
+
+<CardGrid>
+  <LinkCard
+    title="Installing a plugin"
+    href="/plugins/installing-a-plugin/"
+    description="Rehearse, install, update and remove one, and what each step checks before it counts."
+  />
+  <LinkCard
+    title="Capabilities and wiring"
+    href="/plugins/capabilities-and-wiring/"
+    description="How the stack asks for what a service does rather than for the service, and how to choose which one answers."
+  />
+  <LinkCard
+    title="The manifest"
+    href="/plugins/the-manifest/"
+    description="Every field of plugin.toml, read out of the schema the binary validates against."
+  />
+  <LinkCard
+    title="Extension points"
+    href="/plugins/extension-points/"
+    description="The places a plugin may add a row to lemonfiber itself, and the rules each row keeps."
+  />
+  <LinkCard
+    title="Writing a plugin"
+    href="/plugins/writing-a-plugin/"
+    description="From the template to a manifest whose claims are proved, and on to the catalogue."
+  />
+  <LinkCard
+    title="Trust and provenance"
+    href="/plugins/trust-and-provenance/"
+    description="Digests, signatures, where every value came from, and what a plugin may never do."
+  />
+  <LinkCard
+    title="The plugin template"
+    href="/plugins/the-template/"
+    description="The repository a plugin starts from, rendered from its own README."
+  />
+  <LinkCard
+    title="The plugin catalogue"
+    href="/plugins/the-catalogue/"
+    description="Where published plugins are registered, and what a registration is checked against."
+  />
+</CardGrid>
+
+## Where to go next
+
+Every flag of every `plugin` word is in [the command reference](/commands/reference/plugin/),
+and what each refusal means is under
+[PLUGIN in every error by code](/fixing/every-error-by-code/#plugin--installing-and-running-plugins).
+What `lemonfiber plugin installed --json` returns is the `plugins` kind in
+[the API](/api/kinds/). The requirements this section describes are
+[F3 to F11 in the specification](/spec/10-functional/features/f-extensibility/f3-stack-manifests/),
+and how the core is put together behind them is
+[the architecture notes](/develop/architecture/).

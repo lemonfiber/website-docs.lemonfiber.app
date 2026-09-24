@@ -1,0 +1,61 @@
+---
+title: The manifest
+description: Every field of plugin.toml, read out of the schema the binary validates against, and the rules the schema alone cannot state.
+sidebar:
+  order: 3
+---
+
+import Manifest from "../../../components/Manifest.astro";
+import Vendored from "../../../components/Vendored.astro";
+
+A plugin is one `plugin.toml` at the root of its repository or directory. A
+source declaring two plugins is refused.
+
+The reference below is not written here. It is read out of
+`contract/plugin-manifest.schema.json` at the revision this site pins — the
+schema the binary is generated from and validates against, and the one
+`lemonfiber plugin schema` prints for your editor. It starts at the root,
+`PluginManifest`, and every type a field names links to its own entry. The
+normative prose, with the reasons, is
+[the plugin manifest contract](/spec/20-architecture/contracts/plugin-manifest/).
+
+## What the reader refuses that a schema cannot say
+
+A manifest can match the schema and still be refused: an `id` with a character
+that is not a lower-case letter, a digit or a hyphen, a `port` with no `bind`, a
+`hostname` on a service nobody proxies, a `[requires]` naming something this
+build does not offer. The rules, each with its reason, are the contract's
+[validation](/spec/20-architecture/contracts/plugin-manifest/#validation), and
+the fields a manifest has no room for at all — environment, kernel
+capabilities, devices, privilege, a fragment of Compose — are
+[the fields that are absent, and why](/spec/20-architecture/contracts/plugin-manifest/#the-fields-that-are-absent-and-why).
+Neither is restated here, because the specification says the schema is the only
+description of the format published to authors
+([`F10-R2`](/spec/10-functional/features/f-extensibility/f10-authoring/)), and
+a second list is one more to fall behind.
+
+The way to know what this build refuses is to ask it.
+[`lemonfiber plugin claims <path>`](/commands/reference/plugin/) reads your
+manifest the way `install` will, and reports every violation in one pass rather
+than stopping at the first. A refusal is total: nothing of a refused manifest is
+acted on, and [`PLUGIN-3`](/fixing/every-error-by-code/#plugin--installing-and-running-plugins)
+lists everything that was wrong with it.
+
+## Every field
+
+<Manifest />
+
+## A whole manifest
+
+The template every plugin starts from, as its repository holds it at the
+revision this site pins. Its own comments explain each block; the repository is
+[the plugin template](/plugins/the-template/).
+
+<Vendored repo="plugin-template" path="plugin.toml" lang="toml" />
+
+Read it for its shape rather than as something to install unchanged. Its
+`[requires]` names `service.add` and `service.health.http` beside
+`doctor.contribute`, and the lemonfiber this site pins offers only the last of
+those, so this build refuses the template as it stands. The disagreement is
+between the template and the binary, and is being taken up in those
+repositories rather than smoothed over here.

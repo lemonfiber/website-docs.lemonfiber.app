@@ -1,0 +1,14 @@
+---
+import { paragraphs } from "../lib/markdown";
+
+interface Props {
+  /** A description as an artefact carries it: Markdown, from a doc comment. */
+  readonly text: string;
+}
+
+const { text } = Astro.props;
+---
+
+{paragraphs(text).map((runs) => (
+  <p>{runs.map((run) => (run.code ? <code>{run.text}</code> : run.text))}</p>
+))}

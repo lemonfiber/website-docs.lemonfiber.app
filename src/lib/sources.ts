@@ -22,6 +22,10 @@ export const ids = (stack: string, table: string): string[] =>
     stack,
   );
 
+/** The name of every `[[repo]]` the specification's register governs. */
+export const governed = (repos: string): string[] =>
+  matches(/^\[\[repo\]\]\nname = "([^"]+)"/gm, repos);
+
 /** Each service's display name, which is how the pages write them. */
 export const serviceNames = (stack: string): string[] =>
   matches(/^\[\[service\]\]\nid = "[^"]+"\nname = "([^"]+)"/gm, stack);
@@ -137,6 +141,17 @@ export const presets = (commands: string): string[] => {
         .map((one) => one.trim())
         .filter((one) => one.length > 0);
 };
+
+/** The `name` of every entry in the array at `path`, in the order listed. */
+export function namesAt(json: string, ...path: readonly string[]): string[] {
+  const here = nodeAt(json, path);
+  if (!Array.isArray(here)) return [];
+  return here.flatMap((entry: unknown) => {
+    if (typeof entry !== "object" || entry === null) return [];
+    const name = (entry as { name?: unknown }).name;
+    return typeof name === "string" ? [name] : [];
+  });
+}
 
 /** The endpoints the web-API contract sets out under reading, not streaming. */
 export const readEndpoints = (webApi: string): string[] =>

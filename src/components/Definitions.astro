@@ -1,0 +1,117 @@
+---
+import type { Definition } from "../lib/schema";
+import * as m from "../paraglide/messages.js";
+import Prose from "./Prose.astro";
+import Type from "./Type.astro";
+
+interface Props {
+  readonly definitions: readonly Definition[];
+  /** What each definition's anchor starts with, so a page can hold two sets. */
+  readonly prefix: string;
+}
+
+const { definitions, prefix } = Astro.props;
+---
+
+{definitions.map((one) => (
+  <section class="def" id={`${prefix}${one.name}`}>
+    <h3>
+      <code>{one.name}</code>
+    </h3>
+    {one.description === "" ? (
+      <p class="def__none">{m.ref_undescribed()}</p>
+    ) : (
+      <Prose text={one.description} />
+    )}
+    {one.type.length > 0 && (
+      <p>
+        {m.ref_is()} <Type tokens={one.type} prefix={prefix} />
+      </p>
+    )}
+    {one.fields.length > 0 && (
+      <table>
+        <thead>
+          <tr>
+            <th>{m.ref_field()}</th>
+            <th>{m.ref_type()}</th>
+            <th>{m.ref_required()}</th>
+            <th>{m.ref_meaning()}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {one.fields.map((field) => (
+            <tr>
+              <td>
+                <code>{field.name}</code>
+              </td>
+              <td>
+                <Type tokens={field.type} prefix={prefix} />
+              </td>
+              <td>{field.required ? m.ref_yes() : m.ref_no()}</td>
+              <td>
+                <Prose text={field.description} />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )}
+    {one.variants.length > 0 && (
+      <>
+        <p>{m.ref_one_of()}</p>
+        <ul class="def__variants">
+          {one.variants.map((variant) => (
+            <li>
+              {variant.value !== "" && (
+                <code>
+                  {variant.tag === ""
+                    ? JSON.stringify(variant.value)
+                    : `${variant.tag}: ${JSON.stringify(variant.value)}`}
+                </code>
+              )}
+              {variant.type.length > 0 && (
+                <Type tokens={variant.type} prefix={prefix} />
+              )}
+              <Prose text={variant.description} />
+              {variant.fields.length > 0 && (
+                <ul>
+                  {variant.fields.map((field) => (
+                    <li>
+                      <code>{field.name}</code>{" "}
+                      <Type tokens={field.type} prefix={prefix} />{" "}
+                      {!field.required && (
+                        <span class="def__optional">{m.ref_optional()}</span>
+                      )}
+                      <Prose text={field.description} />
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))}
+        </ul>
+      </>
+    )}
+  </section>
+))}
+
+<style>
+  .def {
+    scroll-margin-top: 6rem;
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--line-soft);
+  }
+  .def__optional {
+    color: var(--muted);
+    font-size: var(--lf-size-caption);
+  }
+  .def__none {
+    color: var(--muted);
+  }
+  .def__variants > li {
+    margin-top: var(--sp-2);
+  }
+  .def :global(td p) {
+    margin: 0;
+  }
+</style>

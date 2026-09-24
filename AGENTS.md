@@ -38,11 +38,12 @@ network.
 |                          |                                                                |
 | ------------------------ | -------------------------------------------------------------- |
 | `src/content/docs/`      | the pages this repository owns                                 |
-| `src/lib/sections.ts`    | the sidebar — nine sections, plus the specification            |
+| `src/lib/sections.ts`    | the sidebar — ten sections, plus the specification             |
 | `mirrors.json`           | which upstream tree lands at which route                       |
 | `src/lib/mirror*.ts`     | how a mirrored page is titled, linked and attributed           |
 | `src/lib/inventories.ts` | every number this site states, and the tree it is counted from |
 | `src/lib/guards.ts`      | the rules; `scripts/guards.ts` is what reads the tree          |
+| `src/lib/schema.ts`      | a contract artefact read as reference tables, never copied     |
 | `messages/`              | every word the chrome shows                                    |
 
 ## Numbers are derived, never written down

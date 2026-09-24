@@ -10,7 +10,14 @@
 
 set -eu
 
-staged=$(git diff --cached --name-only --diff-filter=ACM)
+# A mirror is a symlink into `vendor/`, and what it points at is another
+# repository's file, formatted there. Prettier refuses a symlink named to it
+# explicitly, so each one is left out rather than failing every commit that
+# adds a mirror.
+staged=""
+for path in $(git diff --cached --name-only --diff-filter=ACM); do
+	[ -L "$path" ] || staged="$staged $path"
+done
 [ -n "$staged" ] || exit 0
 [ -x node_modules/.bin/prettier ] || exit 0
 

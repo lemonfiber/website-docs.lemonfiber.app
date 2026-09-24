@@ -1,0 +1,57 @@
+---
+import { capabilities, generation } from "../lib/plugins";
+import { artefact } from "../lib/schema-source";
+import * as m from "../paraglide/messages.js";
+
+/** Every core capability, read out of `contract/capability-vocabulary.json`. */
+const vocabulary = artefact("capability-vocabulary.json");
+const listed = capabilities(vocabulary);
+const version = generation(vocabulary, "vocabulary_version");
+---
+
+<p class="cap__gen">{m.cap_generation({ generation: version })}</p>
+{listed.map((one) => (
+  <section class="cap" id={`capability-${one.name}`}>
+    <h3>
+      <code>{one.name}</code>
+    </h3>
+    <p>
+      <strong>{one.summary}</strong>
+    </p>
+    <p>{one.contract}</p>
+    <p>
+      {m.cap_declared_by()}:{" "}
+      {one.declaredBy.length === 0
+        ? m.cap_declared_by_none()
+        : one.declaredBy.map((service) => (
+            <code class="cap__who">{service}</code>
+          ))}
+    </p>
+    <p>{m.cap_probes()}:</p>
+    <ul>
+      {one.probes.map((probe) => (
+        <li>
+          <code>{probe.id}</code> — {probe.title},{" "}
+          {probe.credential === "operator"
+            ? m.cap_probe_operator()
+            : m.cap_probe_none()}
+          . {probe.why}
+        </li>
+      ))}
+    </ul>
+  </section>
+))}
+
+<style>
+  .cap {
+    scroll-margin-top: 6rem;
+  }
+  .cap__gen {
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: var(--lf-size-caption);
+  }
+  .cap__who {
+    margin-right: 0.4em;
+  }
+</style>

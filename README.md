@@ -23,9 +23,9 @@ The specification is one of those mirrors. It is authored and checked in
 points at the repository that owns it, and its footer names the revision it was
 rendered from.
 
-## Nine sections, and the specification
+## Ten sections, and the specification
 
-`src/lib/sections.ts` is the sidebar. The nine authored sections address three
+`src/lib/sections.ts` is the sidebar. The ten authored sections address three
 audiences in order — someone using the tool, someone building on it, someone
 changing it — and the specification is rendered alongside them rather than
 linked away to a site of its own.
@@ -148,8 +148,8 @@ renders there.
 
 ### Counts, against what is counted
 
-This site's pages state numbers about the trees under `vendor/`: the nineteen
-services, fifty-eight payload kinds, eighty-one features and nine end-to-end
+This site's pages state numbers about the trees under `vendor/`: the twenty
+services, sixty-two payload kinds, ninety-eight features and nine end-to-end
 journeys. Each one is a transcription of something machine-readable, and goes
 false when a pin moves.
 
@@ -179,8 +179,9 @@ is. Three failures are reported, not one:
 Some numbers on this site are not derivable from anything vendored and are not
 checked: the four codes raised as `critical` and the code-to-exit-code mapping
 on `fixing/every-error-by-code`, because no artefact says which severity or
-which exit any one code carries; and the eleven repositories in the org, which
-no tree here enumerates. Those stay hand-held.
+which exit any one code carries. Those stay hand-held. The repositories in the
+org were on this list until the specification began keeping a register of them,
+`30-repos/repos.toml`; the repository map is now held to it in both directions.
 
 ### When a source moves under its guard
 
@@ -210,6 +211,26 @@ there.
 
 Neither runs on a pull request. A build may not reach the network, so both sit
 on the schedule, where fetching is what they are for.
+
+## Pages built from an artefact
+
+Some reference is neither prose nor a mirror: it is a contract artefact the
+binary generates, set out as tables. `src/lib/schema.ts` reads a JSON Schema's
+definitions into fields, types and choices, and `src/lib/plugins.ts` reads the
+two lists a plugin is written against. The components that render them read the
+checkout through `src/lib/schema-source.ts`, so the page is the artefact at the
+pinned revision and there is no transcription of it to go stale.
+
+| Page                              | Rendered from                          |
+| --------------------------------- | -------------------------------------- |
+| `api/reference`                   | `contract/web-api.contract.json`       |
+| `plugins/the-manifest`            | `contract/plugin-manifest.schema.json` |
+| `plugins/extension-points`        | `contract/extension-points.json`       |
+| `plugins/capabilities-and-wiring` | `contract/capability-vocabulary.json`  |
+
+Every kind in the web-API artefact carries its own `$defs`, so a type is written
+out once per kind that uses it. They are merged by name, and a name defined two
+different ways fails the build rather than publishing either shape.
 
 ## How a mirrored page is built
 

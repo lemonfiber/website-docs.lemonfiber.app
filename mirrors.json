@@ -46,6 +46,14 @@
       "label": "lemonfiber/lemonfiber"
     },
     {
+      "route": "commands/reference",
+      "repo": "lemonfiber",
+      "path": "reference/commands",
+      "remote": "https://github.com/lemonfiber/lemonfiber",
+      "branch": "main",
+      "label": "lemonfiber/lemonfiber"
+    },
+    {
       "route": "project/whats-built.md",
       "repo": "lemonfiber",
       "path": "IMPLEMENTATION-STATUS.md",
@@ -93,7 +101,7 @@
       "remote": "https://github.com/lemonfiber/lemonfiber",
       "branch": "main",
       "label": "lemonfiber/lemonfiber",
-      "title": "lemonfiber — the Rust workspace"
+      "title": "lemonfiber \u2014 the Rust workspace"
     },
     {
       "route": "develop/repos/media-stack.md",
@@ -102,7 +110,7 @@
       "remote": "https://github.com/lemonfiber/lemonfiber-media-stack",
       "branch": "main",
       "label": "lemonfiber/lemonfiber-media-stack",
-      "title": "lemonfiber-media-stack — the stack itself"
+      "title": "lemonfiber-media-stack \u2014 the stack itself"
     },
     {
       "route": "develop/repos/sdk-ts.md",
@@ -111,7 +119,7 @@
       "remote": "https://github.com/lemonfiber/sdk-ts",
       "branch": "main",
       "label": "lemonfiber/sdk-ts",
-      "title": "sdk-ts — the TypeScript client"
+      "title": "sdk-ts \u2014 the TypeScript client"
     },
     {
       "route": "develop/repos/sdk-php.md",
@@ -120,7 +128,7 @@
       "remote": "https://github.com/lemonfiber/sdk-php",
       "branch": "main",
       "label": "lemonfiber/sdk-php",
-      "title": "sdk-php — the PHP client"
+      "title": "sdk-php \u2014 the PHP client"
     },
     {
       "route": "develop/repos/web.md",
@@ -129,7 +137,16 @@
       "remote": "https://github.com/lemonfiber/lemonfiber-web",
       "branch": "main",
       "label": "lemonfiber/lemonfiber-web",
-      "title": "lemonfiber-web — the web surface"
+      "title": "lemonfiber-web \u2014 the web surface"
+    },
+    {
+      "route": "develop/repos/companion.md",
+      "repo": "lemonfiber-companion",
+      "path": "README.md",
+      "remote": "https://github.com/lemonfiber/lemonfiber-companion",
+      "branch": "main",
+      "label": "lemonfiber/lemonfiber-companion",
+      "title": "lemonfiber-companion \u2014 the phone surface"
     },
     {
       "route": "develop/repos/brand.md",
@@ -138,7 +155,7 @@
       "remote": "https://github.com/lemonfiber/brand",
       "branch": "main",
       "label": "lemonfiber/brand",
-      "title": "brand — the tokens and the marks"
+      "title": "brand \u2014 the tokens and the marks"
     },
     {
       "route": "develop/repos/homebrew-tap.md",
@@ -147,7 +164,25 @@
       "remote": "https://github.com/lemonfiber/homebrew-tap",
       "branch": "main",
       "label": "lemonfiber/homebrew-tap",
-      "title": "homebrew-tap — the formula"
+      "title": "homebrew-tap \u2014 the formula"
+    },
+    {
+      "route": "plugins/the-template.md",
+      "repo": "plugin-template",
+      "path": "README.md",
+      "remote": "https://github.com/lemonfiber/plugin-template",
+      "branch": "main",
+      "label": "lemonfiber/plugin-template",
+      "title": "The plugin template"
+    },
+    {
+      "route": "plugins/the-catalogue.md",
+      "repo": "lemonfiber-plugins",
+      "path": "README.md",
+      "remote": "https://github.com/lemonfiber/lemonfiber-plugins",
+      "branch": "main",
+      "label": "lemonfiber/lemonfiber-plugins",
+      "title": "The plugin catalogue"
     }
   ]
 }

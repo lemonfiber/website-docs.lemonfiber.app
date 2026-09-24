@@ -1,0 +1,77 @@
+---
+title: Capabilities and wiring
+description: How the stack asks for what a service does rather than for the service, how a plugin comes to answer, and how to choose when two could.
+sidebar:
+  order: 2
+---
+
+import Capabilities from "../../../components/Capabilities.astro";
+
+A **capability** is a named, contracted thing a service does: search indexers,
+take a torrent, serve the library to a player, say whether a person is who they
+claim to be. The stack's wiring asks for capabilities rather than naming
+services, so putting a different service in one's place is a single setting
+rather than a hunt for everything that pointed at the old one.
+
+## Three things called capability
+
+The word is used for three different sets, and they never mix:
+
+| Set                             | Where it is declared                 | What it says                                         |
+| ------------------------------- | ------------------------------------ | ---------------------------------------------------- |
+| Service capabilities            | `provides` on a service              | What the service can be relied on to do              |
+| What lemonfiber offers a plugin | `[requires]` in `plugin.toml`        | Which extension a plugin needs this build to support |
+| Kernel grants                   | `grants` in the stack's `stack.toml` | What the kernel lets a container do                  |
+
+This page is about the first. The second is at
+[extension points](/plugins/extension-points/), which lists what this build
+offers a plugin and refuses anything else. The third is never available to a plugin:
+a manifest has no field for it. The distinction is set out in
+[the capability vocabulary contract](/spec/20-architecture/contracts/capability-vocabulary/).
+
+## Core names and a plugin's own
+
+The vocabulary below holds ten core capabilities. A core name reads
+`area.verb`, and a plugin may claim one only with a `[[claim]]` that binds every
+probe the vocabulary declares for it, each proved against a recording — so a
+claim is evidence, not a label. A plugin may also declare capabilities of its
+own, written `<plugin-id>:<name>`; those are inert until something asks for
+them.
+
+## How a link is settled
+
+`lemonfiber wiring` lists every link in the stack, what it reaches and how it
+was settled:
+
+- **outright** — one service provides it, and there is nothing to decide;
+- **each** — the link asked for every provider, not one;
+- **contested** — several provide it and the link wants one. lemonfiber refuses
+  to pick by install order, recency or precedence, and says so;
+- **chosen** — you picked, and the ones not picked are named;
+- **unfilled** — nothing provides it, and the command exits non-zero.
+
+A plugin that claims a core capability can therefore make a link contested the
+moment it is installed; `lemonfiber plugin claims` says so before it is.
+
+## Choosing what fills one
+
+```sh
+lemonfiber wiring fill media.serve navidrome --dry-run
+lemonfiber wiring fill media.serve navidrome
+```
+
+That is how one service stands in for another, and the only way. The choice is
+a setting: it is recorded, it shows in `lemonfiber history`, and
+`lemonfiber undo` puts it back. The rehearsal says what the change would leave
+with nothing filling it before anything is written. Every flag is in
+[the command reference](/commands/reference/wiring/); refusals are the
+[WIRE codes](/fixing/every-error-by-code/#wire--choosing-what-fills-a-capability).
+
+## The vocabulary
+
+Read out of `contract/capability-vocabulary.json` at the revision this site
+pins, which is also what `lemonfiber plugin capabilities` prints. A probe that
+presents the operator's credential cannot be answered on a machine holding
+none, and is reported _unproven_ there rather than failed.
+
+<Capabilities />

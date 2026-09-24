@@ -4,8 +4,9 @@ import { expect, test } from "@playwright/test";
 /**
  * One route of every kind the site serves, in both themes: the landing page,
  * an authored page, a section landing page, a mirrored page, a mirrored page
- * from a repository other than the specification, a long reference table, and
- * the two pages built from the pinned checkout rather than from prose.
+ * from a repository other than the specification, a long reference table, the
+ * two pages built from the pinned checkout rather than from prose, and the two
+ * reference pages rendered from a contract artefact.
  */
 const routes = [
   "/",
@@ -16,6 +17,8 @@ const routes = [
   "/fixing/",
   "/fixing/every-error-by-code/",
   "/commands/",
+  "/api/reference/",
+  "/plugins/the-manifest/",
   "/spec/",
   "/spec/00-overview/vision/",
   "/spec/10-functional/features/b-running/b1-forms/",

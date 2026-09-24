@@ -154,9 +154,13 @@ Rust types that actually serialise the reply. A hand-written response shape woul
 be a second source of truth for the contract.
 
 ```console
-npm run contract:sync       # pull a newer contract from lemonfiber
-npm run contract:generate   # rewrite src/generated/ from it
+npm run contract:sync -- <revision>   # pull the contract at that revision
+npm run contract:generate             # rewrite src/generated/ from it
 ```
+
+The revision is required, and is a release tag or a full 40-character commit
+hash. There is no default: an abbreviated hash may stop naming one artefact, and a
+sync with no revision would vendor whatever `main` held that day.
 
 `contract:check` regenerates and diffs, so a hand edit fails CI rather than
 merging. `contract/VERSION` records the exact revision the vendored copy came
@@ -175,11 +179,10 @@ to negotiate. `npm run ci` runs everything CI runs.
 
 The repository's own page is [sdk-ts](/develop/repos/sdk-ts/), and its
 specification is [the sdk-ts spec](/spec/30-repos/sdk-ts/). It generates types
-for fifty-six of them, from its own copy of the contract, which carries a
-different set of kinds from the one the binary this site pins serves — the
-binary has since grown `catalogue` and `provenance`, so
-[every payload kind](/api/kinds/) is what the server sends today rather than
-what has a type here. A copy taken before a kind was added still reads the
+for sixty-two of them, from its own copy of the contract, which carries the
+same kinds the binary this site pins serves, so
+[every payload kind](/api/kinds/) is also the set that has a type here.
+A copy taken before a kind was added still reads the
 reply: both speak wire version 1, and a kind with no type of its own still
 arrives. The reason `CONTRACT_API_VERSION` is not the package version is
 [two version numbers](/api/two-version-numbers/).

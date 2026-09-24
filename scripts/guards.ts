@@ -227,8 +227,16 @@ found.push(
       stack: await text("vendor/lemonfiber-media-stack/stack.toml"),
       contract: await text("vendor/lemonfiber/contract/web-api.contract.json"),
       commands: await text("vendor/lemonfiber/reference/commands.md"),
+      quality: await text("vendor/lemonfiber/reference/commands/quality.md"),
+      extensionPoints: await text(
+        "vendor/lemonfiber/contract/extension-points.json",
+      ),
+      vocabulary: await text(
+        "vendor/lemonfiber/contract/capability-vocabulary.json",
+      ),
       webApi: await text("vendor/spec/20-architecture/contracts/web-api.md"),
       mirrors: await text("mirrors.json"),
+      repos: await text("vendor/spec/30-repos/repos.toml"),
       clientIndex: await text("vendor/sdk-ts/src/index.ts"),
       phpContract: await text("vendor/sdk-php/contract/web-api.contract.json"),
       phpManifest: await text("vendor/sdk-php/composer.json"),

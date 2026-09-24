@@ -1,38 +1,49 @@
 ---
 title: The repository map
-description: The eleven repositories in the lemonfiber org, what each one is for, and how they depend on each other.
+description: The thirteen repositories in the lemonfiber org, what each one is for, and how they depend on each other.
 sidebar: { order: 1 }
 ---
 
-lemonfiber is eleven repositories. The split is not a taste; each one exists
+lemonfiber is thirteen repositories. The split is not a taste; each one exists
 because something about it — a toolchain, a release cadence, a licence, or a
 requirement Homebrew imposes — could not live inside another.
 
 This page is the orientation. Each repository's own specification is linked from
 its row, and its own README is rendered on this site under
-[the repository pages](/develop/repos/lemonfiber/).
+[the repository pages](/develop/repos/lemonfiber/). The list is held to
+[the register the specification keeps](/spec/30-repos/), so a repository created
+there and missing here fails this site's build rather than going unnoticed.
 
-## The eleven
+## The thirteen
 
-| Repository                                                         | Language   | What it is                                                               |
-| ------------------------------------------------------------------ | ---------- | ------------------------------------------------------------------------ |
-| [`spec`](/spec/)                                                   | Markdown   | The specification. Canonical, and cited by every change to the rest      |
-| [`lemonfiber`](/spec/30-repos/lemonfiber/)                         | Rust       | The binary: the command line, the terminal interface and the web API     |
-| [`lemonfiber-web`](/spec/30-repos/lemonfiber-web/)                 | TypeScript | The web surface — a static app that draws the API and implements nothing |
-| [`sdk-ts`](/spec/30-repos/sdk-ts/)                                 | TypeScript | The TypeScript client for the web API, and all the web surface uses      |
-| [`sdk-php`](/spec/30-repos/sdk-php/)                               | PHP        | The same contract in PHP, as a peer rather than a translation            |
-| [`lemonfiber-media-stack`](/spec/30-repos/lemonfiber-media-stack/) | YAML/TOML  | The Compose definitions, profiles, manifest and service configs          |
-| [`homebrew-tap`](/spec/30-repos/homebrew-tap/)                     | Ruby       | The generated formula, so `brew` works                                   |
-| [`brand`](/spec/30-repos/brand/)                                   | CSS/SVG    | Design tokens and the marks                                              |
-| [`website-lemonfiber.app`](/spec/30-repos/website-lemonfiber/)     | Astro      | The public frontpage                                                     |
-| [`website-docs.lemonfiber.app`](/spec/30-repos/website-docs/)      | Astro      | This site                                                                |
-| `.github`                                                          | Markdown   | The org-wide community health files; it has no specification of its own  |
+| Repository                                                         | Language   | What it is                                                                       |
+| ------------------------------------------------------------------ | ---------- | -------------------------------------------------------------------------------- |
+| [`spec`](/spec/)                                                   | Markdown   | The specification. Canonical, and cited by every change to the rest              |
+| [`lemonfiber`](/spec/30-repos/lemonfiber/)                         | Rust       | The binary: the command line, the terminal interface and the web API             |
+| [`lemonfiber-web`](/spec/30-repos/lemonfiber-web/)                 | TypeScript | The web surface — a static app that draws the API and implements nothing         |
+| [`lemonfiber-companion`](/spec/30-repos/lemonfiber-companion/)     | PHP        | The phone surface, and the first that does not run on the machine it operates    |
+| [`sdk-ts`](/spec/30-repos/sdk-ts/)                                 | TypeScript | The TypeScript client for the web API, and all the web surface uses              |
+| [`sdk-php`](/spec/30-repos/sdk-php/)                               | PHP        | The same contract in PHP, as a peer rather than a translation                    |
+| [`lemonfiber-media-stack`](/spec/30-repos/lemonfiber-media-stack/) | YAML/TOML  | The Compose definitions, profiles, manifest and service configs                  |
+| [`lemonfiber-plugins`](/plugins/the-catalogue/)                    | TOML       | The plugin catalogue: an origin and a reviewed revision per plugin, never a copy |
+| [`homebrew-tap`](/spec/30-repos/homebrew-tap/)                     | Ruby       | The generated formula, so `brew` works                                           |
+| [`brand`](/spec/30-repos/brand/)                                   | CSS/SVG    | Design tokens and the marks                                                      |
+| [`website-lemonfiber.app`](/spec/30-repos/website-lemonfiber/)     | Astro      | The public frontpage                                                             |
+| [`website-docs.lemonfiber.app`](/spec/30-repos/website-docs/)      | Astro      | This site                                                                        |
+| `.github`                                                          | Markdown   | The org-wide community health files; it has no specification of its own          |
 
 The `.github` repository is the one without a page, because it has nothing
 specific to say: it carries the code of conduct, the security policy, the issue
 templates and the org profile that GitHub serves for any sibling repository not
-defining its own. That is why those files are inherited rather than copied
-eleven times.
+defining its own. That is why those files are inherited rather than copied into
+each.
+
+Four more repositories are in the org and outside this map:
+[`plugin-template`](/plugins/the-template/), the starting point a plugin author
+copies, and three plugins written from it — `plugin-komga`, `plugin-uptime-kuma`
+and `plugin-plex`. Each is a plugin's own home rather than a part of lemonfiber,
+which is the relationship every plugin anyone else writes will have; the
+catalogue registers them, and [the plugins section](/plugins/) says what one is.
 
 ## How they depend on each other
 
@@ -56,8 +67,9 @@ the other — both answer to the contract.
 **`lemonfiber-web` consumes `sdk-ts` and `brand`**, and is itself embedded into
 the binary as a pinned submodule at build time.
 
-**Nine repositories feed this site** — every one but the two websites, which
-render rather than being rendered. Each one's own documentation arrives as a
+**Twelve repositories feed this site** — every one but the two websites, which
+render rather than being rendered, and with the catalogue joined by the plugin
+template it registers against. Each one's own documentation arrives as a
 git submodule pinned to an exact revision and is rendered rather than copied.
 Nothing is fetched during a build. The specification arrives the same way and is
 rendered here, at [`/spec/`](/spec/) — it is the largest body of prose the org has,

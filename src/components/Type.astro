@@ -1,0 +1,54 @@
+---
+import type { Token, Word } from "../lib/schema";
+import * as m from "../paraglide/messages.js";
+
+interface Props {
+  readonly tokens: readonly Token[];
+  /** What a definition's anchor starts with on this page. */
+  readonly prefix: string;
+}
+
+const WORDS: Record<Word, () => string> = {
+  arrayOf: m.ref_array_of,
+  mapOf: m.ref_map_of,
+  or: m.ref_or,
+  any: m.ref_any,
+};
+
+const { tokens, prefix } = Astro.props;
+---
+
+<span class="type">
+  {tokens.map((token) => {
+    switch (token.kind) {
+      case "ref":
+        return (
+          <a href={`#${prefix}${token.name}`}>
+            <code>{token.name}</code>
+          </a>
+        );
+      case "primitive":
+        return <code>{token.name}</code>;
+      case "const":
+        return <code>{token.value}</code>;
+      case "bound":
+        return <span class="type__bound">{token.text}</span>;
+      case "word":
+        return <span class="type__word">{WORDS[token.word]()}</span>;
+    }
+  })}
+</span>
+
+<style>
+  .type {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.35em;
+  }
+  .type__word,
+  .type__bound {
+    color: var(--muted);
+    font-size: var(--lf-size-caption);
+  }
+</style>

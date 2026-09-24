@@ -16,6 +16,11 @@ Then `just ci` in the stack directory. If you are working on your own stack
 rather than the bundled one, point lemonfiber at it with
 [`--stack-dir`](/commands/global-flags/).
 
+This page is about changing the stack itself. To run one more service beside the
+bundled stack without keeping a stack of your own, install it as a
+[plugin](/plugins/) instead: lemonfiber writes its container and wiring from a
+manifest, and takes it out again as one operation.
+
 ## Where the compose block goes
 
 `compose.yml` stitches the fragments together and declares no services of its

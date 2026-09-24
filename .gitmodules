@@ -34,3 +34,15 @@
 	path = vendor/homebrew-tap
 	url = https://github.com/lemonfiber/homebrew-tap.git
 	branch = main
+[submodule "plugin-template"]
+	path = vendor/plugin-template
+	url = https://github.com/lemonfiber/plugin-template.git
+	branch = main
+[submodule "lemonfiber-plugins"]
+	path = vendor/lemonfiber-plugins
+	url = https://github.com/lemonfiber/lemonfiber-plugins.git
+	branch = main
+[submodule "lemonfiber-companion"]
+	path = vendor/lemonfiber-companion
+	url = https://github.com/lemonfiber/lemonfiber-companion.git
+	branch = main

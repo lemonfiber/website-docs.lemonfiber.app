@@ -9,6 +9,7 @@ import {
   enumAt,
   exportedBy,
   keysAt,
+  namesAt,
   variantsAt,
 } from "./sources.ts";
 
@@ -31,8 +32,12 @@ const theTree = (): { sources: Sources; pages: Page[] } => ({
     stack: read("vendor/lemonfiber-media-stack/stack.toml"),
     contract: read("vendor/lemonfiber/contract/web-api.contract.json"),
     commands: read("vendor/lemonfiber/reference/commands.md"),
+    quality: read("vendor/lemonfiber/reference/commands/quality.md"),
+    extensionPoints: read("vendor/lemonfiber/contract/extension-points.json"),
+    vocabulary: read("vendor/lemonfiber/contract/capability-vocabulary.json"),
     webApi: read("vendor/spec/20-architecture/contracts/web-api.md"),
     mirrors: read("mirrors.json"),
+    repos: read("vendor/spec/30-repos/repos.toml"),
     clientIndex: read("vendor/sdk-ts/src/index.ts"),
     webManifest: read("vendor/lemonfiber-web/package.json"),
     webRoute: read("vendor/lemonfiber-web/src/lib/route.ts"),
@@ -54,8 +59,12 @@ const nothing: Sources = {
   stack: "",
   contract: "",
   commands: "",
+  quality: "",
+  extensionPoints: "",
+  vocabulary: "",
   webApi: "",
   mirrors: "",
+  repos: "",
   clientIndex: "",
   webManifest: "",
   webRoute: "",
@@ -213,6 +222,21 @@ describe("a manifest that is not what it should be", () => {
     expect(
       repos('{"mirrors": [{"repo": "a"}, {"repo": "a"}, {"repo": "b"}]}'),
     ).toBe(0);
+  });
+});
+
+describe("namesAt", () => {
+  it("names every entry of the array at a path", () => {
+    expect(
+      namesAt(
+        '{"points": [{"name": "a"}, {"name": 2}, 3, null, {"name": "b"}]}',
+        "points",
+      ),
+    ).toEqual(["a", "b"]);
+  });
+
+  it("finds nothing where the path does not lead to an array", () => {
+    expect(namesAt('{"points": {}}', "points")).toEqual([]);
   });
 });
 

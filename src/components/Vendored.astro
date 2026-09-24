@@ -1,0 +1,23 @@
+---
+import { Code } from "@astrojs/starlight/components";
+
+import { vendored } from "../lib/schema-source";
+import * as m from "../paraglide/messages.js";
+
+interface Props {
+  /** The pinned tree, as it is named under `vendor/`. */
+  readonly repo: string;
+  /** The file within it. */
+  readonly path: string;
+  /** What Expressive Code highlights it as. */
+  readonly lang: string;
+}
+
+/** One file of a pinned tree, shown whole, as the revision this site pins has it. */
+const { repo, path, lang } = Astro.props;
+const text = vendored(`${repo}/${path}`);
+if (text === "")
+  throw new Error(`vendor/${repo}/${path} is not in the checkout`);
+---
+
+<Code code={text} lang={lang} title={m.vendored_from({ path, repo })} />

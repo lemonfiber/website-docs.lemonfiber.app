@@ -122,6 +122,6 @@ headroom. See [Run the doctor](/fixing/run-the-doctor/).
 ## Where to go from here
 
 - [Forms and slices](/running/forms-and-slices/) — starting only the part you need
-- [The services](/running/the-services/) — what each of the nineteen does
+- [The services](/running/the-services/) — what each of the twenty does
 - [Words we use](/start/words-we-use/) — the vocabulary the services assume you have
 - [J1 First run](/spec/10-functional/journeys/j1-first-run/) — the same journey, written as a specification

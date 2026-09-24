@@ -22,10 +22,12 @@ import {
   exportedBy,
   features,
   globalFlags,
+  governed,
   ids,
   journeys,
   keysAt,
   mirrored,
+  namesAt,
   presets,
   readEndpoints,
   serviceNames,
@@ -38,8 +40,13 @@ import { columnUnder, firstColumnUnder, namesUnder } from "./tables.ts";
 const STACK = "vendor/lemonfiber-media-stack/stack.toml";
 const CONTRACT = "vendor/lemonfiber/contract/web-api.contract.json";
 const COMMANDS = "vendor/lemonfiber/reference/commands.md";
+// The index links one page per command; a command's own arguments are on its page.
+const QUALITY = "vendor/lemonfiber/reference/commands/quality.md";
+const POINTS = "vendor/lemonfiber/contract/extension-points.json";
+const VOCABULARY = "vendor/lemonfiber/contract/capability-vocabulary.json";
 const WEB_API = "vendor/spec/20-architecture/contracts/web-api.md";
 const MIRRORS = "mirrors.json";
+const REPOS = "vendor/spec/30-repos/repos.toml";
 const CLIENT_INDEX = "vendor/sdk-ts/src/index.ts";
 const WEB_MANIFEST = "vendor/lemonfiber-web/package.json";
 const WEB_ROUTE = "vendor/lemonfiber-web/src/lib/route.ts";
@@ -318,13 +325,25 @@ export const INVENTORIES: readonly Inventory[] = [
   },
   {
     what: "quality presets",
-    source: COMMANDS,
-    members: (sources) => presets(sources.commands),
+    source: QUALITY,
+    members: (sources) => presets(sources.quality),
     claims: [{ says: "the %N% presets" }],
     listing: {
       page: `${DOCS}running/quality-presets.md`,
       members: (text) => columnUnder(text, "Preset"),
     },
+  },
+  {
+    what: "extension points",
+    source: POINTS,
+    members: (sources) => namesAt(sources.extensionPoints, "points"),
+    claims: [{ says: "%N% extension points" }],
+  },
+  {
+    what: "capabilities in the vocabulary",
+    source: VOCABULARY,
+    members: (sources) => namesAt(sources.vocabulary, "capabilities"),
+    claims: [{ says: "%N% core capabilities" }],
   },
   {
     what: "features",
@@ -421,6 +440,20 @@ export const INVENTORIES: readonly Inventory[] = [
         columnUnder(text, "Address").map(
           (at) => at.replace("/", "") || "overview",
         ),
+    },
+  },
+  {
+    what: "repositories the specification governs",
+    source: REPOS,
+    members: (sources) => governed(sources.repos),
+    claims: [
+      { says: "lemonfiber is %N% repositories" },
+      { says: "The %N% repositories in the lemonfiber org" },
+      { says: "^## The %N%$" },
+    ],
+    listing: {
+      page: REPO_MAP_PAGE,
+      members: (text) => namesUnder(text, "Repository"),
     },
   },
   {

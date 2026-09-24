@@ -1,0 +1,46 @@
+---
+title: Extension points
+description: The places a plugin may add a row to lemonfiber itself, read out of the list the binary publishes, and the rules every row keeps.
+sidebar:
+  order: 4
+---
+
+import ExtensionPoints from "../../../components/ExtensionPoints.astro";
+
+Most of what a plugin declares is about its own service. An **extension point**
+is different: a published place where a plugin may add a row to lemonfiber
+itself. At the revision this site pins there are two extension points, and both
+belong to the doctor — a check it runs, and the remedy it shows when that check
+does not pass. Each one below names what a manifest has to declare in
+`[requires]` to use it.
+
+## The rules every row keeps
+
+- **Namespaced.** A contributed id is `<plugin-id>:<name>`, and may not take an
+  id a bundled row holds, by exact name or inside a family the bundled rows own.
+- **A check has a remedy.** Every contributed check needs at least one, and a
+  remedy's `for` names a check of the same plugin.
+- **Rendered, never run.** A remedy is text the error renderer shows you. A
+  repair that acts would be a recipe, and recipes are not run by this build.
+- **Its own service only.** A contributed check asks the plugin's own service
+  and nothing else.
+- **Beside, not instead.** A contributed check runs alongside the bundled ones
+  and cannot replace, reorder or silence one.
+
+A contributed check runs with every `lemonfiber doctor`, and on its own with
+`lemonfiber doctor --only <plugin-id>:<name>`. One that does not hold is raised
+as
+[`PLUGIN-1`](/fixing/every-error-by-code/#plugin--installing-and-running-plugins),
+carrying the plugin's own remedy. There is no dashboard panel, command or
+acting repair a plugin can add; those places are fixed.
+
+The contract, with its reasons, is
+[extension points](/spec/20-architecture/contracts/extension-points/).
+
+## Every point
+
+Read out of `contract/extension-points.json` at the revision this site pins,
+which is also what `lemonfiber plugin extension-points` prints. The fields a row
+carries are defined in [the manifest](/plugins/the-manifest/#manifest-Contribution).
+
+<ExtensionPoints />
