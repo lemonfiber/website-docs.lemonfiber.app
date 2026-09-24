@@ -169,11 +169,11 @@
     {
       "route": "plugins/the-template.md",
       "repo": "plugin-template",
-      "path": "README.md",
+      "path": "docs/development.md",
       "remote": "https://github.com/lemonfiber/plugin-template",
       "branch": "main",
       "label": "lemonfiber/plugin-template",
-      "title": "The plugin template"
+      "title": "Writing a plugin from the template"
     },
     {
       "route": "plugins/the-catalogue.md",

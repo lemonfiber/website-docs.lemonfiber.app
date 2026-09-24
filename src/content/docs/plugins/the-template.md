@@ -1,1 +1,1 @@
-../../../../vendor/plugin-template/README.md
+../../../../vendor/plugin-template/docs/development.md

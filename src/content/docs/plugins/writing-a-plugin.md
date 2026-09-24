@@ -19,9 +19,11 @@ gh repo create my-plugin --template lemonfiber/plugin-template
 ```
 
 [The plugin template](/plugins/the-template/) is a working plugin with the
-checks already wired. Its README is the step-by-step — what to change first,
-how to record a fixture, how to run the checks — and it is rendered on this site
-from the template itself, so follow it there.
+checks already wired. Its author's guide, `docs/development.md`, is the
+step-by-step — what to change first, how to record a fixture, how to run the
+checks — and it is rendered on this site from the template itself, so follow it
+there. The template's `README.md` is the other half: a page with placeholders,
+written for the people who will run your plugin, for you to fill in.
 
 ## Ask the binary, not a copy
 
