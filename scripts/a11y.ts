@@ -29,14 +29,22 @@ const stop = (): void => {
   spawnSync(`${BIN}astro`, ["preview", "stop"], { stdio: "inherit" });
 };
 
-let up = false;
-for (let attempt = 0; attempt < 120; attempt++) {
-  if (await reachable()) {
-    up = true;
-    break;
-  }
-  await new Promise((resolve) => setTimeout(resolve, 500));
-}
+/** How many times the server is asked before it is taken as never coming up. */
+const ATTEMPTS = 120;
+
+/** How long to wait between two of those. */
+const PAUSE_MS = 500;
+
+// Asked one attempt after another rather than in a loop, because each attempt
+// waits on the one before it: a server that answers ends the asking.
+const answered = async (left: number): Promise<boolean> => {
+  if (left === 0) return false;
+  if (await reachable()) return true;
+  await new Promise((resolve) => setTimeout(resolve, PAUSE_MS));
+  return answered(left - 1);
+};
+
+const up = await answered(ATTEMPTS);
 
 let status = 1;
 if (up)

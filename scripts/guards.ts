@@ -55,11 +55,26 @@ async function walk(
   } catch {
     return;
   }
+  const below: string[] = [];
   for (const entry of entries) {
     const path = join(dir, entry.name);
     if (entry.isSymbolicLink()) links.push(path);
-    else if (entry.isDirectory()) await walk(path, files, links);
+    else if (entry.isDirectory()) below.push(path);
     else files.push(path);
+  }
+  // Each directory below is walked into lists of its own, and those are added in
+  // the order the directories were listed, so what is found does not depend on
+  // which walk finished first.
+  const walked = await Promise.all(
+    below.map(async (path) => {
+      const found = { files: [] as string[], links: [] as string[] };
+      await walk(path, found.files, found.links);
+      return found;
+    }),
+  );
+  for (const found of walked) {
+    files.push(...found.files);
+    links.push(...found.links);
   }
 }
 
@@ -92,35 +107,29 @@ const readSomething = (what: string, how_many: number): void => {
     });
 };
 
-const found: Violation[] = [];
-for (const path of authored) {
-  const file: SourceFile = {
+const sources: SourceFile[] = await Promise.all(
+  authored.map(async (path) => ({
     path: rel(path),
     text: await readFile(path, "utf8"),
-  };
-  found.push(...fileViolations(file));
-}
+  })),
+);
+const found: Violation[] = sources.flatMap((file) => fileViolations(file));
 
 const manifest: unknown = JSON.parse(
   await readFile(join(ROOT, "mirrors.json"), "utf8"),
 );
 const declared = (manifest as { mirrors: Declared[] }).mirrors;
 
-const state: MirrorState[] = [];
-for (const link of links.filter((l) => l.startsWith(CONTENT + sep))) {
-  let resolved: string | null;
-  try {
-    resolved = rel(await realpath(link));
-  } catch {
-    resolved = null;
-  }
-  state.push({
-    route: rel(link).replace("src/content/docs/", ""),
-    isSymlink: true,
-    exists: true,
-    resolvesTo: resolved,
-  });
-}
+const state: MirrorState[] = await Promise.all(
+  links
+    .filter((l) => l.startsWith(CONTENT + sep))
+    .map(async (link) => ({
+      route: rel(link).replace("src/content/docs/", ""),
+      isSymlink: true,
+      exists: true,
+      resolvesTo: await realpath(link).then(rel, () => null),
+    })),
+);
 found.push(...mirrorViolations(declared, state));
 
 readSomething("src", authored.length);
@@ -177,11 +186,14 @@ found.push(
 // Every number the site states about a tree it does not own. The pages are
 // this site's own prose only: a mirrored page is a symlink, and belongs to
 // the repository it came from.
-const prose: Page[] = [];
-for (const path of kept.filter(
-  (p) => p.startsWith(CONTENT + sep) && /\.(md|mdx)$/.test(p),
-))
-  prose.push({ path: rel(path), text: await readFile(path, "utf8") });
+const prose: Page[] = await Promise.all(
+  kept
+    .filter((p) => p.startsWith(CONTENT + sep) && /\.(md|mdx)$/.test(p))
+    .map(async (path) => ({
+      path: rel(path),
+      text: await readFile(path, "utf8"),
+    })),
+);
 
 // This repository's own README states the same numbers in the same sentence
 // shapes, and is read as one more page rather than as documentation about the
@@ -202,21 +214,25 @@ readSomething("vendor/spec", specPaths.length);
 // The formulae the tap serves. `brew install lemonfiber/tap/<name>` loads
 // `Formula/<name>.rb` from that repository, so the file name is the name the
 // pages print and the file's contents are the whole of what it installs.
-const formulae: Formula[] = [];
-for (const entry of await readdir(join(ROOT, FORMULAE)).catch(() => []))
-  if (entry.endsWith(".rb"))
-    formulae.push({
+const formulae: Formula[] = await Promise.all(
+  (await readdir(join(ROOT, FORMULAE)).catch(() => []))
+    .filter((entry) => entry.endsWith(".rb"))
+    .map(async (entry) => ({
       name: entry.slice(0, -".rb".length),
       text: await text(`${FORMULAE}/${entry}`),
-    });
+    })),
+);
 
 // Each client generates its types from its own copy of the contract, and its
 // page says how that copy stands against the artefact the pinned binary serves.
 // The count of kinds on each page is held to that client's copy; the sentence
 // comparing the two copies is held here.
-const copies: Copy[] = [];
-for (const client of CLIENTS)
-  copies.push({ ...client, text: await text(client.source) });
+const copies: Copy[] = await Promise.all(
+  CLIENTS.map(async (client) => ({
+    ...client,
+    text: await text(client.source),
+  })),
+);
 
 found.push(
   ...contractViolations(await text(SERVED), copies, prose),
@@ -270,15 +286,16 @@ async function repair(violations: readonly Violation[]): Promise<number> {
         violation.fix,
       ]);
 
-  let written = 0;
-  for (const [path, fixes] of byFile) {
-    let text = await readFile(path, "utf8");
-    for (const fix of [...fixes].sort((a, b) => b.start - a.start))
-      text = text.slice(0, fix.start) + fix.replacement + text.slice(fix.end);
-    await writeFile(path, text, "utf8");
-    written += fixes.length;
-  }
-  return written;
+  const written = await Promise.all(
+    [...byFile].map(async ([path, fixes]) => {
+      let text = await readFile(path, "utf8");
+      for (const fix of [...fixes].sort((a, b) => b.start - a.start))
+        text = text.slice(0, fix.start) + fix.replacement + text.slice(fix.end);
+      await writeFile(path, text, "utf8");
+      return fixes.length;
+    }),
+  );
+  return written.reduce((sum, one) => sum + one, 0);
 }
 
 if (found.length > 0) {
