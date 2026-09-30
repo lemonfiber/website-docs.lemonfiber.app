@@ -35,17 +35,24 @@ answers one of three:
 - **refused** — a signature is there and does not hold. Only this exits
   non-zero.
 
-At the revision this site pins, the keys are only the ones you name: there is
-no trust root, transparency log or catalogue policy yet, and `plugin install`
-does not ask this question for you. Run it yourself before installing.
+At the revision this site pins, the keys an image is checked against are only
+the ones you name — there is no trust root or transparency log for images — and
+`plugin install` does not ask this question for you. Run it yourself before
+installing.
 
 ## Reviewed or not
 
 `lemonfiber plugin installed` says of each plugin whether anybody reviewed it.
-Today the answer is always no. _Reviewed_ is meant to mean installed from the
-[catalogue](/plugins/the-catalogue/) at a commit a person reviewed, and the
-reviewed catalogue is not built yet, so every install — from a path you named —
-is recorded as unreviewed and shown as such.
+_Reviewed_ means installed by name through the
+[catalogue](/plugins/the-catalogue/)'s signed index: from the origin it names, at
+the commit a person reviewed, and only where the manifest there is the one whose
+digest the index carries. The record keeps the key that signed it.
+
+At the revision this site pins the answer is always no. The build carries no key
+to verify the index with, so every install by name is refused as unverifiable,
+[`PLUGIN-20`](/fixing/every-error-by-code/#plugin--installing-and-running-plugins),
+and every install from a directory or a git source is recorded as unreviewed and
+shown as such.
 
 ## Where every value came from
 
@@ -82,4 +89,5 @@ this build. When they arrive, every value a recipe would carry to a host outside
 the machine is declared as its own pair and agreed to on its own, at rehearsal,
 and a destination is a name that is refused if it resolves inward. The reviewed,
 signed catalogue is
-[F5](/spec/10-functional/features/f-extensibility/f5-plugin-catalogue/).
+[F5](/spec/10-functional/features/f-extensibility/f5-plugin-catalogue/), and what
+this build lacks of it is the key its index is signed with.

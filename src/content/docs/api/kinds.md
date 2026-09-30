@@ -1,13 +1,13 @@
 ---
 title: Every payload kind
-description: The sixty-two payload kinds the contract artefact describes, and every field the six most-used ones carry.
+description: The sixty-five payload kinds the contract artefact describes, and every field the six most-used ones carry.
 sidebar:
   order: 2
 ---
 
 `kind` says which payload an [envelope](/api/the-envelope/) carries, so a
 consumer can branch before parsing `data`. The contract artefact describes
-sixty-two of them, and each entry is the whole envelope with that kind's
+sixty-five of them, and each entry is the whole envelope with that kind's
 payload in place rather than the payload alone — a generator wants the shape it
 will actually parse.
 
@@ -27,6 +27,7 @@ kind nobody emits, fails the build rather than reaching a client.
 | `beside`       | A standing-beside report | What standing lemonfiber beside a setup already here came to                                                    |
 | `bundle`       | A bundle description     | What a support bundle holds, how large it is, and where it is if it was written                                 |
 | `catalogue`    | A catalogue report       | What each service in this stack is for, and what became of any it has dropped                                   |
+| `certificate`  | A certificate report     | What replacing the certificate a paired phone pins came to, or would cost                                       |
 | `clients`      | The client guidance      | Which app to watch on, for each kind of device somebody in the house has                                        |
 | `config`       | A configuration answer   | The settings asked about, and what a change did to them                                                         |
 | `credentials`  | A credential inventory   | Every credential the stack holds and where each stands — never a value                                          |
@@ -36,6 +37,7 @@ kind nobody emits, fails the build rather than reaching a client.
 | `forms`        | The form catalogue       | Every form the stack declares                                                                                   |
 | `front-door`   | A front-door report      | The one address to send somebody who lives here, and why the others are not it                                  |
 | `glossary`     | The whole vocabulary     | Every word this product explains, for somebody who asked what there is to ask about                             |
+| `handoff`      | A hand-off report        | Where handing somebody's device the way onto the stack stands, and the code to hand them                        |
 | `held`         | What one member holds    | What one member can actually watch, as the media server answers it for them                                     |
 | `history`      | The record of changes    | Every change lemonfiber made, newest first, and how far each could be put back                                  |
 | `hosting`      | A hosting report         | What this machine keeps running on lemonfiber's behalf                                                          |
@@ -48,6 +50,7 @@ kind nobody emits, fails the build rather than reaching a client.
 | `migration`    | A migration report       | What is already on this machine, before anything is proposed                                                    |
 | `music`        | A music-format report    | The music format chosen, and what became of applying it                                                         |
 | `outbound`     | What leaves this machine | Every request lemonfiber makes on its own account, and the ones the services make                               |
+| `pairing`      | Pairing material         | What a phone is handed to pair with this stack, and what the operator is told beside it                         |
 | `plugins`      | The plugins installed    | Every plugin installed on this machine, and what installing, updating or removing one came to                   |
 | `preview`      | A preview                | What starting or stopping would do, before it is done                                                           |
 | `provenance`   | A provenance report      | Where each service comes from: its licence, its project, and the version pinned                                 |
@@ -86,11 +89,11 @@ string: one line the container engine wrote, emitted as it was written, because 
 pull that takes ten minutes has to say something before it ends.
 
 Six of them are set out field by field below — the ones a client meets first, and
-the ones whose payloads are small enough to read as a table. The other fifty-six
-are in the artefact in full, and both SDKs generate a type per kind from it, so
-nothing here is the only place their shapes are written down. Everything below is
-generated from the types that serialise the reply, so a field here is a field on
-the wire.
+the ones whose payloads are small enough to read as a table. The other fifty-nine
+are in the artefact in full, and both SDKs generate a type for each kind in
+their own copy of it, so nothing here is the only place their shapes are written
+down. Everything below is generated from the types that serialise the reply, so
+a field here is a field on the wire.
 
 ## `error`
 
@@ -316,10 +319,10 @@ A word this product uses, and what somebody meeting it needs to know.
 moving between their screens should not have to work out that two of them are
 one.
 
-## The other fifty-six
+## The other fifty-nine
 
 Every kind in the table above is in the contract artefact with its full schema,
-including the fifty-six not expanded here. Their payloads are larger — a
+including the fifty-nine not expanded here. Their payloads are larger — a
 `dashboard` carries eleven panels, each with its own shape; a `lifecycle` report
 carries twelve fields — and transcribing them into this page would create a second
 place their shapes are written down, which is the one thing the artefact exists to

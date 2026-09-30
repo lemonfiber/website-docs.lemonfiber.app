@@ -19,11 +19,14 @@ Nothing is installed and nothing keeps running afterwards. Stop the command and
 the console is gone, along with the token: the next run mints another, so an
 address you kept from last time will not let anybody in.
 
-The connection is not encrypted, and it says so as it starts. On loopback that
-costs you nothing a program already on your machine could not do anyway. Over a
-network it would, which is why `--lan` is refused until `--set-password` has set
-one — and why the password is asked for rather than the token, because a token
-printed to a terminal is not something you can type from a phone.
+The connection is plain text unless `--tls` asks for it encrypted, and it says
+which as it starts. `--tls` is for a paired phone rather than a browser: a
+browser warns about a certificate nobody it trusts signed, and a phone pins this
+one instead. On loopback plain text costs you nothing a program already on your
+machine could not do anyway. Over a network it would, which is why `--lan` is
+refused until `--set-password` has set one — and why the password is asked for
+rather than the token, because a token printed to a terminal is not something
+you can type from a phone.
 
 ## The five screens
 

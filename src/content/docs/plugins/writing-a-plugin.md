@@ -68,8 +68,11 @@ what the manifest asks for.
 ## Getting listed
 
 A plugin is published by being a git repository; nothing else is required to
-install it from a clone. To be listed, register it in
-[the plugin catalogue](/plugins/the-catalogue/), which records its origin and an
-exact reviewed commit and never copies the manifest. How to register, and what
-CI checks on a registration, are on that page. A reviewed catalogue that marks an
-install _reviewed_ is not built yet; see [what is built](/plugins/#what-is-built-and-what-is-not).
+install it, because `lemonfiber plugin install` takes the repository's address,
+at the branch, tag or commit named after its last `@`. To be listed, register it
+in [the plugin catalogue](/plugins/the-catalogue/), which records its origin and
+an exact reviewed commit and never copies the manifest. How to register, and
+what CI checks on a registration, are on that page. An install is marked
+_reviewed_ only when it is resolved by name through the catalogue's signed
+index, and this build carries no key to verify that index with; see [what is
+built](/plugins/#what-is-built-and-what-is-not).
