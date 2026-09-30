@@ -132,8 +132,9 @@ if ($envelope->kind === Kind::Status->value) {
 handing back a payload of the wrong shape.
 
 This client was generated from its own copy of the contract, and that copy
-carries the same kinds the binary this site pins serves: it has a class for each
-of sixty-two kinds, which is the set [every payload kind](/api/kinds/) sets out.
+carries a different set of kinds from the one the binary this site pins serves: it
+has a class for each of sixty-two kinds, and [every payload kind](/api/kinds/)
+sets out the set the binary serves.
 
 A copy taken before a kind was added is not a version mismatch: both speak wire
 version 1, so the client reads every reply, and a kind with no class of its own

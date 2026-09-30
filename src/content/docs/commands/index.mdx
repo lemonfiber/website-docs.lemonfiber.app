@@ -154,9 +154,10 @@ lists it with everything else.
 
 ## Serving it over HTTP
 
-| Command | What it does                                                                                                                       | Reach for it when                                                                                                                                                                                               |
-| ------- | ---------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ui`    | Serves the JSON API on a loopback socket for as long as you leave it running, printing the address and a token minted for that run | You are driving lemonfiber from a browser, a client or a script rather than a terminal. `--assets <dir>` serves a built web app beside it; `--lan` offers it to your network, once `--set-password` has set one |
+| Command     | What it does                                                                                                                       | Reach for it when                                                                                                                                                                                                                                                        |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ui`        | Serves the JSON API on a loopback socket for as long as you leave it running, printing the address and a token minted for that run | You are driving lemonfiber from a browser, a client or a script rather than a terminal. `--assets <dir>` serves a built web app beside it; `--lan` offers it to your network, once `--set-password` has set one; `--tls` serves it encrypted, on a port you name         |
+| `companion` | Pairs a phone with this stack, or replaces the certificate a paired phone pins                                                     | You want a phone to reach this stack. `pair` makes the material it reads — a code for its camera, and the same text to type — and carries no credential; `certificate` replaces what a paired phone pins, which every paired phone then refuses until it is paired again |
 
 ## Plugins
 
@@ -164,14 +165,16 @@ lists it with everything else.
 | -------- | --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `plugin` | Installs, updates and removes plugins, and reads what one may declare | You are adding a service the stack does not bundle, or writing one. `install`, `update` and `remove` change the machine and take `--dry-run`; `installed` lists what is here; `capabilities`, `extension-points`, `schema`, `claims` and `provenance` are for an author |
 
-`install` and `update` take a path — the plugin's directory, or the `plugin.toml`
-inside it. Neither is kept unless the plugin's own proofs hold against its running
-service and the stack's checks still pass afterwards; if either fails, the install
-is put back. There is no disable: a plugin is installed or it is not, and `remove`
-takes its id. The author's reads need no network, no catalogue and no running
-stack, and each names the generation it reports — except `provenance`, the one
-read that asks a registry about an image's signature.
-[Plugins](/plugins/) is the whole of it.
+`install` takes a source: the plugin's name in the catalogue, its directory, the
+`plugin.toml` inside it, or a git repository at the branch, tag or commit named
+after its last `@`. `update` takes the new version's directory, or the
+`plugin.toml` inside it. Neither is kept unless the plugin's own proofs hold
+against its running service and the stack's checks still pass afterwards; if
+either fails, the install is put back. There is no disable: a plugin is
+installed or it is not, and `remove` takes its id. The author's reads need no
+network, no catalogue and no running stack, and each names the generation it
+reports — except `provenance`, the one read that asks a registry about an
+image's signature. [Plugins](/plugins/) is the whole of it.
 
 ## Words, and help
 

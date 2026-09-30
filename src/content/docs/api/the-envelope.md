@@ -44,8 +44,10 @@ corrupt the one thing that answer exists to be.
 socket — whichever port is free, unless `--port` names one — and prints the whole
 address together with a token minted for that run. `--lan` offers it to your
 network instead, and is refused until a password has been set with
-`--set-password`. Nothing is installed, nothing keeps running afterwards, and the
-connection is not encrypted, which it says as it starts.
+`--set-password`. Nothing is installed, and nothing keeps running afterwards. The
+connection is plain text unless `--tls` asks for it encrypted, with a certificate
+lemonfiber made and keeps, and it says which as it starts. `--tls` needs `--port`,
+because it is for a paired phone, and a phone keeps the address it was given.
 
 Thirty-one endpoints answer a question and close. Each one is a command a person
 could have typed, dispatched through the same entry point the command line uses,
@@ -101,7 +103,7 @@ browser tab closed mid-repair takes nothing with it. `GET /api/jobs/{job}` asks
 what became of that work: `202` with the same `job` envelope while it is still
 going, and the envelope it came to once it has finished. `DELETE /api/jobs/{job}`
 ends it and answers with where it then stood. A name this run never handed out
-is `404`, rather than reported as unfinished.
+is `404` with `ASK-7`, rather than reported as unfinished.
 
 Setup has its own small surface, because it is a conversation rather than a
 command: `GET /api/setup` says where a run stands, and `POST /api/setup/answer`,
@@ -116,13 +118,15 @@ log writes as they are written.
 ### When a read is refused
 
 However a read is refused, it answers with the error envelope — the same document
-`--json` writes — so the status is the only thing that tells one refusal from
-another.
+`--json` writes — and its `code` says which refusal it was. The `READ` codes in
+[every error by code](/fixing/every-error-by-code/#read--asking-the-web-surface-a-question)
+are a read's own. The status says which of four sorts of refusal it is:
 
 | Refused because                                                       | Status |
 | --------------------------------------------------------------------- | ------ |
 | What the request named is not one of the things there are             | `404`  |
 | The request could not be answered as it was asked                     | `400`  |
+| Other work holds what it needs; the same request is answered after it | `409`  |
 | Nothing about the request was wrong; this machine could not answer it | `500`  |
 
 The line between the first two is what the request was _for_. A word this product
@@ -133,7 +137,7 @@ as it stands.
 
 `500` is reserved rather than incidental. A client told the machine failed will try
 again, and a client told that about a word with no entry will try forever. Which of
-the three applies is decided where the refusal is raised, and it reaches a client as
+the four applies is decided where the refusal is raised, and it reaches a client as
 the status alone: the envelope carries no field for it.
 
 ## What a request has to carry
@@ -148,12 +152,17 @@ added.
 | `Host`               | Must name the address the server is listening on. A request without one is refused — a `Host` check is what still holds when DNS rebinding has defeated an origin check          |
 | `Origin`             | Where a browser sent one, it must name the same address. Its absence is allowed, because it is a browser's word about itself and a client that is not a browser has none to give |
 
-A refusal is prose, and says so, and every refusal the guard makes is `403` — a
-browser offered `401` would ask for credentials it has no way to supply. The one
-thing the guard does not hide is which paths exist: a path under `/api/` that no
-route declares is answered `404` by the app's fallback, while one that exists
-answers `403`, so an unadmitted caller can tell the two apart. The endpoints are
-named in the published contract, so what that reveals is already public.
+Nothing under `/api/` is answered in prose. Every refusal is the error envelope,
+and its `code` is what a client decides on, because one status covers refusals
+with different remedies. Every refusal the guard makes is `403`: `ADMIT-4` where
+the request carried no token or session this run admits, and `ADMIT-5` where it
+said it came from somewhere this server is not. A browser offered `401` would ask
+for credentials it has no way to supply. The one thing the guard does not hide is
+which paths exist: a path under `/api/` that no route declares is answered `404`
+with `ASK-9` by the app's fallback, while one that exists answers `403`, so an
+unadmitted caller can tell the two apart. The endpoints are named in the published
+contract, so what that reveals is already public. A path that exists, asked with a
+method it does not answer, is `405` with `ASK-10`.
 
 ### Signing in with a password
 
@@ -162,8 +171,9 @@ operator — and is no use to somebody holding a phone. `POST /api/session` is t
 one route that answers a request carrying no token: it takes
 `{"password": "…"}`, and optionally a `name`, and exchanges them once for a
 session, which travels in the same `X-Lemonfiber-Token` header. The `Host` and
-`Origin` rules still apply to it. A wrong password answers `401`, the one status
-that says trying again could help.
+`Origin` rules still apply to it. A wrong password answers `401` with `ADMIT-8`,
+the one status that says trying again could help. Too many of them answer `429`
+with `ADMIT-9`, and a `Retry-After` header saying how long to wait.
 
 The machine's own password is tried first and admits the operator. Otherwise the
 name and password are checked against the media server's household, and a match
@@ -174,10 +184,10 @@ again on every request.
 A member may ask for two things: what the household asked for, which is always
 narrowed to themselves whatever the request named, and `GET /api/held` for their
 own shelf. Everything else — every other read and every action — is refused `403`
-with _This is not something this account may ask for._ Where the media server
-cannot be asked, the answer is `403` saying nobody was identified and nothing about
-the account changed, so the thing to fix is the media server rather than the
-account.
+with `ADMIT-6`: _This is not something this account may ask for._ Where the media
+server cannot be asked, the answer is `403` with `ADMIT-7`, saying nobody was
+identified and nothing about the account changed, so the thing to fix is the media
+server rather than the account.
 
 ## The app served beside it
 

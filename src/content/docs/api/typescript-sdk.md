@@ -73,12 +73,36 @@ An action's name and its arguments are the command line's own. A name this
 surface does not offer is refused rather than invented, and a field no action
 takes is refused rather than ignored.
 
+A support bundle is a file, not a document, so it arrives as a `Blob` with the
+type lemonfiber served it as. Ask by the name it was written under, or by the
+payload the `support` action answered with once it wrote one:
+
+```ts
+import { isKind } from "@lemonfiber/sdk-ts";
+
+const made = await opened.client.act("support", { write: true });
+if (made.ok && isKind(made.value, "bundle")) {
+  const { path } = made.value.data; // absent where the run described a bundle and wrote none
+  if (typeof path === "string") {
+    const file = await opened.client.bundle({ path }); // or .bundle(name)
+    if (file.ok) offerDownload(file.value); // a Blob, for URL.createObjectURL
+    if (!file.ok) report(file.problem, file.said); // `said` is the refusal's body, whole
+  }
+}
+```
+
+`take(endpoint)` is the same reading for any endpoint that answers with a file. A
+refusal on either is read as every other one is, and carries its body as `said`
+besides: the whole error envelope a turned-away request was answered with.
+
 ## Following live state
 
 Live updates arrive as envelopes. Anything gathered before a break in the
 connection is marked out of date rather than shown as current:
 
 ```ts
+const url = "http://127.0.0.1:9000/api/events"; // the stream's own address, not the base
+
 for await (const arrival of follow({
   url,
   token: printedByLemonfiber,
@@ -89,6 +113,13 @@ for await (const arrival of follow({
   if (arrival.at === "lost") report(arrival.problem.message);
 }
 ```
+
+The stream's address is read the way `Client.at` reads one, so an address that is
+not on this machine, or carries more than an address, arrives as `lost` and
+nothing is sent to it. No request either of them makes follows an answer pointing
+somewhere else: every request asks for `redirect: "error"`, which `fetch` honours,
+so the token reaches the address it was given for and no other. A `sending` or
+`fetching` that is not `fetch` has to honour it too.
 
 Three arrival states rather than two, because a stream that has gone quiet is not
 the same as one that has ended, and neither is the same as one carrying fresh
@@ -101,13 +132,17 @@ assert on the same numbers the client holds itself to.
 `problem.kind` says which sort of refusal came back, so a caller need not read the
 sentence to know what to do with it:
 
-| `kind`        | What it means                                              |
-| ------------- | ---------------------------------------------------------- |
-| `missing`     | lemonfiber has nothing by the name the request gave        |
-| `misasked`    | It could not answer the request as it was asked            |
-| `failed`      | It understood the request and its own answering failed     |
-| `refused`     | The key this page is using is not the one this run expects |
-| `unreachable` | Nothing lemonfiber wrote came back at all                  |
+| `kind`        | What it means                                                   |
+| ------------- | --------------------------------------------------------------- |
+| `missing`     | lemonfiber has nothing by the name the request gave             |
+| `misasked`    | It could not answer the request as it was asked                 |
+| `failed`      | It understood the request and its own answering failed          |
+| `refused`     | The key this page is using is not the one this run expects      |
+| `declined`    | It turned away who is asking, or where from, for another reason |
+| `unreachable` | Nothing lemonfiber wrote came back at all                       |
+| `version`     | The reply is in an `api_version` this package does not speak    |
+| `malformed`   | What arrived as an answer was not a lemonfiber envelope         |
+| `stream`      | The event stream broke or went quiet for too long               |
 
 `refused` is the key and nothing else. That is what makes it worth reading: a
 console meeting it may ask for a new key without reading the sentence, and a
@@ -115,36 +150,47 @@ console meeting `failed` may not, because what failed is behind the answer rathe
 than in front of it. A stopped container engine is `failed`, and the same request
 succeeds once it is running again.
 
-`missing`, `misasked` and `failed` always carry lemonfiber's own sentence. A body
-the package cannot read — a page, or JSON that is not this envelope — is
-`unreachable` whatever status carried it.
+A refusal whose `error` envelope names a code the contract lists carries it as
+`problem.code`, typed `RefusalCode`, and a caller decides what the refusal means
+from that code rather than from the sentence. The codes are the ones
+[every error by code](/fixing/every-error-by-code/) sets out. At `401` or `403`
+the code decides the kind: the key's code is `refused`, and every other listed
+code is `declined`, carrying lemonfiber's own sentence — a page served from the
+wrong address, an account asking for what is not its own, a wrong password, a
+media server that could not vouch for the account. A refusal carrying no code, or
+one the contract does not list, is read by its status alone. `REFUSAL_CODES`
+holds what the contract says of each code, and `isRefusalCode` tells a listed one
+from any other string; both are generated, and no code is written by hand.
+
+`missing`, `misasked`, `failed` and `declined` always carry lemonfiber's own
+sentence. A body the package cannot read — a page, or JSON that is not this
+envelope — is `unreachable`, or `refused` at `401` and `403`.
 
 What that rules out is a document rather than a stranger. A plain sentence is
-taken as lemonfiber's own, because every refusal the write surface makes is prose
-and so is a read it could not read, and nothing in a line of words says who wrote
+still taken as lemonfiber's own, and nothing in a line of words says who wrote
 it: a plain-text answer from whatever else is listening on that loopback port is
-read as lemonfiber's account of what there is. Refusing prose would close that
-door by reporting every one of lemonfiber's own refusals as a server that had
-stopped answering, which is the larger loss of the two and the more common.
+read as lemonfiber's account of what there is.
 
 ## What the package exports
 
 Every name below is checked against the package's own entry point on each build,
 so a name added there and not here fails rather than merely going unmentioned.
 
-| Export                                                                                                          | What it is for                                                            |
-| --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| `Client`, `Opened`, `Talking`, `Query`, `Sending`                                                               | Opening a client and asking it things                                     |
-| `follow`, `Arrival`, `Following`, `Fetching`                                                                    | The event stream, and what an arrival can be                              |
-| `HEARTBEAT_MS`, `SILENCE_ALLOWED_MS`, `RECONNECTS_ALLOWED`, `TOKEN_HEADER`                                      | The numbers and the header a client holds itself to                       |
-| `Ledger`, `Held`                                                                                                | The values held across a reconnection, and whether each is still current  |
-| `Envelope`, `Reading`, `parse`, `read`, `isKind`, `API_VERSION`                                                 | The envelope, and reading one safely                                      |
-| `Kind`, `ByKind`, `CONTRACT_API_VERSION`                                                                        | The generated kinds, and the wire version these types were generated for  |
-| `Problem`, `ProblemKind`                                                                                        | The typed error                                                           |
-| `problem`, `refused`, `unreachable`, `missing`, `misasked`, `failed`, `malformed`, `wrongVersion`, `streamLost` | The constructors that build one                                           |
-| `refusalIn`                                                                                                     | Which of those an unsuccessful answer is, for a caller reading its status |
-| `address`, `Address`                                                                                            | The loopback rule, on its own                                             |
-| `SseParser`, `SseEvent`                                                                                         | The event-stream parser, for a consumer that needs it directly            |
+| Export                                                                                                                      | What it is for                                                              |
+| --------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `Client`, `Opened`, `Talking`, `Query`, `Sending`                                                                           | Opening a client and asking it things                                       |
+| `Handed`, `Written`                                                                                                         | A file an endpoint answered with, and a support bundle known to be written  |
+| `follow`, `Arrival`, `Following`, `Fetching`                                                                                | The event stream, and what an arrival can be                                |
+| `HEARTBEAT_MS`, `SILENCE_ALLOWED_MS`, `RECONNECTS_ALLOWED`, `TOKEN_HEADER`                                                  | The numbers and the header a client holds itself to                         |
+| `Ledger`, `Held`                                                                                                            | The values held across a reconnection, and whether each is still current    |
+| `Envelope`, `Reading`, `parse`, `read`, `isKind`, `API_VERSION`                                                             | The envelope, and reading one safely                                        |
+| `Kind`, `ByKind`, `CONTRACT_API_VERSION`                                                                                    | The generated kinds, and the wire version these types were generated for    |
+| `RefusalCode`, `REFUSAL_CODES`, `isRefusalCode`                                                                             | The generated refusal codes, and telling a listed one from any other string |
+| `Problem`, `ProblemKind`                                                                                                    | The typed error                                                             |
+| `problem`, `refused`, `declined`, `unreachable`, `missing`, `misasked`, `failed`, `malformed`, `wrongVersion`, `streamLost` | The constructors that build one                                             |
+| `refusalIn`                                                                                                                 | Which of those an unsuccessful answer is, for a caller reading its status   |
+| `address`, `Address`                                                                                                        | The loopback rule, on its own                                               |
+| `SseParser`, `SseEvent`                                                                                                     | The event-stream parser, for a consumer that needs it directly              |
 
 ## `src/generated/` is not yours to edit
 
@@ -179,7 +225,7 @@ to negotiate. `npm run ci` runs everything CI runs.
 
 The repository's own page is [sdk-ts](/develop/repos/sdk-ts/), and its
 specification is [the sdk-ts spec](/spec/30-repos/sdk-ts/). It generates types
-for sixty-two of them, from its own copy of the contract, which carries the
+for sixty-five of them, from its own copy of the contract, which carries the
 same kinds the binary this site pins serves, so
 [every payload kind](/api/kinds/) is also the set that has a type here.
 A copy taken before a kind was added still reads the

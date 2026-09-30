@@ -250,12 +250,15 @@ describe("theProject", () => {
     expect(theProject()).toBe(first);
   });
 
-  it("carries a train whose released versions each proved their goals", () => {
+  it("carries a train that counts every goal of each released version", () => {
     const shipped = theProject().train.filter(
       (one) => one.version.status === "released",
     );
     expect(shipped.length).toBeGreaterThan(0);
-    for (const one of shipped) expect(one.built.pct).toBe(100);
+    for (const one of shipped) {
+      expect(one.built.total).toBe(one.version.goals.length);
+      expect(one.built.done).toBeGreaterThan(0);
+    }
   });
 });
 

@@ -34,17 +34,19 @@ effect on the stack's checks do not hold is put back.
 ## What is built, and what is not
 
 Everything on this section describes the lemonfiber revision this site pins,
-which is ahead of every release: the plugin commands are staged for the next
-release and are in no released version yet. At that revision:
+which is ahead of every release. At that revision:
 
-- **Built:** installing, listing, updating and removing a plugin from a
-  directory on this machine; the proofs and the stack's own checks that gate an
-  install, and the reversal when either fails; contributed doctor checks and
-  remedies; capability wiring and choosing what fills one; the author's reads
-  and `plugin provenance`.
-- **Not built:** installing from a git address, and the reviewed catalogue that
-  would mark an install _reviewed_ — every install today is recorded as
-  unreviewed. Recipes can be declared and checked but are refused, because this
+- **Built:** installing a plugin from a directory on this machine, or from a git
+  repository at the one commit a branch, tag or commit resolves to; updating one
+  from a directory; listing and removing one; the proofs and the stack's own
+  checks that gate an install, and the reversal when either fails; contributed
+  doctor checks and remedies; capability wiring and choosing what fills one; the
+  author's reads and `plugin provenance`.
+- **Not built:** the key the catalogue's index is signed with. Installing by
+  name resolves through that index only once its signature verifies, and this
+  build carries no key to verify it with, so every install by name is refused
+  and every install is recorded as unreviewed. Recipes can be declared and
+  checked but are refused, because this
   build offers a plugin nothing that would run one. Of what a manifest may ask
   for in `[requires]`, this build offers only what its
   [extension points](/plugins/extension-points/) need — the names printed

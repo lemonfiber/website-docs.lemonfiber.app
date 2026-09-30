@@ -28,11 +28,18 @@ const routes = [
 ];
 const themes = ["light", "dark"] as const;
 
+/**
+ * The route that renders the web API's whole contract artefact on one page. Axe
+ * reads every node, and there that takes longer than one test's default budget.
+ */
+const long = new Set(["/api/reference/"]);
+
 for (const route of routes)
   for (const theme of themes)
     test(`${route} has no contrast or a11y violations in ${theme}`, async ({
       page,
     }) => {
+      if (long.has(route)) test.slow();
       await page.emulateMedia({ colorScheme: theme });
       await page.goto(route);
       await page.evaluate((t) => {

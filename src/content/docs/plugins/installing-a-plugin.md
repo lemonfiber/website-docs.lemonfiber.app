@@ -6,10 +6,13 @@ sidebar:
 ---
 
 A plugin is installed from its source: the directory holding its `plugin.toml`,
-or the file itself. At the revision this site pins, that source has to be on this
-machine — there is no install from a git address yet, so clone the plugin's
-repository first. Every flag each word takes is in
-[the command reference](/commands/reference/plugin/).
+the file itself, or a git repository at the branch, tag or commit named after its
+last `@`. A git source is resolved to one commit before anything is fetched, and
+that commit is fetched as data: nothing of it is run, it is removed once the
+install is done, and the record keeps the repository and the commit. A bare word
+such as `komga` is a name for the [catalogue](/plugins/the-catalogue/) to
+resolve, so a directory of that name is written `./komga`. Every flag each word
+takes is in [the command reference](/commands/reference/plugin/).
 
 ## Rehearse it first
 
@@ -63,7 +66,9 @@ For each plugin: where it came from and whether anybody reviewed it, when it was
 installed, its licence, what it claims and fills, what it added, what it may
 change, where it may reach and what it holds, and how each of its services is
 reached. It is read from the record rather than from any manifest, so it still
-answers after the plugin's source is gone. A record that exists and cannot be
+answers after the plugin's source is gone, and whether each source can still be
+fetched is asked as it lists them: a directory is looked for, and a git source is
+asked for the commit it serves by default. A record that exists and cannot be
 read is refused rather than reported as _no plugins_.
 
 ## Update it
