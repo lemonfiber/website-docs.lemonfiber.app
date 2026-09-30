@@ -74,11 +74,16 @@ const pages = entries
   .filter((entry) => entry.endsWith(".html"))
   .sort((a, b) => a.localeCompare(b));
 
+const read = await Promise.all(
+  pages.map(async (page) => ({
+    page,
+    on: addresses(await readFile(join(DIST, page), "utf8"), checkouts),
+  })),
+);
+
 const found: Fault[] = [];
 let checked = 0;
-for (const page of pages) {
-  const html = await readFile(join(DIST, page), "utf8");
-  const on = addresses(html, checkouts);
+for (const { page, on } of read) {
   checked += on.length;
   found.push(...faults(pageOf(page), on));
 }

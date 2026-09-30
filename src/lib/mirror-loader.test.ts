@@ -20,7 +20,7 @@ import {
   pagesOf,
   pathOf,
   readingOf,
-  storeMirror,
+  entriesOf,
 } from "./mirror-loader.ts";
 import { gitLog, listing, read } from "./mirror-source.ts";
 
@@ -150,13 +150,13 @@ describe("crossRoutes", () => {
   });
 });
 
-describe("storeMirror", () => {
+describe("entriesOf", () => {
   it("refuses a page that names itself nowhere", async () => {
     const { context } = recorder();
     const untitled: Mirror = { ...one };
     delete (untitled as { title?: string }).title;
     await expect(
-      storeMirror(context, readingOf(untitled, root), root, new Map()),
+      entriesOf(context, readingOf(untitled, root), root, new Map()),
     ).rejects.toThrow("has no title");
   });
 });

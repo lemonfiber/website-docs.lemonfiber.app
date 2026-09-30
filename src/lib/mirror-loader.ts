@@ -99,58 +99,71 @@ const missing = (mirror: Mirror, relative: string): Error =>
     `mirror ${mirror.route}: ${relative} has no title, and none is declared for it`,
   );
 
-/** Stores every page one mirror renders. */
-export async function storeMirror(
+/** One page as the content store keeps it. */
+type Entry = Parameters<LoaderContext["store"]["set"]>[0];
+
+/**
+ * Every page one mirror renders, ready for the store, in the order its files
+ * are listed.
+ *
+ * Rendered all at once and returned rather than stored as each finishes, so the
+ * store receives them in the order they were listed whichever finished first.
+ */
+export async function entriesOf(
   context: LoaderContext,
   reading: Reading,
   root: string,
   cross: ReadonlyMap<string, string>,
-): Promise<void> {
+): Promise<Entry[]> {
   const { mirror, revision, relatives } = reading;
   const routes = routeTable(mirror, relatives);
 
-  for (const relative of relatives) {
-    const source = read(pathOf(mirror, root, relative));
-    const declared = isFile(mirror) ? mirror.title : mirror.titles?.[relative];
-    const title = titleOf(source, declared);
-    if (title === null) throw missing(mirror, relative);
+  return Promise.all(
+    relatives.map(async (relative): Promise<Entry> => {
+      const source = read(pathOf(mirror, root, relative));
+      const declared = isFile(mirror)
+        ? mirror.title
+        : mirror.titles?.[relative];
+      const title = titleOf(source, declared);
+      if (title === null) throw missing(mirror, relative);
 
-    const id = routeOf(mirror, relative);
-    const body = rewriteLinks(
-      withoutLeadingHeading(source),
-      mirror,
-      revision,
-      relative,
-      routes,
-      cross,
-    );
-    const provenance: Provenance = {
-      repo: mirror.repo,
-      label: mirror.label,
-      revision: revision.sha,
-      date: revision.date,
-      source: sourceUrl(mirror, revision, relative),
-    };
-    const data = await context.parseData({
-      id,
-      data: {
-        title,
-        editUrl: editUrl(mirror, relative),
-        lastUpdated: new Date(revision.date),
-        mirror: provenance,
-      },
-    });
-    context.store.set({
-      id,
-      data,
-      body,
-      filePath: fileOf(mirror, relative),
-      digest: context.generateDigest(`${revision.sha}:${source}`),
-      rendered: await context.renderMarkdown(body, {
-        fileURL: pathToFileURL(`${root}/${attributedPath(id)}`),
-      }),
-    });
-  }
+      const id = routeOf(mirror, relative);
+      const body = rewriteLinks(
+        withoutLeadingHeading(source),
+        mirror,
+        revision,
+        relative,
+        routes,
+        cross,
+      );
+      const provenance: Provenance = {
+        repo: mirror.repo,
+        label: mirror.label,
+        revision: revision.sha,
+        date: revision.date,
+        source: sourceUrl(mirror, revision, relative),
+      };
+      const data = await context.parseData({
+        id,
+        data: {
+          title,
+          editUrl: editUrl(mirror, relative),
+          lastUpdated: new Date(revision.date),
+          mirror: provenance,
+        },
+      });
+      return {
+        id,
+        data,
+        body,
+        filePath: fileOf(mirror, relative),
+        digest: context.generateDigest(`${revision.sha}:${source}`),
+        rendered: await context.renderMarkdown(body, {
+          fileURL: pathToFileURL(`${root}/${attributedPath(id)}`),
+        }),
+      };
+    }),
+  );
 }
 
 /** The loader itself: every declared mirror, in the order they are declared. */
@@ -160,8 +173,10 @@ export function mirrorLoader(mirrors: readonly Mirror[], root: string): Loader {
     load: async (context: LoaderContext): Promise<void> => {
       const readings = mirrors.map((mirror) => readingOf(mirror, root));
       const cross = crossRoutes(readings);
-      for (const reading of readings)
-        await storeMirror(context, reading, root, cross);
+      const entries = await Promise.all(
+        readings.map((reading) => entriesOf(context, reading, root, cross)),
+      );
+      for (const entry of entries.flat()) context.store.set(entry);
     },
   };
 }
