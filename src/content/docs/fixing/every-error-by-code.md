@@ -1,6 +1,6 @@
 ---
 title: Every error by code
-description: Every error code lemonfiber raises, what it means, and what to do about it, read from the crate that raises each one at the revision this site pins.
+description: Every error code lemonfiber raises, what it means, and what to do about it, read from lemonfiber's registry of codes at the revision this site pins.
 sidebar:
   order: 2
 ---
@@ -499,7 +499,6 @@ Raised while reading or changing what the household is trusted to request, and w
 | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
 | `QUOTA-1` | The request service would not answer, so nothing was changed. What was in force before is still in force.                                                                                                                                                  | Check the request service is running, then run this again.                              |
 | `QUOTA-2` | A policy that lives inside a limit was chosen without one. Living within a limit needs a limit.                                                                                                                                                            | Say how many requests a period allows, and how long the period is.                      |
-| `QUOTA-3` | No policy goes by the word that was given.                                                                                                                                                                                                                 | Choose one of the three the message names.                                              |
 | `QUOTA-4` | The request named is not one that is waiting on anybody, so there is nothing to rule on.                                                                                                                                                                   | Ask what the household has asked for, to see what is still waiting.                     |
 | `QUOTA-5` | A request was turned down and the reason given was blank. The reason is passed on to whoever asked, so a blank one tells them nothing.                                                                                                                     | Say why in a few words, and pass them on to whoever asked.                              |
 | `QUOTA-6` | Nobody in this household goes by the name that was given, so nothing was changed.                                                                                                                                                                          | Name somebody who is here. The message lists the household.                             |
@@ -684,8 +683,8 @@ Some commands decide their exit from their result rather than from a problem:
 
 ## Where these come from
 
-The codes on this page are read from the crate that raises each one, at the revision this site is pinned to. Each is declared as a constant beside the code that raises it, rather than in a central list, so a code and its meaning move together — and no code is ever recycled, so a search that found an answer once finds the same answer later.
+The codes on this page are read from lemonfiber's registry of codes, at the revision this site is pinned to. Every code is declared there once, beside the line saying what it means, and the code that raises it names it from there. A code nothing raises is not declared, and its number is never given to another — so a search that found an answer once finds the same answer later.
 
-The crate emits the whole list, and this site's own gate compares that list against this page in both directions on every change. So the sentence at the top of the page is checked rather than promised: a code added to the crate and not to this page fails the build, and so does a code on this page that nothing raises.
+lemonfiber emits the whole list, and this site's own gate compares that list against this page in both directions on every change. So the sentence at the top of the page is checked rather than promised: a code added to lemonfiber and not to this page fails the build, and so does a code on this page that nothing raises.
 
 For the model behind them — why a problem cannot be constructed without a remedy, how a typed failure becomes something you read, and why the core never formats — see [the error model architecture note](/develop/architecture/error-model/). The requirement it is written against is [G4, the error and remedy model](/spec/10-functional/features/g-ux/g4-error-model/).
