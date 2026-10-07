@@ -24,54 +24,58 @@ Two things are worth knowing before you start:
 
 Each family's page sets out all of its codes in one table. Search this site for a code to land on its family's page directly.
 
-| Family                                                                                                | What it covers                               |
-| ----------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| <span id="setup--the-first-run"></span>[`SETUP`](/fixing/codes/setup/)                                | The first run                                |
-| <span id="config--your-settings"></span>[`CONFIG`](/fixing/codes/config/)                             | Your settings                                |
-| <span id="stack--the-stack-description"></span>[`STACK`](/fixing/codes/stack/)                        | The stack description                        |
-| <span id="form--choosing-what-to-run"></span>[`FORM`](/fixing/codes/form/)                            | Choosing what to run                         |
-| <span id="env--the-container-engine"></span>[`ENV`](/fixing/codes/env/)                               | The container engine                         |
-| <span id="docker--talking-to-the-engine"></span>[`DOCKER`](/fixing/codes/docker/)                     | Talking to the engine                        |
-| <span id="proc--the-program-underneath"></span>[`PROC`](/fixing/codes/proc/)                          | The program underneath                       |
-| <span id="life--starting-and-stopping"></span>[`LIFE`](/fixing/codes/life/)                           | Starting and stopping                        |
-| <span id="storage--the-data-location"></span>[`STORAGE`](/fixing/codes/storage/)                      | The data location                            |
-| <span id="qual--quality-against-what-is-available"></span>[`QUAL`](/fixing/codes/qual/)               | Quality against what is available            |
-| <span id="vpn--traffic-leaving-the-tunnel"></span>[`VPN`](/fixing/codes/vpn/)                         | Traffic leaving the tunnel                   |
-| <span id="bind--where-the-stack-is-actually-listening"></span>[`BIND`](/fixing/codes/bind/)           | Where the stack is actually listening        |
-| <span id="cred--credentials-a-service-refuses"></span>[`CRED`](/fixing/codes/cred/)                   | Credentials a service refuses                |
-| <span id="provider--accounts-and-indexers"></span>[`PROVIDER`](/fixing/codes/provider/)               | Accounts and indexers                        |
-| <span id="wiring--drift-between-services"></span>[`WIRING`](/fixing/codes/wiring/)                    | Drift between services                       |
-| <span id="seed--wiring-the-services-together"></span>[`SEED`](/fixing/codes/seed/)                    | Wiring the services together                 |
-| <span id="backup--capturing-your-configuration"></span>[`BACKUP`](/fixing/codes/backup/)              | Capturing your configuration                 |
-| <span id="restore--putting-configuration-back"></span>[`RESTORE`](/fixing/codes/restore/)             | Putting configuration back                   |
-| <span id="undo--putting-a-run-back"></span>[`UNDO`](/fixing/codes/undo/)                              | Putting a run back                           |
-| <span id="update--moving-the-stack-onto-newer-versions"></span>[`UPDATE`](/fixing/codes/update/)      | Moving the stack onto newer versions         |
-| <span id="bundle--the-support-bundle"></span>[`BUNDLE`](/fixing/codes/bundle/)                        | The support bundle                           |
-| <span id="kept--what-lemonfiber-keeps-here"></span>[`KEPT`](/fixing/codes/kept/)                      | What lemonfiber keeps here                   |
-| <span id="watch--guarding-the-data-location"></span>[`WATCH`](/fixing/codes/watch/)                   | Guarding the data location                   |
-| <span id="diag--narrowing-a-diagnosis"></span>[`DIAG`](/fixing/codes/diag/)                           | Narrowing a diagnosis                        |
-| <span id="repair--putting-right-what-the-doctor-found"></span>[`REPAIR`](/fixing/codes/repair/)       | Putting right what the doctor found          |
-| <span id="ack--answering-a-warning"></span>[`ACK`](/fixing/codes/ack/)                                | Answering a warning                          |
-| <span id="word--the-glossary"></span>[`WORD`](/fixing/codes/word/)                                    | The glossary                                 |
-| <span id="serve--the-web-surface"></span>[`SERVE`](/fixing/codes/serve/)                              | The web surface                              |
-| <span id="admit--who-the-web-interface-lets-in"></span>[`ADMIT`](/fixing/codes/admit/)                | Who the web interface lets in                |
-| <span id="read--asking-the-web-surface-a-question"></span>[`READ`](/fixing/codes/read/)               | Asking the web surface a question            |
-| <span id="ask--putting-a-request-to-the-web-surface"></span>[`ASK`](/fixing/codes/ask/)               | Putting a request to the web surface         |
-| <span id="pair--pairing-a-phone-with-the-stack"></span>[`PAIR`](/fixing/codes/pair/)                  | Pairing a phone with the stack               |
-| <span id="tui--the-terminal-interface"></span>[`TUI`](/fixing/codes/tui/)                             | The terminal interface                       |
-| <span id="invite--offering-somebody-an-account"></span>[`INVITE`](/fixing/codes/invite/)              | Offering somebody an account                 |
-| <span id="handoff--pointing-somebodys-device-at-the-stack"></span>[`HANDOFF`](/fixing/codes/handoff/) | Pointing somebody's device at the stack      |
-| <span id="reissue--letting-somebody-set-a-new-password"></span>[`REISSUE`](/fixing/codes/reissue/)    | Letting somebody set a new password          |
-| <span id="remove--taking-somebody-out-of-the-household"></span>[`REMOVE`](/fixing/codes/remove/)      | Taking somebody out of the household         |
-| <span id="quota--what-the-household-may-ask-for"></span>[`QUOTA`](/fixing/codes/quota/)               | What the household may ask for               |
-| <span id="telling--what-the-household-is-told-about"></span>[`TELLING`](/fixing/codes/telling/)       | What the household is told about             |
-| <span id="space--the-disk-and-letting-a-download-go"></span>[`SPACE`](/fixing/codes/space/)           | The disk, and letting a download go          |
-| <span id="rate--holding-the-stack-to-a-share-of-the-line"></span>[`RATE`](/fixing/codes/rate/)        | Holding the stack to a share of the line     |
-| <span id="host--keeping-a-command-running-without-a-terminal"></span>[`HOST`](/fixing/codes/host/)    | Keeping a command running without a terminal |
-| <span id="gone--taking-lemonfiber-off-this-machine"></span>[`GONE`](/fixing/codes/gone/)              | Taking lemonfiber off this machine           |
-| <span id="rehearse--asking-what-a-command-would-do"></span>[`REHEARSE`](/fixing/codes/rehearse/)      | Asking what a command would do               |
-| <span id="wire--choosing-what-fills-a-capability"></span>[`WIRE`](/fixing/codes/wire/)                | Choosing what fills a capability             |
-| <span id="plugin--installing-and-running-plugins"></span>[`PLUGIN`](/fixing/codes/plugin/)            | Installing and running plugins               |
+| Family                                                                                                         | What it covers                                   |
+| -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| <span id="setup--the-first-run"></span>[`SETUP`](/fixing/codes/setup/)                                         | The first run                                    |
+| <span id="migrate--taking-over-a-setup-already-here"></span>[`MIGRATE`](/fixing/codes/migrate/)                | Taking over a setup already here                 |
+| <span id="config--your-settings"></span>[`CONFIG`](/fixing/codes/config/)                                      | Your settings                                    |
+| <span id="stack--the-stack-description"></span>[`STACK`](/fixing/codes/stack/)                                 | The stack description                            |
+| <span id="form--choosing-what-to-run"></span>[`FORM`](/fixing/codes/form/)                                     | Choosing what to run                             |
+| <span id="env--the-container-engine"></span>[`ENV`](/fixing/codes/env/)                                        | The container engine                             |
+| <span id="docker--talking-to-the-engine"></span>[`DOCKER`](/fixing/codes/docker/)                              | Talking to the engine                            |
+| <span id="proc--the-program-underneath"></span>[`PROC`](/fixing/codes/proc/)                                   | The program underneath                           |
+| <span id="life--starting-and-stopping"></span>[`LIFE`](/fixing/codes/life/)                                    | Starting and stopping                            |
+| <span id="storage--the-data-location"></span>[`STORAGE`](/fixing/codes/storage/)                               | The data location                                |
+| <span id="qual--quality-against-what-is-available"></span>[`QUAL`](/fixing/codes/qual/)                        | Quality against what is available                |
+| <span id="vpn--traffic-leaving-the-tunnel"></span>[`VPN`](/fixing/codes/vpn/)                                  | Traffic leaving the tunnel                       |
+| <span id="bind--where-the-stack-is-actually-listening"></span>[`BIND`](/fixing/codes/bind/)                    | Where the stack is actually listening            |
+| <span id="cred--credentials-a-service-refuses"></span>[`CRED`](/fixing/codes/cred/)                            | Credentials a service refuses                    |
+| <span id="provider--accounts-and-indexers"></span>[`PROVIDER`](/fixing/codes/provider/)                        | Accounts and indexers                            |
+| <span id="wiring--drift-between-services"></span>[`WIRING`](/fixing/codes/wiring/)                             | Drift between services                           |
+| <span id="seed--wiring-the-services-together"></span>[`SEED`](/fixing/codes/seed/)                             | Wiring the services together                     |
+| <span id="backup--capturing-your-configuration"></span>[`BACKUP`](/fixing/codes/backup/)                       | Capturing your configuration                     |
+| <span id="restore--putting-configuration-back"></span>[`RESTORE`](/fixing/codes/restore/)                      | Putting configuration back                       |
+| <span id="undo--putting-a-run-back"></span>[`UNDO`](/fixing/codes/undo/)                                       | Putting a run back                               |
+| <span id="update--moving-the-stack-onto-newer-versions"></span>[`UPDATE`](/fixing/codes/update/)               | Moving the stack onto newer versions             |
+| <span id="bundle--the-support-bundle"></span>[`BUNDLE`](/fixing/codes/bundle/)                                 | The support bundle                               |
+| <span id="kept--what-lemonfiber-keeps-here"></span>[`KEPT`](/fixing/codes/kept/)                               | What lemonfiber keeps here                       |
+| <span id="watch--guarding-the-data-location"></span>[`WATCH`](/fixing/codes/watch/)                            | Guarding the data location                       |
+| <span id="diag--narrowing-a-diagnosis"></span>[`DIAG`](/fixing/codes/diag/)                                    | Narrowing a diagnosis                            |
+| <span id="repair--putting-right-what-the-doctor-found"></span>[`REPAIR`](/fixing/codes/repair/)                | Putting right what the doctor found              |
+| <span id="ack--answering-a-warning"></span>[`ACK`](/fixing/codes/ack/)                                         | Answering a warning                              |
+| <span id="word--the-glossary"></span>[`WORD`](/fixing/codes/word/)                                             | The glossary                                     |
+| <span id="serve--the-web-surface"></span>[`SERVE`](/fixing/codes/serve/)                                       | The web surface                                  |
+| <span id="admit--who-the-web-interface-lets-in"></span>[`ADMIT`](/fixing/codes/admit/)                         | Who the web interface lets in                    |
+| <span id="read--asking-the-web-surface-a-question"></span>[`READ`](/fixing/codes/read/)                        | Asking the web surface a question                |
+| <span id="ask--putting-a-request-to-the-web-surface"></span>[`ASK`](/fixing/codes/ask/)                        | Putting a request to the web surface             |
+| <span id="pair--pairing-a-phone-with-the-stack"></span>[`PAIR`](/fixing/codes/pair/)                           | Pairing a phone with the stack                   |
+| <span id="key--keys-another-program-reaches-the-stack-with"></span>[`KEY`](/fixing/codes/key/)                 | Keys another program reaches the stack with      |
+| <span id="tui--the-terminal-interface"></span>[`TUI`](/fixing/codes/tui/)                                      | The terminal interface                           |
+| <span id="invite--offering-somebody-an-account"></span>[`INVITE`](/fixing/codes/invite/)                       | Offering somebody an account                     |
+| <span id="handoff--pointing-somebodys-device-at-the-stack"></span>[`HANDOFF`](/fixing/codes/handoff/)          | Pointing somebody's device at the stack          |
+| <span id="reissue--letting-somebody-set-a-new-password"></span>[`REISSUE`](/fixing/codes/reissue/)             | Letting somebody set a new password              |
+| <span id="remove--taking-somebody-out-of-the-household"></span>[`REMOVE`](/fixing/codes/remove/)               | Taking somebody out of the household             |
+| <span id="decline--the-service-that-answers-an-invitations-decline"></span>[`DECLINE`](/fixing/codes/decline/) | The service that answers an invitation's decline |
+| <span id="gate--the-request-gate"></span>[`GATE`](/fixing/codes/gate/)                                         | The request gate                                 |
+| <span id="quota--what-the-household-may-ask-for"></span>[`QUOTA`](/fixing/codes/quota/)                        | What the household may ask for                   |
+| <span id="telling--what-the-household-is-told-about"></span>[`TELLING`](/fixing/codes/telling/)                | What the household is told about                 |
+| <span id="space--the-disk-and-letting-a-download-go"></span>[`SPACE`](/fixing/codes/space/)                    | The disk, and letting a download go              |
+| <span id="rate--holding-the-stack-to-a-share-of-the-line"></span>[`RATE`](/fixing/codes/rate/)                 | Holding the stack to a share of the line         |
+| <span id="host--keeping-a-command-running-without-a-terminal"></span>[`HOST`](/fixing/codes/host/)             | Keeping a command running without a terminal     |
+| <span id="gone--taking-lemonfiber-off-this-machine"></span>[`GONE`](/fixing/codes/gone/)                       | Taking lemonfiber off this machine               |
+| <span id="rehearse--asking-what-a-command-would-do"></span>[`REHEARSE`](/fixing/codes/rehearse/)               | Asking what a command would do                   |
+| <span id="wire--choosing-what-fills-a-capability"></span>[`WIRE`](/fixing/codes/wire/)                         | Choosing what fills a capability                 |
+| <span id="plugin--installing-and-running-plugins"></span>[`PLUGIN`](/fixing/codes/plugin/)                     | Installing and running plugins                   |
 
 ## Severity
 

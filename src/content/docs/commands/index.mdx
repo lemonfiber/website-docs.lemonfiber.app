@@ -65,15 +65,17 @@ binary at the revision this site pins, which that page names at its foot.
 
 ## Seeing what is happening
 
-| Command      | What it does                                                                 | Reach for it when                                                                                                    |
-| ------------ | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `ps`         | Reports what each service is actually doing                                  | You want the state of the stack in one screen                                                                        |
-| `logs`       | Shows what services are saying                                               | You want the lines. `--follow` keeps reading; `--watch` opens the scrollable viewer                                  |
-| `trace`      | Follows one show or film across the services                                 | You are asking "where is my show?" and want the answer step by step                                                  |
-| `household`  | Shows what the household asked for, and where each request stands            | You want the queue grouped by whoever asked for it                                                                   |
-| `held`       | Shows what one member can actually watch, read from the media server as them | You want to see what an age limit or a library restriction comes to, as the list it produces rather than the setting |
-| `stuck`      | Lists the items whose downloads are stuck                                    | Something reported a count of stuck items and you want them named                                                    |
-| `front-door` | Names the one address to send somebody who lives here                        | Somebody in the house asks where to go, and you want one answer rather than a list of ports                          |
+| Command      | What it does                                                                                             | Reach for it when                                                                                                                                                               |
+| ------------ | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ps`         | Reports what each service is actually doing                                                              | You want the state of the stack in one screen                                                                                                                                   |
+| `logs`       | Shows what services are saying                                                                           | You want the lines. `--follow` keeps reading; `--watch` opens the scrollable viewer                                                                                             |
+| `trace`      | Follows one show or film across the services                                                             | You are asking "where is my show?" and want the answer step by step                                                                                                             |
+| `household`  | Shows what the household asked for, and where each request stands                                        | You want the queue grouped by whoever asked for it                                                                                                                              |
+| `held`       | Shows what one member can actually watch, read from the media server as them                             | You want to see what an age limit or a library restriction comes to, as the list it produces rather than the setting                                                            |
+| `playing`    | Shows what the media server is playing now: who is watching what, and where                              | You want to know who is watching before you restart something. `--member` narrows it to one person's sessions                                                                   |
+| `stuck`      | Lists the items whose downloads are stuck                                                                | Something reported a count of stuck items and you want them named                                                                                                               |
+| `front-door` | Names the one address to send somebody who lives here                                                    | Somebody in the house asks where to go, and you want one answer rather than a list of ports                                                                                     |
+| `news`       | Lists lemonfiber's releases, what the household asked for, and the checks found wrong, each newest first | You want what is new in one list. Each entry carries what names it, so a screen can mark what came after the newest it showed; the stack keeps nothing of what anybody has seen |
 
 ## The household
 
@@ -86,11 +88,12 @@ binary at the revision this site pins, which that page names at its foot.
 
 ## The disk and the line
 
-| Command        | What it does                                                                  | Reach for it when                                                                                  |
-| -------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `space`        | Accounts for the disk: where the room went, when it runs out, what can go     | The disk is filling and you want to know what took it, and what could be got back                  |
-| `stop-seeding` | Stops seeding one completed download, and lets its files go with it           | You want the room back from one torrent, and to be told what letting it go costs first             |
-| `bandwidth`    | Accounts for the line: what it carries, what the stack takes, what that costs | The house is complaining, and you want the stack held to a share of the line rather than all of it |
+| Command        | What it does                                                                  | Reach for it when                                                                                                                              |
+| -------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `space`        | Accounts for the disk: where the room went, when it runs out, what can go     | The disk is filling and you want to know what took it, and what could be got back                                                              |
+| `stop-seeding` | Stops seeding one completed download, and lets its files go with it           | You want the room back from one torrent, and to be told what letting it go costs first                                                         |
+| `bandwidth`    | Accounts for the line: what it carries, what the stack takes, what that costs | The house is complaining, and you want the stack held to a share of the line rather than all of it                                             |
+| `downloads`    | Pauses every download client the stack runs, or lets them all fetch again     | You want the line back now, whatever the schedule says. `pause` holds until `resume`: a schedule, a new month or a lifted cap does not undo it |
 
 ## Settings and quality
 
@@ -158,6 +161,7 @@ lists it with everything else.
 | ----------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `ui`        | Serves the JSON API on a loopback socket for as long as you leave it running, printing the address and a token minted for that run | You are driving lemonfiber from a browser, a client or a script rather than a terminal. `--assets <dir>` serves a built web app beside it; `--lan` offers it to your network, once `--set-password` has set one; `--tls` serves it encrypted, on a port you name         |
 | `companion` | Pairs a phone with this stack, or replaces the certificate a paired phone pins                                                     | You want a phone to reach this stack. `pair` makes the material it reads — a code for its camera, and the same text to type — and carries no credential; `certificate` replaces what a paired phone pins, which every paired phone then refuses until it is paired again |
+| `key`       | Mints, lists or revokes the keys another program reaches the web interface with                                                    | A program — Home Assistant, an assistant, a script — should reach this stack under a key of its own. `mint` gives it one scope, `read`, `act` or `member:<account>`, and shows the secret once; `revoke` refuses it from its next request                                |
 
 ## Plugins
 

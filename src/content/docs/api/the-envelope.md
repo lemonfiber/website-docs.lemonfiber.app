@@ -116,8 +116,12 @@ command: `GET /api/setup` says where a run stands, and `POST /api/setup/answer`,
 `GET /api/events` is a server-sent event stream, and it is described in full under
 [what a client keeps](#what-a-client-keeps-that-the-schema-cannot-say) below. Each
 event's name is the envelope's `kind`: `dashboard` for the state the stack is in,
-and `step`, `start` and `log` for the lines a walkthrough, a start or a followed
-log writes as they are written.
+`alert` when an alert starts and again when it resolves, and `step`, `start` and
+`log` for the lines a walkthrough, a start or a followed log writes as they are
+written. A line said by work an action handed to a job names that job in the
+envelope's `job`. A member's stream carries none of these: it carries their own
+`household` row, their `held` shelf and what they are `playing`, each the answer
+that read gives them.
 
 ### When a read is refused
 
@@ -184,9 +188,9 @@ admits that **member**; the `admission` envelope then carries their id, and its
 absence means the operator. A member's session is checked with the media server
 again on every request.
 
-A member may ask for two things: what the household asked for, which is always
-narrowed to themselves whatever the request named, and `GET /api/held` for their
-own shelf. Everything else — every other read and every action — is refused `403`
+A member may ask for three things, each narrowed to themselves whatever the
+request named: what the household asked for, `GET /api/held` for their own shelf,
+and `GET /api/playing` for their own sessions. Everything else — every other read and every action — is refused `403`
 with `ADMIT-6`: _This is not something this account may ask for._ Where the media
 server cannot be asked, the answer is `403` with `ADMIT-7`, saying nobody was
 identified and nothing about the account changed, so the thing to fix is the media
@@ -212,14 +216,23 @@ answering with an empty document, the endpoints below `/api` answer as usual, an
 `lemonfiber ui --assets <dir>` serves a directory instead, which is what somebody
 working on the app itself needs.
 
-## What is not built yet
+## What a stack says it can do
 
-**`GET /api/capabilities` is not served.** The contract describes it; no route in
-the binary this site pins answers it.
+`GET /api/capabilities` answers with what this stack can do, as the credential
+that asked may do it, so a client on a phone reads it rather than deducing it
+from a version. The payload is `kind: "capabilities"`, and its data maps each
+request, named by the path it is served at, to one of three states:
 
-The contract and both SDKs were published ahead of all of this deliberately: the
-boundary is a published shape rather than a compiler check, and publishing it
-first is what stops two clients inventing two answers to the same question.
+| State          | Means                                                     |
+| -------------- | --------------------------------------------------------- |
+| `available`    | This stack can do it, and this credential may             |
+| `unconfigured` | The stack has it, and a setting switched off has to be on |
+| `unpermitted`  | The stack has it, and this credential may not ask for it  |
+
+A request the stack does not have is absent from the map rather than listed, so a
+stack older than a client's request says so by not naming it. The set is generated
+from the lists the surface routes by, and each state is decided by the same rule
+every request meets.
 
 ## What a client keeps that the schema cannot say
 
