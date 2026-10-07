@@ -202,6 +202,29 @@ describe("a contract that has gained a read endpoint", () => {
       ]),
     ).toEqual([]);
   });
+
+  it("counts an endpoint once where the section names it again under its own heading", () => {
+    const described = webApi.replace(
+      "## Live state",
+      [
+        "### What the version is",
+        "",
+        "```",
+        "GET /api/version",
+        "```",
+        "",
+        "## Live state",
+      ].join("\n"),
+    );
+    expect(
+      countViolations(INVENTORIES, { ...nothing, webApi: described }, [
+        page([
+          "| `GET /api/status` | What the stack is doing |",
+          "| `GET /api/version` | The versions in play |",
+        ]),
+      ]).filter((one) => one.where === ENVELOPE),
+    ).toEqual([]);
+  });
 });
 
 describe("a manifest that is not what it should be", () => {
