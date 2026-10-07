@@ -77,12 +77,12 @@ Then follow the trace, and read across from where it stopped.
 
 Nothing is being found. That is usually about the indexers or the quality preset rather than the download side.
 
-- [`QUAL-2`](/fixing/every-error-by-code/#qual--quality-against-what-is-available) — releases exist and the preset wants none of them. The indexer is working; the preset is stricter than what is out there.
-- [`QUAL-3`](/fixing/every-error-by-code/#qual--quality-against-what-is-available) — the indexer answered and there is nothing at all. Not a failure; there is nothing to grab yet.
-- [`CRED-2`](/fixing/every-error-by-code/#cred--credentials-a-service-refuses) — the indexer rejected its key. Searches through it come back empty.
-- [`CRED-3`](/fixing/every-error-by-code/#cred--credentials-a-service-refuses) and [`PROVIDER-9`](/fixing/every-error-by-code/#provider--accounts-and-indexers) — the key is fine and the indexer is limiting or has spent its allowance. Waiting fixes it.
-- [`PROVIDER-4`](/fixing/every-error-by-code/#provider--accounts-and-indexers) — one indexer has been failing and its aggregator has rested it. Releases are still found, from a smaller pool.
-- [`PROVIDER-5`](/fixing/every-error-by-code/#provider--accounts-and-indexers) — every indexer is failing at once. Indexers do not all fail on the same afternoon, so look at this machine's network, its DNS, and the tunnel if searches run through one.
+- [`QUAL-2`](/fixing/codes/qual/) — releases exist and the preset wants none of them. The indexer is working; the preset is stricter than what is out there.
+- [`QUAL-3`](/fixing/codes/qual/) — the indexer answered and there is nothing at all. Not a failure; there is nothing to grab yet.
+- [`CRED-2`](/fixing/codes/cred/) — the indexer rejected its key. Searches through it come back empty.
+- [`CRED-3`](/fixing/codes/cred/) and [`PROVIDER-9`](/fixing/codes/provider/) — the key is fine and the indexer is limiting or has spent its allowance. Waiting fixes it.
+- [`PROVIDER-4`](/fixing/codes/provider/) — one indexer has been failing and its aggregator has rested it. Releases are still found, from a smaller pool.
+- [`PROVIDER-5`](/fixing/codes/provider/) — every indexer is failing at once. Indexers do not all fail on the same afternoon, so look at this machine's network, its DNS, and the tunnel if searches run through one.
 
 [Quality presets](/running/quality-presets/) covers changing what the preset asks for.
 
@@ -90,18 +90,18 @@ Nothing is being found. That is usually about the indexers or the quality preset
 
 Something was sent to the download client and is not progressing.
 
-- On Usenet, check the account: [`PROVIDER-1`](/fixing/every-error-by-code/#provider--accounts-and-indexers) means it has nothing left, [`PROVIDER-6`](/fixing/every-error-by-code/#provider--accounts-and-indexers) means it is refusing the login, [`PROVIDER-7`](/fixing/every-error-by-code/#provider--accounts-and-indexers) means it stopped answering, and [`PROVIDER-8`](/fixing/every-error-by-code/#provider--accounts-and-indexers) means the client is opening more connections than the plan allows.
-- On torrents, check that peers can reach you. [`VPN-4`](/fixing/every-error-by-code/#vpn--traffic-leaving-the-tunnel) and [`VPN-7`](/fixing/every-error-by-code/#vpn--traffic-leaving-the-tunnel) both mean no peer can open a connection to your client, which reads as a slow download rather than as a fault. [Is my VPN hiding me?](/fixing/is-my-vpn-hiding-me/) covers both.
+- On Usenet, check the account: [`PROVIDER-1`](/fixing/codes/provider/) means it has nothing left, [`PROVIDER-6`](/fixing/codes/provider/) means it is refusing the login, [`PROVIDER-7`](/fixing/codes/provider/) means it stopped answering, and [`PROVIDER-8`](/fixing/codes/provider/) means the client is opening more connections than the plan allows.
+- On torrents, check that peers can reach you. [`VPN-4`](/fixing/codes/vpn/) and [`VPN-7`](/fixing/codes/vpn/) both mean no peer can open a connection to your client, which reads as a slow download rather than as a fault. [Is my VPN hiding me?](/fixing/is-my-vpn-hiding-me/) covers both.
 - A genuinely slow large release on a slow connection is not broken, and is reported as slow rather than stalled.
 
 ### Stopped at `downloaded` or `importing`
 
 The file is on disk and is not reaching the library. This is nearly always storage or wiring.
 
-- [`STORAGE-2`](/fixing/every-error-by-code/#storage--the-data-location) and [`STORAGE-6`](/fixing/every-error-by-code/#storage--the-data-location) — the services cannot write where they need to. Imports fail inside the service, far from where the cause is.
-- [`STORAGE-4`](/fixing/every-error-by-code/#storage--the-data-location) — the disk is full or projected to fill. A disk that fills partway through an import leaves half a file behind and stalls everything behind it.
-- [`WIRING-1`](/fixing/every-error-by-code/#wiring--drift-between-services) — the download client is filing under a category the rest of the stack no longer looks in, or the service can no longer reach the client at all. `lemonfiber doctor --fix` offers to put it right.
-- [`SEED-1`](/fixing/every-error-by-code/#seed--wiring-the-services-together) and [`SEED-2`](/fixing/every-error-by-code/#seed--wiring-the-services-together) — the wiring between two services was never completed, or its credential has gone stale.
+- [`STORAGE-2`](/fixing/codes/storage/) and [`STORAGE-6`](/fixing/codes/storage/) — the services cannot write where they need to. Imports fail inside the service, far from where the cause is.
+- [`STORAGE-4`](/fixing/codes/storage/) — the disk is full or projected to fill. A disk that fills partway through an import leaves half a file behind and stalls everything behind it.
+- [`WIRING-1`](/fixing/codes/wiring/) — the download client is filing under a category the rest of the stack no longer looks in, or the service can no longer reach the client at all. `lemonfiber doctor --fix` offers to put it right.
+- [`SEED-1`](/fixing/codes/seed/) and [`SEED-2`](/fixing/codes/seed/) — the wiring between two services was never completed, or its credential has gone stale.
 
 [Hardlinks and one mount point](/fixing/hardlinks-and-one-mount-point/) covers the storage side in full.
 

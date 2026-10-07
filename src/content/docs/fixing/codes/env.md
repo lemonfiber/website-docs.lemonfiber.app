@@ -1,0 +1,18 @@
+---
+title: ENV — the container engine
+description: Every ENV code lemonfiber raises, what it means, and what to do about it.
+sidebar:
+  hidden: true
+---
+
+Raised by the environment checks, before anything is started.
+
+| Code    | What it means                                                                                                                                                                                                                                                                                                         | What to do                                                                                                                                                |
+| ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ENV-1` | Docker is not installed. lemonfiber runs your stack in containers, so nothing can start without an engine.                                                                                                                                                                                                            | Install Docker Desktop, or Docker Engine on Linux.                                                                                                        |
+| `ENV-2` | Docker is installed and its daemon is not answering, or would not start. The client being present usually means this is the daemon stopped, or a permission problem, rather than a missing install.                                                                                                                   | Start Docker Desktop, or the `docker` service on Linux. If it is running, check that your account may run `docker`.                                       |
+| `ENV-3` | The Docker Compose plugin is missing, or is too old. lemonfiber drives the stack through Compose v2.                                                                                                                                                                                                                  | Install or update the Docker Compose plugin. The message names the minimum version.                                                                       |
+| `ENV-4` | The container engine is not set to start with this machine. The containers carry a restart policy, and a restart policy only brings a container back once the engine behind it is running — so after the next restart the stack is simply not there, with no error and nothing in any log you would think to look at. | Turn the engine's own start-at-boot on: Docker Desktop's open-at-login setting on macOS and Windows, the daemon's unit on Linux. The message names which. |
+| `ENV-5` | This machine and the daemon speak different Docker API generations. Both ends settle on the older of the two, so everything works and anything newer than that generation is not available.                                                                                                                           | Bring both to the same Docker release, or carry on with the older set. It is ordinary where the two machines were updated at different times.             |
+
+How to read a row, what each severity and state means, and which exit each code leaves with are on [every error by code](/fixing/every-error-by-code/), beside every other family.

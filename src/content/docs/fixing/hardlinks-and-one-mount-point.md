@@ -53,13 +53,13 @@ The mode is derived from what the test established, not chosen from a menu. You 
 
 `degraded` is the loud one, and it is its own finding rather than the ordinary copy-mode warning. A location that never could link is a decision you made. A location that used to link and stopped is something that changed under a running stack, and every import since has quietly been copying.
 
-That is [`STORAGE-5`](/fixing/every-error-by-code/#storage--the-data-location). The usual cause is a drive that came back mounted with different options — a network share remounted without the right ones, most often. Remount it as it was, then run the storage check again.
+That is [`STORAGE-5`](/fixing/codes/storage/). The usual cause is a drive that came back mounted with different options — a network share remounted without the right ones, most often. Remount it as it was, then run the storage check again.
 
 ## One mount point, not two
 
 Every container gets **one** data mount, with subdirectories beneath it. Splitting downloads and media into separate mounts is the anti-pattern this rule exists to prevent: separate mounts are separate filesystems, so nothing can ever link between them, and every import copies for ever.
 
-This is rejected at manifest validation rather than left to be discovered in production. A stack that describes it raises [`STACK-6`](/fixing/every-error-by-code/#stack--the-stack-description) and names every fault it found in one pass.
+This is rejected at manifest validation rather than left to be discovered in production. A stack that describes it raises [`STACK-6`](/fixing/codes/stack/) and names every fault it found in one pass.
 
 The reasoning is recorded in [ADR-0006, a single data mount](/spec/00-overview/decisions/0006-single-data-mount/). [The stack manifest](/advanced/the-stack-manifest/) covers how mounts are declared.
 
@@ -69,8 +69,8 @@ Files the services cannot write produce failures a long way from their cause: th
 
 Two findings cover it.
 
-- [`STORAGE-2`](/fixing/every-error-by-code/#storage--the-data-location) — the data location exists and cannot be written to at all.
-- [`STORAGE-6`](/fixing/every-error-by-code/#storage--the-data-location) — you own it, and the containers cannot write it. They run as a particular user and group, and the message names both those and the directory's own ownership and mode. Give the service user ownership, or write access.
+- [`STORAGE-2`](/fixing/codes/storage/) — the data location exists and cannot be written to at all.
+- [`STORAGE-6`](/fixing/codes/storage/) — you own it, and the containers cannot write it. They run as a particular user and group, and the message names both those and the directory's own ownership and mode. Give the service user ownership, or write access.
 
 The check applies the platform's real semantics: ownership matters on native Linux, and is largely mapped away on Docker Desktop, where the check reports `skipped` with the reason rather than inventing a verdict.
 
@@ -78,21 +78,21 @@ The check applies the platform's real semantics: ownership matters on native Lin
 
 External drives get unplugged, and network mounts drop. A data location that vanishes while the services are running is dangerous: the library services may write into the now-empty mount point and build a phantom library on the system disk.
 
-[`STORAGE-3`](/fixing/every-error-by-code/#storage--the-data-location) reports the location being unreachable. To have the stack stopped rather than left writing into nothing, run a watch over the forms that need it:
+[`STORAGE-3`](/fixing/codes/storage/) reports the location being unreachable. To have the stack stopped rather than left writing into nothing, run a watch over the forms that need it:
 
 ```sh
 $ lemonfiber watch tv
 ```
 
-A watch can only guard a location that is present when it starts — [`WATCH-2`](/fixing/every-error-by-code/#watch--guarding-the-data-location) is what you get if it has already gone.
+A watch can only guard a location that is present when it starts — [`WATCH-2`](/fixing/codes/watch/) is what you get if it has already gone.
 
 ## Space
 
 Free space on its own is not enough to know. What matters is free space measured against what is already queued, because a disk that fills partway through an import leaves a partial file behind and stalls everything behind it.
 
-[`STORAGE-4`](/fixing/every-error-by-code/#storage--the-data-location) covers both readings: low free space, and projected exhaustion against downloads still to land. Either way the options are the same — free space, thin the queue, or move the data location to a larger volume.
+[`STORAGE-4`](/fixing/codes/storage/) covers both readings: low free space, and projected exhaustion against downloads still to land. Either way the options are the same — free space, thin the queue, or move the data location to a larger volume.
 
-[`QUAL-1`](/fixing/every-error-by-code/#qual--quality-against-what-is-available) is the related warning from the other direction: the disk is not full, but at the quality preset you chose it holds only a few hours of content. Nothing is broken and nothing already downloaded is affected; new acquisitions will simply fill it quickly. [Quality presets](/running/quality-presets/) covers choosing a lighter one for media that does not need it.
+[`QUAL-1`](/fixing/codes/qual/) is the related warning from the other direction: the disk is not full, but at the quality preset you chose it holds only a few hours of content. Nothing is broken and nothing already downloaded is affected; new acquisitions will simply fill it quickly. [Quality presets](/running/quality-presets/) covers choosing a lighter one for media that does not need it.
 
 ## If you cannot have hardlinks
 
@@ -102,7 +102,7 @@ What you should know before settling for it is the third cost — you cannot see
 
 ## Related
 
-- [Every error by code](/fixing/every-error-by-code/) — the seven `STORAGE` codes, side by side
+- [The data location's codes](/fixing/codes/storage/) — the seven `STORAGE` codes, side by side
 - [Run the doctor](/fixing/run-the-doctor/) — running just the storage category
 - [Your first stack](/start/your-first-stack/) — choosing a data location in the first place
 - [C5, storage and hardlink management](/spec/10-functional/features/c-trust/c5-storage/) — the requirement this is written against

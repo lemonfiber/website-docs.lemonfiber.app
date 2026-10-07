@@ -1,0 +1,18 @@
+---
+title: PAIR — pairing a phone with the stack
+description: Every PAIR code lemonfiber raises, what it means, and what to do about it.
+sidebar:
+  hidden: true
+---
+
+Raised by `lemonfiber companion`, which makes the material a phone reads to find this stack and know it, and replaces the certificate a paired phone pins. The material carries no credential: a phone handed it still signs in with a password.
+
+| Code     | What it means                                                                                                                                                                                                                                                                                                  | What to do                                                                                                                       |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `PAIR-1` | There is nowhere on this machine to keep what pairing a phone needs. The certificate a phone pins and the name it knows this stack by are kept beside the configuration, and this machine would not say where its configuration directory is.                                                                  | Run it as a user with a home directory, so there is a configuration directory.                                                   |
+| `PAIR-2` | lemonfiber has not been served encrypted on your network, so a phone has nothing to reach. A phone refuses an address that presents no certificate, and reaches this machine from the network rather than from here. The material names the port the surface was last served on that way, and it has not been. | Serve the web interface encrypted and on your network, on a port that stays the same: `lemonfiber ui --lan --tls --port <port>`. |
+| `PAIR-3` | The certificate this machine presents to a phone could not be read, or none has been made; the message says which. A phone pins that certificate, so it is not made again on its own — a new one is one every paired phone refuses.                                                                            | Replace it with `lemonfiber companion certificate --confirm`, knowing every paired phone will need pairing again.                |
+| `PAIR-4` | This machine has no address a phone could reach it at. Pairing material names the address a phone reaches, and this machine answers to no name on the network and has none written down.                                                                                                                       | Record the address your household reaches this machine at, with `lemonfiber config set HOUSEHOLD_HOST <address>`.                |
+| `PAIR-5` | This stack's own identifier could not be read or made. A phone knows this stack by an identifier it keeps whatever else changes; the message says what went wrong.                                                                                                                                             | Check that the configuration directory can be written, and try again.                                                            |
+
+How to read a row, what each severity and state means, and which exit each code leaves with are on [every error by code](/fixing/every-error-by-code/), beside every other family.

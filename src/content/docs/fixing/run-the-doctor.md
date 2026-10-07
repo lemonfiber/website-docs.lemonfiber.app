@@ -120,7 +120,7 @@ $ lemonfiber doctor --accept vpn.unprotected
 
 The finding is suppressed rather than removed: it still exists, still says what the cost is, and still appears when you ask to see everything. It simply stops leading.
 
-Two limits are deliberate. You can only accept something **this run is currently warning about** — naming anything else raises [`ACK-1`](/fixing/every-error-by-code/#ack--answering-a-warning). And only a warning can be accepted. A failure is not something to acknowledge away.
+Two limits are deliberate. You can only accept something **this run is currently warning about** — naming anything else raises [`ACK-1`](/fixing/codes/ack/). And only a warning can be accepted. A failure is not something to acknowledge away.
 
 ## Machine-readable output
 
