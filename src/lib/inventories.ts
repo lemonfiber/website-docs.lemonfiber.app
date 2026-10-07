@@ -10,6 +10,7 @@
  * Those are named in the README, under what stays unchecked.
  */
 
+import { FAMILIES, INDEX, isFamilyPage } from "./codes.ts";
 import { matches, type Inventory, type Page, type Sources } from "./counts.ts";
 import { captured } from "./mirror.ts";
 import {
@@ -67,7 +68,6 @@ const ENVELOPE_PAGE = `${DOCS}api/the-envelope.md`;
 const KINDS_PAGE = `${DOCS}api/kinds.md`;
 const TUI_PAGE = `${DOCS}commands/the-tui.md`;
 const CONSOLE_PAGE = `${DOCS}commands/the-web-console.md`;
-const CODES_PAGE = `${DOCS}fixing/every-error-by-code.md`;
 const CLIENT_PAGE = `${DOCS}api/typescript-sdk.md`;
 const PHP_PAGE = `${DOCS}api/php-sdk.md`;
 const REPO_MAP_PAGE = `${DOCS}develop/repo-map.md`;
@@ -270,7 +270,7 @@ export const INVENTORIES: readonly Inventory[] = [
       { says: "there are %N% deliberately" },
     ],
     listing: {
-      page: CODES_PAGE,
+      page: INDEX,
       members: (text) => columnUnder(text, "Severity"),
     },
   },
@@ -281,7 +281,7 @@ export const INVENTORIES: readonly Inventory[] = [
       variantsAt(sources.contract, "kinds", "error", "$defs", "ProblemState"),
     claims: [],
     listing: {
-      page: CODES_PAGE,
+      page: INDEX,
       members: (text) => columnUnder(text, "State"),
     },
   },
@@ -470,14 +470,18 @@ export const INVENTORIES: readonly Inventory[] = [
   },
   {
     what: "codes with no known remedy",
-    source: CODES_PAGE,
+    source: FAMILIES,
     members: (_sources, pages) =>
-      matches(
-        /^\| `([A-Z][A-Z0-9]*-\d+)` \|(?=.*Nothing is known to fix this)/gm,
-        prose(pages, CODES_PAGE),
-      ),
+      pages
+        .filter(isFamilyPage)
+        .flatMap((page) =>
+          matches(
+            /^\| `([A-Z][A-Z0-9]*-\d+)` \|(?=.*Nothing is known to fix this)/gm,
+            page.text,
+          ),
+        ),
     claims: [
-      { says: "%N% codes on this page do that" },
+      { says: "%N% codes in this reference do that" },
       { says: "%N% codes elsewhere on the site" },
     ],
   },

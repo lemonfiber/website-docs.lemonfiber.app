@@ -104,8 +104,8 @@ There is no _disable_. A plugin is installed or it is not.
 `install`, `update` and `remove` each accept `--dry-run`, and a rehearsal exits
 zero. A real run exits non-zero when an install went back, an update did not
 hold, or a removal left something standing. Every refusal carries a code in the
-`PLUGIN` family; what each means and what to do is
-[under PLUGIN in every error by code](/fixing/every-error-by-code/#plugin--installing-and-running-plugins).
+`PLUGIN` family; what each means and what to do is on
+[the `PLUGIN` codes page](/fixing/codes/plugin/).
 What an install wrote before it stopped is on the change record, which
 `lemonfiber history` reads.
 

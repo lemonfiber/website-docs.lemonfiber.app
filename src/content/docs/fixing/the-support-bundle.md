@@ -59,11 +59,11 @@ GET /api?apikey=<redacted:a3f1>&t=search
 
 Somebody helping can see that two services point at the same account without ever seeing which account. That preserves the diagnostic signal — _are these the same key?_ — which naive redaction destroys.
 
-The derivation is salted per bundle, so the likeness holds **inside** one bundle and says nothing across two. If the machine cannot produce the randomness that salt needs, no bundle is written at all: that is [`BUNDLE-5`](/fixing/every-error-by-code/#bundle--the-support-bundle), because a stand-in anyone can reproduce is a way back to the value it stands for.
+The derivation is salted per bundle, so the likeness holds **inside** one bundle and says nothing across two. If the machine cannot produce the randomness that salt needs, no bundle is written at all: that is [`BUNDLE-5`](/fixing/codes/bundle/), because a stand-in anyone can reproduce is a way back to the value it stands for.
 
 ### And it is checked before anything is written
 
-Before the archive is created, the whole of it is read back and scanned for anything that still resembles a known credential. A hit is a hard failure, not a warning: [`BUNDLE-1`](/fixing/every-error-by-code/#bundle--the-support-bundle), nothing written, and the file that produced it named.
+Before the archive is created, the whole of it is read back and scanned for anything that still resembles a known credential. A hit is a hard failure, not a warning: [`BUNDLE-1`](/fixing/codes/bundle/), nothing written, and the file that produced it named.
 
 Failing closed is the only acceptable behaviour here. This is the one place in lemonfiber where a bug publishes a secret.
 
@@ -82,22 +82,22 @@ Two of those are worth a note.
 
 **Media filenames are replaced by default.** A library's contents are not a credential, but they are the one thing in a bundle that says something about you rather than about the machine. They are replaced by stand-ins, which keeps two mentions of one file recognisable as one file, so a diagnostic is still followable.
 
-**`--reveal` needs `--confirm` on the same run.** Showing a setting as it is puts the real value into a file people post in public, so it takes saying twice — a flag that publishes a credential is not one to honour because it turned up on a command line somebody copied. Without the confirmation you get [`BUNDLE-4`](/fixing/every-error-by-code/#bundle--the-support-bundle). The bundle also records which settings were revealed, so whoever reads it knows.
+**`--reveal` needs `--confirm` on the same run.** Showing a setting as it is puts the real value into a file people post in public, so it takes saying twice — a flag that publishes a credential is not one to honour because it turned up on a command line somebody copied. Without the confirmation you get [`BUNDLE-4`](/fixing/codes/bundle/). The bundle also records which settings were revealed, so whoever reads it knows.
 
 ## When it will not write
 
-| Code                                                                  | Why                                                                                             |
-| --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| [`BUNDLE-1`](/fixing/every-error-by-code/#bundle--the-support-bundle) | The finished bundle still held something that reads as a credential                             |
-| [`BUNDLE-2`](/fixing/every-error-by-code/#bundle--the-support-bundle) | Not enough room, with space left over for the machine to keep working in                        |
-| [`BUNDLE-3`](/fixing/every-error-by-code/#bundle--the-support-bundle) | The archive could not be written. Nothing partial is left behind                                |
-| [`BUNDLE-4`](/fixing/every-error-by-code/#bundle--the-support-bundle) | A `--reveal` was asked for without `--confirm`                                                  |
-| [`BUNDLE-5`](/fixing/every-error-by-code/#bundle--the-support-bundle) | The machine could offer no randomness to derive stand-ins from                                  |
-| [`BUNDLE-6`](/fixing/every-error-by-code/#bundle--the-support-bundle) | This run has neither a directory of its own to keep an archive in nor anything to pack one with |
+| Code                                | Why                                                                                             |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------- |
+| [`BUNDLE-1`](/fixing/codes/bundle/) | The finished bundle still held something that reads as a credential                             |
+| [`BUNDLE-2`](/fixing/codes/bundle/) | Not enough room, with space left over for the machine to keep working in                        |
+| [`BUNDLE-3`](/fixing/codes/bundle/) | The archive could not be written. Nothing partial is left behind                                |
+| [`BUNDLE-4`](/fixing/codes/bundle/) | A `--reveal` was asked for without `--confirm`                                                  |
+| [`BUNDLE-5`](/fixing/codes/bundle/) | The machine could offer no randomness to derive stand-ins from                                  |
+| [`BUNDLE-6`](/fixing/codes/bundle/) | This run has neither a directory of its own to keep an archive in nor anything to pack one with |
 
-Two more are about asking for a bundle **back**. The web interface has no filesystem to write into and no path it could name, so a bundle asked for there is kept with lemonfiber's own files and then handed over by name. [`BUNDLE-7`](/fixing/every-error-by-code/#bundle--the-support-bundle) means this run cannot say where those files are; [`BUNDLE-8`](/fixing/every-error-by-code/#bundle--the-support-bundle) means the name is not one of the bundles kept here — a name carrying a path is refused rather than followed.
+Two more are about asking for a bundle **back**. The web interface has no filesystem to write into and no path it could name, so a bundle asked for there is kept with lemonfiber's own files and then handed over by name. [`BUNDLE-7`](/fixing/codes/bundle/) means this run cannot say where those files are; [`BUNDLE-8`](/fixing/codes/bundle/) means the name is not one of the bundles kept here — a name carrying a path is refused rather than followed.
 
-Two codes elsewhere on the site point you here rather than offering advice: [`STACK-3`](/fixing/every-error-by-code/#stack--the-stack-description) and [`SEED-3`](/fixing/every-error-by-code/#seed--wiring-the-services-together). Both mean lemonfiber does not recognise what happened and will not guess. Admitting that costs you a bundle; a confident wrong guess would cost you an afternoon.
+Two codes elsewhere on the site point you here rather than offering advice: [`STACK-3`](/fixing/codes/stack/) and [`SEED-3`](/fixing/codes/seed/). Both mean lemonfiber does not recognise what happened and will not guess. Admitting that costs you a bundle; a confident wrong guess would cost you an afternoon.
 
 ## Before you share it
 
@@ -108,5 +108,5 @@ Then take it to [where to ask](/contributing/where-to-ask/), which lists the pla
 ## Related
 
 - [Run the doctor](/fixing/run-the-doctor/) — the diagnosis the bundle carries
-- [Every error by code](/fixing/every-error-by-code/) — the eight `BUNDLE` codes, side by side
+- [The support bundle's codes](/fixing/codes/bundle/) — the eight `BUNDLE` codes, side by side
 - [C4, the support bundle](/spec/10-functional/features/c-trust/c4-support-bundle/) — the requirement this is written against

@@ -1,0 +1,19 @@
+---
+title: CONFIG — your settings
+description: Every CONFIG code lemonfiber raises, what it means, and what to do about it.
+sidebar:
+  hidden: true
+---
+
+Raised when the settings file cannot be read, written, or kept anywhere.
+
+| Code       | What it means                                                                                                                                                                                                                                                                     | What to do                                                                                                         |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `CONFIG-1` | Your settings exist and could not be read. Nothing has been changed — lemonfiber will not guess at settings it cannot read.                                                                                                                                                       | Check the file is readable. The message names its path.                                                            |
+| `CONFIG-2` | Your settings could not be saved. The change was not made and your existing settings are untouched.                                                                                                                                                                               | Check the location is writable and has space.                                                                      |
+| `CONFIG-3` | There is nowhere to keep settings, because setup has not chosen a location yet.                                                                                                                                                                                                   | Run `lemonfiber setup`.                                                                                            |
+| `CONFIG-4` | A file holding a credential can be read by somebody other than its owner. Nothing has been changed — this is the doctor reporting what it found.                                                                                                                                  | Take the permissions back to their owner. The message names each file.                                             |
+| `CONFIG-5` | Your settings were written by a newer lemonfiber than the one running, so this build will not write over them. Nothing has been changed — an older build writing over a newer one's settings leaves a file neither version can make sense of, and no way back to the one you had. | Run the newer lemonfiber, or take this one forward with `lemonfiber update self`. The message names both versions. |
+| `CONFIG-6` | A value could not be saved because it has a line break in it. Nothing has been changed — the settings file holds one setting per line, so the rest of the value would have been read as settings you never chose.                                                                 | Check where the value came from, and set it to a single line. The message names the settings file.                 |
+
+How to read a row, what each severity and state means, and which exit each code leaves with are on [every error by code](/fixing/every-error-by-code/), beside every other family.
