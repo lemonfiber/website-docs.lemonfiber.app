@@ -7,22 +7,25 @@ import {
   declaredBranches,
   DEFAULT_BRANCH,
   GUARDED,
+  LOG_FORMAT,
   mirrored,
+  overdue,
+  moved,
   parseCommits,
+  pinnedIn,
   pinnedRevisions,
   report,
   unread,
   watched,
+  WINDOW_HOURS,
+  WINDOW_SECONDS,
   type Behind,
 } from "../src/lib/pins.ts";
 
 const ROOT = new URL("..", import.meta.url).pathname;
-const FORMAT = "--format=%h%x09%cs%x09%s";
 
-// What the run page shows above the log. The verdict is written there as well
-// as printed, so what this check found and what it is for are read together —
-// the reader who has to be told it reports rather than gates is the one who did
-// not go looking for the workflow file.
+// What the run page shows above the log, so the verdict and what it asks of
+// the reader are read together.
 const SUMMARY = process.env["GITHUB_STEP_SUMMARY"];
 
 const say = (line = ""): void => {
@@ -39,24 +42,22 @@ const fenced = (lines: readonly string[]): void => {
 /**
  * A red this check could not compose a finding for.
  *
- * It never reached a comparison, so it has nothing to say about any pin. A run
- * that ends here and says nothing is the case this whole check exists to make
- * legible, one layer down: red, gating nothing, and indistinguishable from the
- * red it is meant to raise.
+ * It never reached a comparison, so it has nothing to say about any pin, and a
+ * comparison that did not happen is not a clean one: it refuses rather than
+ * passes over what it could not read.
  */
 function stopped(heading: string, detail: string): never {
   say(`## ${heading}`);
   say();
-  say("**This check reports; it gates nothing.** It did not get as far as a");
-  say(
-    "comparison, so nothing here is a pin that has gone behind — the run could",
-  );
-  say("not read what it reads.");
+  say("This run did not get as far as a comparison, so nothing here is a pin");
+  say("that has gone behind: it could not read what it reads.");
   say();
   fenced([detail]);
-  console.error(`::error::${detail} — this check reports it and gates nothing`);
+  console.error(`::error::${detail}`);
   process.exit(1);
 }
+
+const hours = String(WINDOW_HOURS);
 
 // A command named on its own is whichever one `PATH` reaches first, and `PATH`
 // on a runner is what the steps before this one prepended to it. Both ends are
@@ -98,11 +99,30 @@ const branches = declaredBranches(
 // most of this site: a mirrored page is the upstream file, so no guard names it
 // and `GUARDED` alone knew nothing about any of them.
 const mirrors = readFileSync(`${ROOT}mirrors.json`, "utf8");
-const reads = watched([...GUARDED, ...mirrored(mirrors)], [...pinned.keys()]);
+const everything = watched(
+  [...GUARDED, ...mirrored(mirrors)],
+  [...pinned.keys()],
+);
+
+// A pull request names the commit it targets. One that moves a pin is a
+// catch-up, and is judged on the modules it moves rather than refused for a
+// pin it does not touch.
+const BASE = process.env["BASE_SHA"] ?? "";
+const pinsAt = (revision: string): Map<string, string> => {
+  const listed = git("ls-tree", revision, "--", "vendor/");
+  if (!listed.ok)
+    stopped("The pins could not be read", `${revision} is not in the checkout`);
+  return pinnedIn(listed.out);
+};
+const moving = BASE === "" ? [] : moved(pinsAt(BASE), pinsAt("HEAD"));
+const reads =
+  moving.length === 0
+    ? everything
+    : everything.filter((one) => moving.includes(one.module));
 
 // A guard whose source resolves to no pinned repository is a guard this check
 // is not watching, and an empty list would read as a clean run.
-if (reads.length === 0)
+if (everything.length === 0)
   stopped(
     "No guarded source sits in a pinned repository",
     "every guarded path resolved outside vendor/, so nothing was compared",
@@ -125,7 +145,7 @@ for (const read of reads) {
   }
 
   const range = `${pin}..origin/${branch}`;
-  const args = ["-C", read.module, "log", FORMAT, range];
+  const args = ["-C", read.module, "log", LOG_FORMAT, range];
   if (read.path !== "") args.push("--", read.path);
 
   const log = git(...args);
@@ -139,78 +159,79 @@ for (const read of reads) {
     behind.push({ ...read, pin: pin.slice(0, 7), commits });
 }
 
-const blind = unread(GUARDED, [...pinned.keys()]);
+const blind = unread([...GUARDED, ...mirrored(mirrors)], [...pinned.keys()]);
+const late = overdue(behind, Math.floor(Date.now() / 1000), WINDOW_SECONDS);
+const scanned = `${String(reads.length)} watched paths, in ${String(fetched.size)} of ${String(pinned.size)} pinned repositories.`;
 
-const scanned = `${String(reads.length)} guarded paths, in ${String(fetched.size)} of ${String(pinned.size)} pinned repositories.`;
-
-if (behind.length > 0) {
-  say("## A guard is reading a source its pin has gone behind on");
+if (late.length > 0) {
+  say("## A pin has gone behind on a source this site renders");
   say();
-  say(
-    "**This check reports; it gates nothing.** A pin that lags is the design",
-  );
-  say(
-    "(ADR-0015, REPO-R46) and there is no window here: what is reported is not",
-  );
-  say(
-    "how far behind a pin is but what it is behind *on*. These commits touched",
-  );
-  say(
-    "a file a guard in this repository holds a page to, so the guard can agree",
-  );
-  say(
-    "with the vendored copy in both directions while the page is out of date.",
-  );
-  say("It does not mean this check is broken, and it is not failing any pull");
-  say("request.");
+  say("These commits touched a file a page here renders or a guard reads,");
+  say(`and have waited longer than ${hours} hours on their branch, which is`);
+  say("longer than `bump-pins` takes to carry them. Until each is taken, this");
+  say("check refuses every pull request here (Q-R68).");
 } else if (unreadable.length > 0) {
   say("## A pinned repository could not be compared with its default branch");
   say();
+  say("This is not a pin that has gone behind: the comparison did not happen,");
+  say("so what that pin has taken is unknown rather than current.");
+} else if (behind.length > 0) {
+  say("## Every commit a pin has not taken is inside the window");
+  say();
+  say("Each one below touched a source this site renders, and has waited less");
   say(
-    "**This check reports; it gates nothing.** This is not a pin that has gone",
-  );
-  say(
-    "behind, and it is not news about the repository it names: the comparison",
-  );
-  say(
-    "did not happen, so what that pin has taken is unknown rather than current.",
+    `than ${hours} hours. \`bump-pins\` carries it in a pull request of its own.`,
   );
 } else {
-  say("## Every pin has taken every commit touching a source a guard reads");
-  say();
-  say("A pin behind is the design (ADR-0015, REPO-R46). What is asked here is");
-  say("narrower: whether any of the commits it has not taken touched a file a");
-  say("guard in this repository holds a page to. None had.");
+  say(
+    "## Every pin has taken every commit touching a source this site renders",
+  );
 }
 
 say();
 say(scanned);
+if (moving.length > 0) {
+  say();
+  say(
+    "This pull request moves a pin, so it is judged on the modules it moves:",
+  );
+  say();
+  fenced(moving);
+}
 
-// What a clean run does not say. These repositories hold no path any guard
-// reads, so no commit in them can ever appear above — the verdict is about
-// the ones that are read, and without this it reads as an account of all of
-// them. Said on every run, green or not, because the reader who needs it is
-// the one looking at a clean one.
+// What a clean run does not say. These repositories hold no path a page or a
+// guard here reads, so no commit in them can ever appear above — the verdict
+// is about the ones that are read, and without this it reads as an account of
+// all of them.
 if (blind.length > 0) {
   say();
-  say("No guard reads a path inside these, so this check says nothing about");
-  say("them either way:");
+  say("No page or guard here reads a path inside these, so this check says");
+  say("nothing about them either way:");
   say();
   fenced(blind);
 }
 
-if (behind.length > 0) {
+if (late.length > 0) {
   say();
-  say("Gone behind on a guarded source:");
+  say(`Waiting longer than ${hours} hours:`);
+  say();
+  fenced(report(late).split("\n"));
+  say();
+  say("To catch up, merge the `pins/all` pull request `bump-pins` keeps open.");
+  say("Where it names a module above as held, the guards name what the pages");
+  say("need: take the pin in a pull request that also writes it, with");
+  say(
+    "`git submodule update --remote <module>`, then `npm run guard -- --fix`",
+  );
+  say("and the rest by hand.");
+  console.error(
+    `::error::a pin has not taken commits that have waited longer than ${hours} hours on a source this site renders — merge the pins/all pull request, or take the pin with \`git submodule update --remote <module>\` and \`npm run guard -- --fix\``,
+  );
+} else if (behind.length > 0) {
+  say();
+  say("Inside the window:");
   say();
   fenced(report(behind).split("\n"));
-  say();
-  say("To catch up: `git submodule update --remote <path>`, then re-run");
-  say("`npm run guard`.");
-  console.error(
-    "::error::a guard is reading a source its pin has gone behind on, so the guard " +
-      "can be green and the page wrong — this check reports it and gates nothing",
-  );
 }
 
 if (unreadable.length > 0) {
@@ -219,10 +240,8 @@ if (unreadable.length > 0) {
   say();
   fenced(unreadable);
   console.error(
-    "::error::a pinned repository could not be compared with its default branch, so " +
-      "what it holds is unknown rather than current — this check reports it and gates " +
-      "nothing",
+    "::error::a pinned repository could not be compared with its default branch, so what it holds is unknown rather than current",
   );
 }
 
-process.exit(behind.length + unreadable.length === 0 ? 0 : 1);
+process.exit(late.length + unreadable.length === 0 ? 0 : 1);

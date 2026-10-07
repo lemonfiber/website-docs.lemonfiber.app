@@ -191,26 +191,31 @@ changed what it counts: `api/the-envelope` named six read endpoints, and the
 listing guard agreed with it in both directions, against a contract upstream had
 already grown.
 
-`.github/workflows/pins.yml` runs weekly and asks two questions.
+Two workflows keep the pins moving and say when they stop.
 
-`age` asks how long each pin has been behind and fails past three weeks. That is
-the measure for a mirror of something abandoned, and it is blind to this: it
-called every pin healthy on the morning the endpoint table was wrong, because
-the pin was two days old.
+`.github/workflows/bump-pins.yml` runs every three hours. For each repository
+whose default branch is ahead of its pin, it checks the new revision out and
+runs `npm run guard -- --fix` to rewrite the counts the pages state. A move the
+guards then hold is taken; a move that needs words written here is left at its
+pin and named, with what the guards said, so it holds back no other. What is
+taken goes to `pins/all` as one commit made through the API, and the pull
+request it opens merges itself once every required check passes.
+`node scripts/bump.ts` is the whole of that job.
 
-`sources` asks the other question, and applies no window at all. Has a pin gone
-behind on a file a guard here reads? The paths are the declarations themselves —
-every inventory's `source`, and the artefact each guard that is not one holds
-a page to — so a new inventory is watched from the day it is declared
-and nothing is written down twice. It names the commits rather than counting
-them: a repository commits far more than this site reads, and the count of
-everything says nothing about whether a page here has gone wrong.
+`.github/workflows/pins.yml` holds `pins-sources`, the gate. Has a pin gone
+behind on a file a page here renders or a guard reads? The paths are the
+declarations themselves — every mirror in `mirrors.json`, every inventory's
+`source`, and the artefact each guard that is not one holds a page to — so a
+new one is watched from the day it is declared and nothing is written down
+twice. It names the commits rather than counting them, and refuses once one has
+waited longer than `WINDOW_HOURS` (`src/lib/pins.ts`) on its branch: on every
+pull request, and on
+a daily schedule that tells the maintainers' Discord. A pull request that moves
+a pin is judged on the modules it moves. `node scripts/pins.ts` is the whole of
+that job, and runs here as it runs there.
 
-`node scripts/pins.ts` is the whole of that job, and runs here as it runs
-there.
-
-Neither runs on a pull request. A build may not reach the network, so both sit
-on the schedule, where fetching is what they are for.
+`age`, on the same schedule, reports how long each pin has been behind at all,
+in days, and gates nothing.
 
 ## Pages built from an artefact
 

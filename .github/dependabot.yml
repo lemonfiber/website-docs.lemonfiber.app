@@ -8,8 +8,8 @@
 # `GOV-R12` for a pull request GitHub says `dependabot[bot]` opened (Q-R55).
 #
 # Not configured here, deliberately:
-#   - the nine repositories under `vendor/`. Those revisions are bumped on
-#     purpose; the `pins` workflow here is what notices one going stale.
+#   - the repositories under `vendor/`. `bump-pins` takes those in one pull
+#     request, and `pins-sources` refuses when one stalls.
 #   - `.nvmrc`. Dependabot has no manager that reads it, and nothing else
 #     watches it — see the spec's 40-quality/tooling.md, "What Dependabot does
 #     not watch".

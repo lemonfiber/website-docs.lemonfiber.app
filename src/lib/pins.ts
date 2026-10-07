@@ -8,6 +8,11 @@
  * behind, which is a different question with a different answer: a pin two days
  * behind is inside every window and still enough.
  *
+ * `bump-pins.yml` takes every pin that has moved, by pull request, so a commit
+ * a pin has not taken is normally one that pull request is carrying. What makes
+ * one a fault is that it has waited longer than that takes: `overdue` keeps the
+ * commits older than the window, and those are what `sources` refuses on.
+ *
  * Everything here is a pure function over text. Reading the checkout and its
  * remotes is `scripts/pins.ts`.
  */
@@ -28,9 +33,21 @@ export const DEFAULT_BRANCH = "main";
 /** What `git submodule status` puts in front of a revision it holds. */
 const PINNED = /^[-+U ]?([0-9a-f]{40})\s+(\S+)/;
 /** One `submodule.<name>.<key> <value>` line of `.gitmodules`. */
-const DECLARED = /^submodule\.(.+)\.(path|branch)\s+(\S+)$/;
-/** One line of `git log --format=%h%x09%cs%x09%s`. */
-const LOGGED = new RegExp(String.raw`^(\S+)${TAB}(\S+)${TAB}(.*)$`);
+const DECLARED = /^submodule\.(.+)\.(path|branch|url)\s+(\S+)$/;
+/** One gitlink line of `git ls-tree <revision> -- vendor/`. */
+const GITLINK = /^160000 commit ([0-9a-f]{40})\t(\S+)$/;
+/** What `parseCommits` reads: short hash, date, committer time, subject. */
+export const LOG_FORMAT = "--format=%h%x09%cs%x09%ct%x09%s";
+/** One line of `git log` in `LOG_FORMAT`. */
+const LOGGED = new RegExp(String.raw`^(\S+)${TAB}(\S+)${TAB}(\d+)${TAB}(.*)$`);
+/**
+ * How long a commit may wait on its branch before a pin not having taken it
+ * refuses pull requests (Q-R68). `bump-pins` runs every three hours, which
+ * leaves it eight runs to carry one.
+ */
+export const WINDOW_HOURS = 24;
+/** `WINDOW_HOURS`, in the seconds a committer time is counted in. */
+export const WINDOW_SECONDS = WINDOW_HOURS * 3600;
 
 /** A pinned repository, and a path inside it that a guard reads. */
 export interface Watched {
@@ -44,6 +61,11 @@ export interface Watched {
 export interface Commit {
   readonly sha: string;
   readonly date: string;
+  /**
+   * When it reached the branch, in seconds since the epoch: the committer time,
+   * which a squash merge sets to the moment of the merge.
+   */
+  readonly time: number;
   readonly subject: string;
 }
 
@@ -170,30 +192,86 @@ export function pinnedRevisions(status: string): Map<string, string> {
 }
 
 /**
- * The default branch each submodule declares, by the path it sits at.
+ * The revision each submodule is pinned to in a commit, by the path it sits at.
  *
- * What `git config -f .gitmodules --get-regexp ^submodule\.` prints. Every
- * submodule in this repository declares one.
+ * What `git ls-tree <revision> -- vendor/` prints. Where `pinnedRevisions` reads
+ * the checkout, this reads any commit the checkout holds, which is how a pull
+ * request's pins are told apart from the ones on the branch it targets.
  */
-export function declaredBranches(config: string): Map<string, string> {
-  const paths = new Map<string, string>();
-  const branches = new Map<string, string>();
-
-  for (const line of config.split("\n")) {
-    const one = DECLARED.exec(line.trim());
-    if (one === null) continue;
-    const value = captured(one, 3);
-    if (captured(one, 2) === "path") paths.set(captured(one, 1), value);
-    else branches.set(captured(one, 1), value);
-  }
-
+export function pinnedIn(tree: string): Map<string, string> {
   const found = new Map<string, string>();
-  for (const [name, path] of paths)
-    found.set(path, branches.get(name) ?? DEFAULT_BRANCH);
+  for (const line of tree.split("\n")) {
+    const one = GITLINK.exec(line);
+    if (one !== null) found.set(captured(one, 2), captured(one, 1));
+  }
   return found;
 }
 
-/** The commits `git log --format=%h%x09%cs%x09%s` named. */
+/**
+ * The modules whose pin differs between two commits, in path order.
+ *
+ * A pull request that moves a pin is a catch-up, and refusing it for a pin it
+ * does not touch would hold back the cure for the very drift being refused —
+ * so such a pull request is judged on the modules it moves and no others.
+ */
+export function moved(
+  base: ReadonlyMap<string, string>,
+  head: ReadonlyMap<string, string>,
+): string[] {
+  return [...head]
+    .filter(([module, sha]) => base.get(module) !== sha)
+    .map(([module]) => module)
+    .sort((a, b) => a.localeCompare(b));
+}
+
+/**
+ * What `.gitmodules` declares about each submodule, by the path it sits at.
+ *
+ * What `git config -f .gitmodules --get-regexp ^submodule\.` prints. A module
+ * is keyed by its path because that is how everything else here names it.
+ */
+function declarations(config: string): Map<string, Map<string, string>> {
+  const byName = new Map<string, Map<string, string>>();
+  for (const line of config.split("\n")) {
+    const one = DECLARED.exec(line.trim());
+    if (one === null) continue;
+    const name = captured(one, 1);
+    const keys = byName.get(name) ?? new Map<string, string>();
+    keys.set(captured(one, 2), captured(one, 3));
+    byName.set(name, keys);
+  }
+
+  const found = new Map<string, Map<string, string>>();
+  for (const keys of byName.values()) {
+    const path = keys.get("path");
+    if (path !== undefined) found.set(path, keys);
+  }
+  return found;
+}
+
+/**
+ * The default branch each submodule declares, by the path it sits at.
+ *
+ * A module that declares none is read against `DEFAULT_BRANCH`.
+ */
+export function declaredBranches(config: string): Map<string, string> {
+  const found = new Map<string, string>();
+  for (const [path, keys] of declarations(config))
+    found.set(path, keys.get("branch") ?? DEFAULT_BRANCH);
+  return found;
+}
+
+/** The repository each submodule is cloned from, by the path it sits at. */
+export function declaredUrls(config: string): Map<string, string> {
+  const found = new Map<string, string>();
+  for (const [path, keys] of declarations(config)) {
+    const url = keys.get("url");
+    if (url !== undefined) found.set(path, url);
+  }
+  return found;
+}
+
+/** The commits `git log` in `LOG_FORMAT` named. */
 export function parseCommits(output: string): Commit[] {
   const found: Commit[] = [];
   for (const line of output.split("\n")) {
@@ -202,8 +280,29 @@ export function parseCommits(output: string): Commit[] {
       found.push({
         sha: captured(one, 1),
         date: captured(one, 2),
-        subject: captured(one, 3),
+        time: Number(captured(one, 3)),
+        subject: captured(one, 4),
       });
+  }
+  return found;
+}
+
+/**
+ * The commits that have waited longer than the window, by watched path.
+ *
+ * A commit inside the window is one the automatic bump has had no time to
+ * take yet. A path left with none is dropped, so what comes back is exactly
+ * what the check refuses on, in the order it was given.
+ */
+export function overdue(
+  behind: readonly Behind[],
+  now: number,
+  allowed: number,
+): Behind[] {
+  const found: Behind[] = [];
+  for (const one of behind) {
+    const late = one.commits.filter((commit) => now - commit.time > allowed);
+    if (late.length > 0) found.push({ ...one, commits: late });
   }
   return found;
 }

@@ -10,13 +10,13 @@ decoration: it gets cited when convenient, ignored under deadline pressure, and
 produces the inconsistency it was written to prevent. So most of what follows is
 a check, and a check that decides whether a change is correct blocks the merge.
 
-A few deliberately do not, and they are the ones about **another repository's
-state** rather than about this change. A pin is meant to trail the thing it
-points at; a check that reddens the moment anything lands upstream refuses work
-that has nothing to do with it, and gets routed around. Those report — daily or
-weekly, naming the commits not taken — and the repository's own gates stay
-blocking. A label sync is not a gate either, for the same reason: it changes
-nothing a reviewer reads.
+Some checks are about **another repository's state** rather than about this
+change: whether a pin has taken what the repository it points at has merged.
+Those block too, and each names the commits not taken and how to take them, so
+the catch-up stands in front of the next change rather than behind it. On this
+site, an automated pull request takes each pin that has moved, and the check
+refuses only once a commit has waited longer than that takes. A label sync is
+not a gate: it changes nothing a reviewer reads.
 
 ## The order they run in
 
