@@ -1,0 +1,79 @@
+# Takes every pin this site holds forward to its repository's default branch,
+# in one pull request (REPO-R46, Q-R68).
+#
+# A pin moves by pull request, so the diff says which revision the site starts
+# showing and the guards hold every page to it before it merges. This is what
+# opens that pull request: `scripts/bump.ts` checks each moved revision out, lets
+# `npm run guard -- --fix` rewrite the counts the pages state, and takes the move
+# where the guards then hold. It writes what it takes to `pins/all` as a commit
+# made through the API, which GitHub signs, and sets the pull request to merge
+# itself once every required check passes.
+#
+# A repository whose move needs words written here, such as an error code the
+# pages do not describe yet, is left at its pin and named in the pull request
+# with what the guards said, so it holds back no other pin. `pins-sources`
+# refuses every pull request here once a commit has waited longer than its
+# window (`pins.yml`), and the words are written in a pull request of their own.
+#
+# It runs on the release App: a pull request opened with this workflow's own
+# token would start none of the checks it has to pass to merge.
+name: bump-pins
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Every three hours. `WINDOW_HOURS` in `src/lib/pins.ts` gives a commit a
+    # day before a pin not having taken it refuses pull requests, which leaves
+    # this eight runs to carry it.
+    - cron: "17 */3 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bump-pins
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Mint the release App token
+        id: token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.RELEASE_CLIENT_ID }}
+          private-key: ${{ secrets.RELEASE_APP_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: website-docs.lemonfiber.app
+          permission-contents: write
+          permission-pull-requests: write
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          # Whole histories: the commits a pin has not taken are read from the
+          # submodule, and a shallow one holds only the revision it is at.
+          submodules: true
+          fetch-depth: 0
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # The guards import the message catalogue, and the fixer is the guards.
+      - name: Install what the guards and the formatter need
+        run: |
+          npm ci --ignore-scripts
+          npm run messages
+
+      - name: Take every pin that has moved
+        env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+          # Only a pull request this app opened, from a branch in this
+          # repository, is edited, closed or set to merge; any other on the
+          # `pins/` prefix, a fork's included, is left alone and named.
+          APP_SLUG: ${{ steps.token.outputs.app-slug }}
+        run: node scripts/bump.ts

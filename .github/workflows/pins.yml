@@ -1,63 +1,38 @@
-# This site renders nine repositories from pinned revisions, which is the design
-# (ADR-0015, REPO-R46): a reader gets a page that agrees with itself, and a
-# revision is bumped deliberately rather than drifting under the build.
+# This site renders its sibling repositories from pinned revisions (ADR-0015,
+# REPO-R46): a reader gets a page that agrees with itself, and a revision moves
+# by pull request, where the guards hold every page to it before it merges.
+# `bump-pins.yml` opens that pull request, `pins/all`, and it merges itself
+# when the guards hold.
 #
-# The cost of that is a gate can be correct and still pass on the wrong input.
-# The error-code pages claim to list every error lemonfiber can raise, and a
-# check holds them to the codes the vendored source declares — bidirectional,
-# and it works. It passed while they were missing two codes, because the pin sat
-# one commit before the code that raises them. Nothing was broken; the artefact
-# was old.
+# A pin behind is therefore normal for as long as that takes, and a fault after
+# it. The two jobs here ask the two halves of that.
 #
-# So `age` asks the question no other check asked: how long has a pin been
-# behind? Not how many commits — a pin eleven commits and six hours behind is
-# fine, and one two commits and three months behind is not.
+# `sources` is the gate (Q-R68, Q-R70). It names every commit a pin has not
+# taken that touched a file a page here renders or a guard reads, and refuses
+# once one of them has waited longer than `WINDOW_HOURS` (`src/lib/pins.ts`)
+# on its branch — on every pull request, so the catch-up stands in front of the
+# next change, and on the schedule, so a stall is said where nobody has a pull
+# request open. A pull
+# request that moves a pin is judged on the modules it moves, since refusing it
+# for a pin it does not touch would hold back the cure. A page that renders a
+# pinned file can go false without anything here changing, and a guard holding
+# a page to a source stays green while the pin sits before the commit that moved
+# it; this is the check that says so.
 #
-# Duration answers abandonment, and only abandonment. It happened again on the
-# read-endpoint table: `api/the-envelope` named six endpoints and the listing
-# guard agreed with it in both directions, out of a contract upstream had
-# already grown. The pin was two days behind, and `age` called every pin
-# healthy. So `sources` asks the other half — has a pin gone behind on a file a
-# guard here reads? — with no window at all. It names the commits rather than
-# counting them: most of what a repository commits touches nothing this site
-# reads.
+# `age` reports how long each pin has been behind at all, in days, including on
+# files no page reads. It runs on the schedule only and gates nothing.
 #
-# Both report rather than gate, which is what `Q-R68` asks of them. A pin is
-# meant to lag: bumping one is a decision about the pages it re-renders, so
-# running these on pull requests would refuse every unrelated change for the
-# whole stretch between a repository moving and this site taking it. A red run
-# here is news about a repository this site renders, not a fault in whichever
-# commit happened to be last.
-#
-# So each run says which of those it is. A check nobody is required to pass,
-# that has been red for days, is otherwise indistinguishable from a check that
-# is broken, and the only reader who can tell them apart is one who already
-# knew.
-#
-# And that reader has to be reached. Both checks wrote their finding to the run
-# summary and to `::error::`, which is a place somebody has to already be
-# standing in front of to read — so `sources` was correct and red on every
-# scheduled run for three weeks and told nobody, while the file it named went on
-# rendering a page nothing said was out of date. The finding now goes to the
-# maintainers' Discord, in full, on the same run that raises it.
-#
-# The destination is part of the check, not a courtesy beside it. `telling`
-# refuses a red run it has nowhere to send, and it refuses a job that ended
-# without composing a finding at all — a reporter nobody reads and a reporter
-# that says nothing are the same silence, and this one has already been both.
+# A scheduled finding goes to the maintainers' Discord, in full, on the run
+# that raises it. `telling` refuses a red run it has nowhere to send, and a job
+# that ended without composing a finding at all.
 name: pins
 
 on:
+  pull_request:
   workflow_dispatch:
   schedule:
-    # Daily. It was weekly, on the reasoning that a pin is bumped deliberately and
-    # a daily nag would mostly report the same considered decision back at whoever
-    # made it. That holds for `age`, which measures abandonment in weeks. It does
-    # not hold for `sources`: a release moves the version manifests and the
-    # implementation status on the day it happens, and this site then serves the
-    # state before it. `0.14.0` was published on a Saturday and the next run that
-    # could have said so was the Monday. Reporting the same decision back is a
-    # smaller cost than a roadmap two days wrong about which version is out.
+    # Daily: `age` measures in days, and `sources` says a stall here when no
+    # pull request is open to show it on.
     - cron: "40 7 * * *"
 
 permissions:
@@ -65,6 +40,7 @@ permissions:
 
 jobs:
   age:
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     outputs:
       red: ${{ steps.report.outputs.red }}
@@ -276,6 +252,8 @@ jobs:
         run: exit 1
 
   sources:
+    # The name the default branch requires it by.
+    name: pins-sources
     runs-on: ubuntu-latest
     outputs:
       red: ${{ steps.report.outputs.red }}
@@ -295,8 +273,13 @@ jobs:
       # No install step. The check imports the declarations themselves and
       # nothing from `node_modules`, so the node this repository declares is
       # the whole of what it needs.
-      - name: Which pins have gone behind on a source a guard reads
+      - name: Which pins have gone behind on a source this site renders
         id: report
+        env:
+          # The commit a pull request targets, so one that moves a pin is
+          # judged on the modules it moves. Empty off a pull request, where
+          # every module is judged.
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           # `||` rather than a bare call, for the reason `age` needs it: the
           # step's shell is `bash -e` and a refusal would end the step before
@@ -319,17 +302,15 @@ jobs:
           path: ${{ runner.temp }}/finding
           retention-days: 1
 
-      - name: A guard is reading a source its pin has gone behind on
+      - name: A pin has gone behind on a source this site renders
         if: steps.report.outputs.red == 'true'
         run: exit 1
 
-  # Where the finding goes. Both checks above have always written it to the run
-  # summary; what neither had was a reader. `sources` was red on every scheduled
-  # run for three weeks, correct every time, and the file it named went on being
-  # rendered stale.
+  # Where a scheduled finding goes. A pull request shows its own red where its
+  # author is looking; a scheduled run has no such reader, so it is sent.
   telling:
     needs: [age, sources]
-    if: always()
+    if: always() && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     outputs:
       red: ${{ steps.compose.outputs.red }}

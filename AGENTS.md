@@ -28,10 +28,14 @@ refuses a real file under a mirror route for exactly that reason.
 The corollary is the thing to watch for: **a page here can go false without
 anything here changing.** Every tree under `vendor/` is pinned, so a recount
 stays green while the pin sits in front of the commit that moved what it counts.
-`.github/workflows/pins.yml` asks the two questions that catch it — how long a
-pin has been behind, and whether a pin has gone behind _on a file a guard here
-reads_. Neither runs on a pull request, because a build may not reach the
-network.
+`.github/workflows/bump-pins.yml` takes every pin that has moved in one pull
+request, `pins/all`, rewriting the counts the pages state on the way, and that
+pull request merges itself when the guards hold. A move that needs words the
+fixer cannot write is left at its pin and named in it, with what the guards
+said.
+`pins-sources` in `.github/workflows/pins.yml` refuses every pull request once
+a commit touching a file a page here renders has waited longer than its window
+untaken — the cure is to take the pin and write what the guards name.
 
 ## Where things are
 
@@ -83,5 +87,6 @@ an assistant. The four rules are in
 [50-governance/contributing.md](https://github.com/lemonfiber/spec/blob/main/50-governance/contributing.md#what-a-commit-message-has-to-carry).
 
 `npm run ci` is the whole gate and is what CI runs; `README.md` has the table of
-what each step reads. `pins.yml` is the exception in both directions — it is not
-in `npm run ci` and it does not run on a pull request.
+what each step reads. `pins-sources` is the exception: it runs on every pull
+request and is not in `npm run ci`, because it fetches the repositories this
+site pins and a build may not reach the network.

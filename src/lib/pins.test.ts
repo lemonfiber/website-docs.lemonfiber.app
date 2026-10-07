@@ -7,21 +7,29 @@ import { INVENTORIES } from "./inventories.ts";
 import { TOKENS } from "./tokens.ts";
 import {
   declaredBranches,
+  declaredUrls,
   GUARDED,
+  LOG_FORMAT,
   mirrored,
+  moved,
+  overdue,
   parseCommits,
+  pinnedIn,
   pinnedRevisions,
   report,
   unread,
   watched,
+  WINDOW_HOURS,
+  WINDOW_SECONDS,
   type Behind,
 } from "./pins.ts";
 
 const MODULES = ["vendor/spec", "vendor/lemonfiber", "vendor/lemonfiber/dep"];
 
-const commit = (sha: string): Behind["commits"][number] => ({
+const commit = (sha: string, time = 0): Behind["commits"][number] => ({
   sha,
   date: "2026-08-25",
+  time,
   subject: `feat: ${sha}`,
 });
 
@@ -211,19 +219,152 @@ describe("declaredBranches", () => {
       ["vendor/brand", "main"],
     ]);
   });
+
+  it("passes over a module that declares no path", () => {
+    expect([...declaredBranches("submodule.spec.branch trunk")]).toEqual([]);
+  });
+});
+
+describe("declaredUrls", () => {
+  it("maps a module's path to the repository it is cloned from", () => {
+    const config = [
+      "submodule.spec.path vendor/spec",
+      "submodule.spec.url http://localhost/lemonfiber/spec.git",
+      "submodule.brand.path vendor/brand",
+    ].join("\n");
+
+    expect([...declaredUrls(config)]).toEqual([
+      ["vendor/spec", "http://localhost/lemonfiber/spec.git"],
+    ]);
+  });
+});
+
+describe("pinnedIn", () => {
+  it("reads each gitlink a tree listing holds, and nothing else", () => {
+    const sha = "3573c195bde6e8ad3812fdc256ae60f78f267fd3";
+    const listing = [
+      `160000 commit ${sha}\tvendor/spec`,
+      `100644 blob ${sha}\tvendor/README.md`,
+      "",
+    ].join("\n");
+
+    expect([...pinnedIn(listing)]).toEqual([["vendor/spec", sha]]);
+  });
+});
+
+describe("moved", () => {
+  it("names the modules whose pin differs, in path order", () => {
+    const base = new Map([
+      ["vendor/spec", "a"],
+      ["vendor/brand", "b"],
+      ["vendor/lemonfiber", "c"],
+    ]);
+    const head = new Map([
+      ["vendor/spec", "z"],
+      ["vendor/brand", "b"],
+      ["vendor/lemonfiber", "y"],
+    ]);
+
+    expect(moved(base, head)).toEqual(["vendor/lemonfiber", "vendor/spec"]);
+  });
+
+  it("names a module the base does not pin at all", () => {
+    expect(moved(new Map(), new Map([["vendor/new", "a"]]))).toEqual([
+      "vendor/new",
+    ]);
+  });
+
+  it("names nothing where every pin is the same", () => {
+    const pins = new Map([["vendor/spec", "a"]]);
+    expect(moved(pins, pins)).toEqual([]);
+  });
 });
 
 describe("parseCommits", () => {
   it("reads what the log format put in each field", () => {
     expect(
-      parseCommits("e6a1eaa\t2026-08-25\tfix(contract): a\tb\n\n"),
+      parseCommits("e6a1eaa\t2026-08-25\t1756108800\tfix(contract): a\tb\n\n"),
     ).toEqual([
-      { sha: "e6a1eaa", date: "2026-08-25", subject: "fix(contract): a\tb" },
+      {
+        sha: "e6a1eaa",
+        date: "2026-08-25",
+        time: 1756108800,
+        subject: "fix(contract): a\tb",
+      },
     ]);
+  });
+
+  it("asks git for the four fields it reads, in that order", () => {
+    expect(LOG_FORMAT).toBe("--format=%h%x09%cs%x09%ct%x09%s");
+  });
+
+  it("passes over a line whose time is not a number", () => {
+    expect(parseCommits("e6a1eaa\t2026-08-25\tsoon\tfix: a")).toEqual([]);
   });
 
   it("finds nothing in an empty log", () => {
     expect(parseCommits("")).toEqual([]);
+  });
+});
+
+describe("the window", () => {
+  it("is a day, in hours and in seconds", () => {
+    expect(WINDOW_HOURS).toBe(24);
+    expect(WINDOW_SECONDS).toBe(86400);
+  });
+});
+
+describe("overdue", () => {
+  const NOW = 1_000_000;
+  const HOUR = 3600;
+
+  it("keeps a commit that has waited longer than the window", () => {
+    const behind: Behind[] = [
+      {
+        module: "vendor/spec",
+        pin: "2875549",
+        path: "",
+        commits: [commit("old", NOW - 2 * HOUR), commit("new", NOW - 60)],
+      },
+    ];
+
+    expect(overdue(behind, NOW, HOUR)).toEqual([
+      { ...behind[0], commits: [commit("old", NOW - 2 * HOUR)] },
+    ]);
+  });
+
+  it("leaves a commit that has waited exactly the window", () => {
+    const behind: Behind[] = [
+      {
+        module: "vendor/spec",
+        pin: "2875549",
+        path: "",
+        commits: [commit("edge", NOW - HOUR)],
+      },
+    ];
+
+    expect(overdue(behind, NOW, HOUR)).toEqual([]);
+  });
+
+  it("drops a path whose every commit is inside the window", () => {
+    const behind: Behind[] = [
+      {
+        module: "vendor/lemonfiber",
+        pin: "d0a59a3",
+        path: "reference/commands.md",
+        commits: [commit("fresh", NOW - 60)],
+      },
+      {
+        module: "vendor/spec",
+        pin: "2875549",
+        path: "",
+        commits: [commit("stale", NOW - 3 * HOUR)],
+      },
+    ];
+
+    expect(overdue(behind, NOW, HOUR).map((one) => one.module)).toEqual([
+      "vendor/spec",
+    ]);
   });
 });
 

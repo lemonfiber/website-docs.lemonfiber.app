@@ -12,7 +12,7 @@ default: ci
 #   commitlint, dco, attribution,   `.githooks/commit-msg` refuses all four before
 #   the citation gate               the push; `npm ci` is what turns it on, through
 #                                   npm's `prepare`
-#   pins                            weekly, and deliberately not on a pull request:
+#   pins-sources                    on every pull request, and not here:
 #                                   a build may not reach the network, and fetching
 #                                   is what that job is for
 #   hygiene                         actionlint, typos, links, markdown, the invite
