@@ -20,37 +20,27 @@ const summary = [
 ];
 
 /** Every version, in the order the manifests sequence them. */
-const versions = project.train.map(({ version, built }) => ({
+const versions = project.train.map((version) => ({
   id: version.version,
   status: version.status,
   open: expanded(version.status),
   milestone: m.project_milestone({ id: version.milestone }),
   delivers: version.delivers,
   goals:
-    built.total === 0
+    version.goals.length === 0
       ? m.project_no_goals()
-      : m.project_goals({ done: built.done, total: built.total }),
+      : m.project_goals({ total: version.goals.length }),
   featuresLabel:
     version.features.length === 0
       ? m.project_no_features()
       : m.project_features(),
-  features: version.features.map((feature) => {
-    const progress = project.features.get(feature.id);
-    return {
-      ...feature,
-      carried:
-        feature.shipped === null
-          ? null
-          : m.project_feature_shipped({ version: feature.shipped }),
-      note:
-        progress === undefined
-          ? m.project_feature_untracked()
-          : m.project_feature_built({
-              done: progress.done,
-              total: progress.total,
-            }),
-    };
-  }),
+  features: version.features.map((feature) => ({
+    ...feature,
+    carried:
+      feature.shipped === null
+        ? null
+        : m.project_feature_shipped({ version: feature.shipped }),
+  })),
 }));
 ---
 
@@ -85,7 +75,6 @@ const versions = project.train.map(({ version, built }) => ({
                 {feature.carried && (
                   <span class="feat__note">{feature.carried}</span>
                 )}
-                <span class="feat__note">{feature.note}</span>
               </li>
             ))}
           </ul>

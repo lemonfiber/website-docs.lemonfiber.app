@@ -8,6 +8,11 @@ import { sections } from "./src/lib/sections";
 export default defineConfig({
   site: "https://docs.lemonfiber.app",
   trailingSlash: "always",
+  // A page that moved keeps its address: the build writes a page at the old
+  // one that sends a reader on.
+  redirects: {
+    "/project/whats-built/": "/project/roadmap/",
+  },
   vite: {
     plugins: [
       paraglideVitePlugin({

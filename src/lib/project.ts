@@ -1,29 +1,17 @@
 /**
  * What the project pages render, assembled from the checkout.
  *
- * Three pinned files stand behind both pages, and nothing is fetched: the
- * specification's generated feature board, its per-version manifests, and the
- * implementation status the binary's repository keeps. The board says what each
- * version is for, the manifests say what each one locked, and the status file
- * says how much of it exists.
+ * The pinned specification stands behind both pages, and nothing is fetched:
+ * its generated feature board and its per-version manifests. The board says
+ * what each version is for and how far each feature is built, and the
+ * manifests say what each version locked.
  *
- * `train.ts` and `status.ts` hold the parsing. This file reads the tree through
+ * `train.ts` holds the parsing. This file reads the tree through
  * `project-source.ts` and joins the two into the shapes a page asks for.
  */
 import { parseRevision, type Revision } from "./mirror";
 import { gitLog } from "./mirror-source";
 import { readText } from "./project-source";
-import {
-  featureProgress,
-  parseStatus,
-  progressOver,
-  requirementProgress,
-  rollup,
-  type FeatureProgress,
-  type Milestone,
-  type Progress,
-  type Rollup,
-} from "./status";
 import {
   manifestName,
   parseBoard,
@@ -36,19 +24,12 @@ import {
 } from "./train";
 
 const SPEC = "vendor/spec";
-const BINARY = "vendor/lemonfiber";
 const BOARD = `${SPEC}/10-functional/features/index.json`;
 const MANIFESTS = `${SPEC}/70-operations/versions`;
-const STATUS = `${BINARY}/IMPLEMENTATION-STATUS.md`;
+/** The repositories the pages are read from. */
+const READ: readonly string[] = [SPEC];
 
-/** A version of the train, with how much of what it locked exists. */
-export interface Release {
-  readonly version: TrainVersion;
-  /** The goals it locked, against what the status file marks done. */
-  readonly built: Rollup;
-}
-
-/** The train taken whole: how far along it is, and how much of it exists. */
+/** The train taken whole: how far along it is, and how much of it has shipped. */
 export interface Sequence {
   /** How many of its versions have been released. */
   readonly released: number;
@@ -63,14 +44,8 @@ export interface Sequence {
 /** Everything both project pages render. */
 export interface Project {
   readonly counts: Counts;
-  readonly train: readonly Release[];
+  readonly train: readonly TrainVersion[];
   readonly sequence: Sequence;
-  readonly milestones: readonly Milestone[];
-  readonly features: ReadonlyMap<string, FeatureProgress>;
-  readonly requirements: ReadonlyMap<string, Progress>;
-  readonly overall: Rollup;
-  readonly doneMilestones: number;
-  readonly totalMilestones: number;
   /** The revisions the pages were rendered from, where git could say. */
   readonly pinned: readonly Pin[];
 }
@@ -112,7 +87,7 @@ export function revisionOf(directory: string): Revision | null {
 /** The repositories the pages read, each at the revision it is pinned to. */
 export function pinsIn(root: string): Pin[] {
   const found: Pin[] = [];
-  for (const repo of [SPEC, BINARY]) {
+  for (const repo of READ) {
     const revision = revisionOf(`${root}/${repo}`);
     if (revision !== null)
       found.push({
@@ -133,12 +108,11 @@ export function pinsIn(root: string): Pin[] {
  * half — the manifests for the versions, the catalogue for the features.
  */
 export function sequenceOf(
-  train: readonly Release[],
+  train: readonly TrainVersion[],
   features: readonly BoardFeature[],
 ): Sequence {
   return {
-    released: train.filter(({ version }) => version.status === "released")
-      .length,
+    released: train.filter((version) => version.status === "released").length,
     versions: train.length,
     shipped: features.filter((one) => one.maturity === "shipped").length,
     features: features.length,
@@ -151,42 +125,28 @@ const missing = (path: string): Error =>
 /**
  * The project, read from the checkout.
  *
- * A source the checkout does not hold is a fault, not an empty page. Both files
- * arrive through submodules that the rest of the site already depends on, so a
- * missing one means the checkout is incomplete — and a page that quietly says
- * nothing shipped would be worse than a build that stops.
+ * A board the checkout does not hold is a fault, not an empty page. It arrives
+ * through a submodule the rest of the site already depends on, so a missing one
+ * means the checkout is incomplete — and a page that quietly says nothing
+ * shipped would be worse than a build that stops.
  */
 export function project(root: string): Project {
   const boardFile = readText(`${root}/${BOARD}`);
   if (boardFile === null) throw missing(BOARD);
-  const statusFile = readText(`${root}/${STATUS}`);
-  if (statusFile === null) throw missing(STATUS);
 
   const board = parseBoard(boardFile);
-
-  const milestones = parseStatus(statusFile);
-  const requirements = requirementProgress(statusFile);
   const train = trainOf(
     board,
     manifestsIn(
       root,
       board.versions.map((version) => version.version),
     ),
-  ).map((version) => ({
-    version,
-    built: progressOver(version.goals, requirements),
-  }));
+  );
 
   return {
     counts: board.counts,
     train,
     sequence: sequenceOf(train, board.features),
-    milestones,
-    features: featureProgress(statusFile),
-    requirements,
-    overall: rollup(milestones.flatMap((one) => one.deliverables)),
-    doneMilestones: milestones.filter((one) => one.status === "done").length,
-    totalMilestones: milestones.length,
     pinned: pinsIn(root),
   };
 }

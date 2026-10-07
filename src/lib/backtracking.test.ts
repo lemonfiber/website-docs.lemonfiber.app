@@ -9,7 +9,6 @@ import { describe, expect, it } from "vitest";
 import { chromeProse } from "./guards.ts";
 import { rendered } from "./maturity.ts";
 import { rewriteLinks, type Mirror, type Revision } from "./mirror.ts";
-import { headingOf } from "./status.ts";
 
 const BUDGET_MS = 500;
 const LENGTH = 30_000;
@@ -46,16 +45,6 @@ const written = (body: string): number =>
 describe("a parse of prose this repository does not own", () => {
   it("strips a run of unclosed tags in step with its length", () => {
     expect(took(() => chromeProse("<".repeat(LENGTH)))).toBeLessThan(BUDGET_MS);
-  });
-
-  it("reads a heading padded with whitespace in step with its length", () => {
-    const line = `## M1 — ${" ".repeat(LENGTH)}\r`;
-    expect(took(() => headingOf(line))).toBeLessThan(BUDGET_MS);
-  });
-
-  it("reads a heading full of separators in step with its length", () => {
-    const line = `## M1 — ${"·".repeat(LENGTH)} x y`;
-    expect(took(() => headingOf(line))).toBeLessThan(BUDGET_MS);
   });
 
   it("rewrites a run of unclosed link texts in step with its length", () => {

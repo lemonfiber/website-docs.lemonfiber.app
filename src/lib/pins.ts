@@ -86,14 +86,8 @@ export const GUARDED: readonly string[] = [
  *
  * A guard reads a source to hold this site's *own* prose to it. A mirror has no
  * prose of its own — the upstream file is the page — so no guard names one, and
- * `GUARDED` therefore knew nothing about any of them. That is most of what this
- * site publishes.
- *
- * It cost the roadmap. `IMPLEMENTATION-STATUS.md` is mirrored at
- * `/project/whats-built/` and is half of what the version train counts, and the
- * only thing watching `vendor/lemonfiber` was three artefacts under `contract/`
- * and `reference/`. A release moved the tracker and the site went on serving the
- * week before it, with nothing in a position to say so.
+ * `GUARDED` holds none of them. That is most of what this site publishes, and a
+ * pin behind on a mirrored file serves a page as it stood before.
  *
  * `mirrors.json` already names each one. Read from there rather than listed
  * again, so a mirror added tomorrow is watched the day it is declared.
