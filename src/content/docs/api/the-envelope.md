@@ -49,7 +49,7 @@ connection is plain text unless `--tls` asks for it encrypted, with a certificat
 lemonfiber made and keeps, and it says which as it starts. `--tls` needs `--port`,
 because it is for a paired phone, and a phone keeps the address it was given.
 
-Thirty-one endpoints answer a question and close. Each one is a command a person
+Thirty-five endpoints answer a question and close. Each one is a command a person
 could have typed, dispatched through the same entry point the command line uses,
 so the two surfaces cannot say different things about the same stack.
 
@@ -85,6 +85,10 @@ so the two surfaces cannot say different things about the same stack.
 | `GET /api/migration`     | What is already on this machine, before anything is proposed                                                                                                         |
 | `GET /api/history`       | What has already been changed on this machine, and when                                                                                                              |
 | `GET /api/update`        | `?what=self` or `?what=stack` is required: where this copy stands and how it was installed, or what each service would move to; `?to=` names a version               |
+| `GET /api/news`          | What is new: releases, the household's requests and the problems the checks found, each newest first                                                                 |
+| `GET /api/plugins`       | Which plugins are installed, as `lemonfiber plugin installed` answers                                                                                                |
+| `GET /api/wiring`        | What the stack wires to what, and how each link was settled                                                                                                          |
+| `GET /api/playing`       | What the media server is playing now, each session naming the member watching and what they are watching; a member is answered with their own sessions only          |
 | `GET /api/bundle/{name}` | The support bundle itself, handed over rather than described                                                                                                         |
 
 Two of them are not shaped like the rest. `GET /api/front-door` takes no parameters, because the question takes none: which one address the household is given is worked out from what the stack runs rather than asked for, and a parameter here would be a way for one surface to be told a different door from another. `GET /api/bundle/{name}` is the one read that does not answer with an envelope — it answers with the bundle itself, because a browser has no path on the host to be told and handing the file over is the only form `--out` can take on a screen. The name is resolved beneath the bundles directory rather than followed, so one carrying a path, or climbing out of that directory, is refused by name.

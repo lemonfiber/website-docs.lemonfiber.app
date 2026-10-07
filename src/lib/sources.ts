@@ -153,9 +153,13 @@ export function namesAt(json: string, ...path: readonly string[]): string[] {
   });
 }
 
-/** The endpoints the web-API contract sets out under reading, not streaming. */
-export const readEndpoints = (webApi: string): string[] =>
-  matches(/GET \/api\/([a-z]+)/g, section(webApi, "Reading"));
+/**
+ * The endpoints the web-API contract sets out under reading, not streaming, each
+ * once: a read with a heading of its own under the section names it again there.
+ */
+export const readEndpoints = (webApi: string): string[] => [
+  ...new Set(matches(/GET \/api\/([a-z]+)/g, section(webApi, "Reading"))),
+];
 
 const FEATURE =
   /^vendor\/spec\/10-functional\/features\/[a-z]-[a-z-]+\/[a-z]\d+-[a-z0-9-]+\.md$/;
