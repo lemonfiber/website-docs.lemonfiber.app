@@ -11,4 +11,4 @@ jobs:
       contents: read
       issues: write
       pull-requests: write
-    uses: lemonfiber/spec/.github/workflows/stale.yml@44f27cb6e10a5cb38a858436d3b57c40ab63b1b7 # v1.0.30
+    uses: lemonfiber/spec/.github/workflows/stale.yml@23d12ea556d80216ffccc06aa4d589e3e514c9ea # v1.0.36
