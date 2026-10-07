@@ -1,10 +1,10 @@
 ---
 title: The services
-description: All twenty services in the stack, what each one does, what you lose without it, and which form starts it.
+description: All twenty-two services in the stack, what each one does, what you lose without it, and which form starts it.
 sidebar: { order: 2 }
 ---
 
-The stack is twenty services. You will rarely run all of them at once —
+The stack is twenty-two services. You will rarely run all of them at once —
 [forms](/running/forms-and-slices/) exist precisely so you do not have to — but
 it is worth knowing what each one is for, because every diagnostic and every
 trace names them.
@@ -18,28 +18,30 @@ The last column names the smallest form that starts each service. Broader forms
 include it as well: anything in `search` is also started by `hunt`, `tv`,
 `movies`, `music`, `books`, `auto` and `full`.
 
-| Service               | What it does                                                                  | Without it                                        | Smallest form |
-| --------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------- | ------------- |
-| Prowlarr              | Holds your indexer accounts in one place and shares them with everything else | Every app needs indexers configured separately    | `search`      |
-| FlareSolverr          | Gets past bot-protection on some indexers                                     | Those indexers return nothing                     | `search`      |
-| NZBHydra2             | A search box across all your Usenet indexers at once                          | Search one indexer at a time                      | `search`      |
-| SABnzbd               | Downloads from Usenet                                                         | No Usenet downloads                               | `dl`          |
-| Gluetun               | Routes torrent traffic through your VPN and blocks it if the VPN drops        | Your home IP is visible to every peer             | `dl`          |
-| qBittorrent           | Downloads torrents                                                            | No torrent downloads                              | `dl`          |
-| Sonarr                | Watches for new episodes and fetches them                                     | Find and download episodes yourself               | `tv`          |
-| Radarr                | Watches for films and fetches them                                            | Find and download films yourself                  | `movies`      |
-| Lidarr                | Watches for music and fetches it                                              | Find and download music yourself                  | `music`       |
-| Bindery               | Watches for books and audiobooks and fetches them                             | No book automation, since Readarr is discontinued | `books`       |
-| Bazarr                | Finds and downloads subtitles                                                 | No automatic subtitles                            | `tv`          |
-| Jellyfin              | Plays your library on TVs, phones and browsers                                | Files on disk, no way to watch them               | `library`     |
-| Seerr                 | Where the household asks for things                                           | Requests come to you in person                    | `library`     |
-| Calibre-Web-Automated | Reading and organising your ebook library                                     | No ebook reader                                   | `library`     |
-| Audiobookshelf        | Listening to audiobooks, with progress synced                                 | No audiobook player                               | `library`     |
-| Navidrome             | Plays your music library in a browser, on a phone, and in any Subsonic client | Music arrives and nothing plays it                | `library`     |
-| Recyclarr             | Keeps quality settings in line with community guidance                        | Tune quality profiles by hand                     | `auto`        |
-| Unpackerr             | Extracts archived releases so they can be imported                            | Some downloads never import                       | `auto`        |
-| Homepage              | One page linking everything, with live status                                 | Remember a dozen URLs and ports                   | `full`        |
-| Caddy                 | Friendly hostnames instead of ports                                           | Use `localhost:8989` and friends                  | `proxy`       |
+| Service               | What it does                                                                                  | Without it                                                   | Smallest form |
+| --------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ------------- |
+| Prowlarr              | Holds your indexer accounts in one place and shares them with everything else                 | Every app needs indexers configured separately               | `search`      |
+| FlareSolverr          | Gets past bot-protection on some indexers                                                     | Those indexers return nothing                                | `search`      |
+| NZBHydra2             | A search box across all your Usenet indexers at once                                          | Search one indexer at a time                                 | `search`      |
+| SABnzbd               | Downloads from Usenet                                                                         | No Usenet downloads                                          | `dl`          |
+| Gluetun               | Routes torrent traffic through your VPN and blocks it if the VPN drops                        | Your home IP is visible to every peer                        | `dl`          |
+| qBittorrent           | Downloads torrents                                                                            | No torrent downloads                                         | `dl`          |
+| Sonarr                | Watches for new episodes and fetches them                                                     | Find and download episodes yourself                          | `tv`          |
+| Radarr                | Watches for films and fetches them                                                            | Find and download films yourself                             | `movies`      |
+| Lidarr                | Watches for music and fetches it                                                              | Find and download music yourself                             | `music`       |
+| Bindery               | Watches for books and audiobooks and fetches them                                             | No book automation, since Readarr is discontinued            | `books`       |
+| Bazarr                | Finds and downloads subtitles                                                                 | No automatic subtitles                                       | `tv`          |
+| Jellyfin              | Plays your library on TVs, phones and browsers                                                | Files on disk, no way to watch them                          | `library`     |
+| Seerr                 | Where the household asks for things                                                           | Requests come to you in person                               | `library`     |
+| Request gate          | Stands between Seerr and Sonarr, Radarr and Jellyfin, so Seerr holds none of their keys       | Seerr cannot send requests, and members cannot sign in to it | `library`     |
+| Decline service       | Lets somebody you invited turn the invitation down, and switches the account off when they do | An invitation stays claimable until it lapses                | `library`     |
+| Calibre-Web-Automated | Reading and organising your ebook library                                                     | No ebook reader                                              | `library`     |
+| Audiobookshelf        | Listening to audiobooks, with progress synced                                                 | No audiobook player                                          | `library`     |
+| Navidrome             | Plays your music library in a browser, on a phone, and in any Subsonic client                 | Music arrives and nothing plays it                           | `library`     |
+| Recyclarr             | Keeps quality settings in line with community guidance                                        | Tune quality profiles by hand                                | `auto`        |
+| Unpackerr             | Extracts archived releases so they can be imported                                            | Some downloads never import                                  | `auto`        |
+| Homepage              | One page linking everything, with live status                                                 | Remember a dozen URLs and ports                              | `full`        |
+| Caddy                 | Friendly hostnames instead of ports                                                           | Use `localhost:8989` and friends                             | `proxy`       |
 
 Bazarr is reached by `movies` as well as `tv`; both forms include the `subs`
 profile.
@@ -67,8 +69,9 @@ any business reaching them.
 
 **Household-facing surfaces bind to the LAN**, because they are useless if a
 television cannot reach them: Jellyfin on `8096`, Seerr on `5055`,
-Calibre-Web-Automated on `8083`, Audiobookshelf on `13378`, and Navidrome on
-`4533`. Homepage joins
+Calibre-Web-Automated on `8083`, Audiobookshelf on `13378`, Navidrome on
+`4533`, and the decline service on `5056`, which is the address an invitation
+gives for turning it down. Homepage joins
 them on `3000` — a dashboard nobody else can open is not much of a dashboard —
 and Caddy answers on `80` when you run the `proxy` form.
 
@@ -76,9 +79,11 @@ Nothing binds to every interface. Reaching any of this from outside the house is
 [Remote access](/advanced/remote-access/), which is a deliberate decision rather
 than a default.
 
-Gluetun, Recyclarr and Unpackerr publish no port at all. Gluetun is a network
-namespace that qBittorrent runs inside; the other two are scheduled jobs with no
-interface.
+Gluetun, Recyclarr, Unpackerr and the request gate publish no port at all.
+Gluetun is a network namespace that qBittorrent runs inside; Recyclarr and
+Unpackerr are scheduled jobs with no interface; and the request gate is reached
+only by Seerr, across the internal networks it shares with Seerr and with the
+services it calls.
 
 ## The two that are not like the others
 
@@ -97,13 +102,13 @@ cover it, so it consumes indexer endpoints directly.
 The manifest grades each service, and lemonfiber's health summary uses that
 grading rather than counting containers:
 
-| Grade     | Meaning                                      | Examples                                                                                                          |
-| --------- | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Critical  | Failure has consequences outside the machine | Gluetun                                                                                                           |
-| Core      | The stack cannot do its job without it       | Prowlarr, SABnzbd, qBittorrent, Sonarr, Radarr, Lidarr, Bindery                                                   |
-| Important | The household notices immediately            | Jellyfin, Seerr                                                                                                   |
-| Enhancing | Something works less well                    | FlareSolverr, NZBHydra2, Bazarr, Calibre-Web-Automated, Audiobookshelf, Navidrome, Recyclarr, Unpackerr, Homepage |
-| Optional  | Convenience only                             | Caddy                                                                                                             |
+| Grade     | Meaning                                      | Examples                                                                                                                           |
+| --------- | -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Critical  | Failure has consequences outside the machine | Gluetun                                                                                                                            |
+| Core      | The stack cannot do its job without it       | Prowlarr, SABnzbd, qBittorrent, Sonarr, Radarr, Lidarr, Bindery                                                                    |
+| Important | The household notices immediately            | Jellyfin, Seerr, Request gate                                                                                                      |
+| Enhancing | Something works less well                    | FlareSolverr, NZBHydra2, Bazarr, Calibre-Web-Automated, Audiobookshelf, Navidrome, Recyclarr, Unpackerr, Homepage, Decline service |
+| Optional  | Convenience only                             | Caddy                                                                                                                              |
 
 This is why a stack with every container running and a leaking VPN does not
 report that everything is fine.
@@ -114,12 +119,14 @@ Every image is pinned to an explicit version tag in the manifest. Nothing change
 because time passed — an update happens when you decide it should. See
 [Updating](/running/updating/).
 
-The manifest also records each service's licence and upstream project. All
-twenty are open source; lemonfiber's own licence is separate and stricter.
+The manifest also records each service's licence and upstream project. Twenty
+are open source. The request gate and the decline service are lemonfiber's own
+images, built from `lemonfiber-request-gate` and `lemonfiber-decline` under
+lemonfiber's licence, which is separate and stricter.
 
 ## Related
 
 - [Forms and slices](/running/forms-and-slices/) — how these group into slices
 - [The stack manifest](/advanced/the-stack-manifest/) — the file this page is drawn from
-- [Adding a service](/advanced/adding-a-service/) — making the list twenty-one
+- [Adding a service](/advanced/adding-a-service/) — making the list twenty-three
 - [F2 Service catalogue](/spec/10-functional/features/f-extensibility/f2-service-catalogue/) — the requirement behind it

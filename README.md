@@ -148,7 +148,7 @@ renders there.
 
 ### Counts, against what is counted
 
-This site's pages state numbers about the trees under `vendor/`: the twenty
+This site's pages state numbers about the trees under `vendor/`: the twenty-two
 services, seventy-three payload kinds, 111 features and nine end-to-end
 journeys. Each one is a transcription of something machine-readable, and goes
 false when a pin moves.

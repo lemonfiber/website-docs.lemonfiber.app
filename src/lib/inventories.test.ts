@@ -8,6 +8,7 @@ import {
   enumAt,
   keysAt,
   namesAt,
+  thirdParty,
   variantsAt,
 } from "./sources.ts";
 
@@ -328,6 +329,46 @@ describe("variantsAt", () => {
 
   it("reads nothing out of a schema that is not a choice", () => {
     expect(variantsAt('{"a": {"type": "string"}}', "a")).toEqual([]);
+  });
+});
+
+describe("thirdParty", () => {
+  const own = ["https:", "//github.com/lemonfiber/lemonfiber-decline"].join("");
+  const theirs = ["https:", "//github.com/Jellyfin/jellyfin"].join("");
+
+  it("names the services whose upstream is outside the org", () => {
+    const stack = [
+      "[[form]]",
+      'id = "library"',
+      "",
+      "[[service]]",
+      'id = "jellyfin"',
+      `upstream = "${theirs}"`,
+      "",
+      "[[service]]",
+      'id = "decline"',
+      `upstream = "${own}"`,
+      "",
+    ].join("\n");
+    expect(thirdParty(stack)).toEqual(["jellyfin"]);
+  });
+
+  it("takes an upstream that is not an address as nobody's in the org", () => {
+    expect(
+      thirdParty('[[service]]\nid = "odd"\nupstream = "elsewhere"\n'),
+    ).toEqual(["odd"]);
+  });
+
+  it("passes over a service that names no upstream or no id", () => {
+    const stack = [
+      "[[service]]",
+      'id = "nameless"',
+      "",
+      "[[service]]",
+      `upstream = "${theirs}"`,
+      "",
+    ].join("\n");
+    expect(thirdParty(stack)).toEqual([]);
   });
 });
 
