@@ -1,6 +1,6 @@
 ---
 title: The web console
-description: The five screens a browser gets, what each one answers, and what it can ask the stack to do.
+description: The six screens a browser gets, what each one answers, and what it can ask the stack to do.
 sidebar:
   order: 3
 ---
@@ -28,15 +28,16 @@ refused until `--set-password` has set one — and why the password is asked for
 rather than the token, because a token printed to a terminal is not something
 you can type from a phone.
 
-## The five screens
+## The six screens
 
-| Address     | Screen                | What it answers                                               |
-| ----------- | --------------------- | ------------------------------------------------------------- |
-| `/`         | Overview              | How the whole stack is doing, and what needs you              |
-| `/checks`   | Checks                | What the diagnosis found, and what to do about each finding   |
-| `/storage`  | The disk              | What is on the disk, how fast it is filling, and what checked |
-| `/logs`     | Logs                  | The scrollback, filtered by service                           |
-| `/requests` | What's been asked for | What the household has requested, and where each one got to   |
+| Address     | Screen                | What it answers                                                                                                                   |
+| ----------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `/`         | Overview              | How the whole stack is doing, and what needs you                                                                                  |
+| `/checks`   | Checks                | What the diagnosis found, and what to do about each finding                                                                       |
+| `/storage`  | The disk              | What is on the disk, how fast it is filling, and what checked                                                                     |
+| `/logs`     | Logs                  | The scrollback, filtered by service                                                                                               |
+| `/requests` | What's been asked for | What the household has requested, and where each one got to                                                                       |
+| `/settings` | Settings              | The quality new media is fetched at, every setting, how the line is shared, the versions the stack stands on, and pairing a phone |
 
 Each is a real address rather than something the page remembers. That is worth
 saying because of what it buys: every screen can be typed in, bookmarked, opened

@@ -26,6 +26,37 @@ export const ids = (stack: string, table: string): string[] =>
 export const governed = (repos: string): string[] =>
   matches(/^\[\[repo\]\]\nname = "([^"]+)"/gm, repos);
 
+/** Where the org keeps its own repositories: the forge, and the account on it. */
+const FORGE = "github.com";
+const ORG = "/lemonfiber/";
+
+/** Whether an upstream names one of the org's own repositories. */
+const ours = (upstream: string): boolean => {
+  try {
+    const at = new URL(upstream);
+    return at.hostname === FORGE && at.pathname.startsWith(ORG);
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * Every service whose upstream project is somebody else's: the ones the stack
+ * takes from open source rather than builds itself.
+ */
+export const thirdParty = (stack: string): string[] =>
+  stack
+    .split(/^(?=\[\[)/m)
+    .filter((block) => block.startsWith("[[service]]\n"))
+    .filter((block) => {
+      const upstream = /^upstream = "([^"]*)"/m.exec(block);
+      return upstream !== null && !ours(captured(upstream, 1));
+    })
+    .flatMap((block) => {
+      const id = /^id = "([^"]+)"/m.exec(block);
+      return id === null ? [] : [captured(id, 1)];
+    });
+
 /** Each service's display name, which is how the pages write them. */
 export const serviceNames = (stack: string): string[] =>
   matches(/^\[\[service\]\]\nid = "[^"]+"\nname = "([^"]+)"/gm, stack);

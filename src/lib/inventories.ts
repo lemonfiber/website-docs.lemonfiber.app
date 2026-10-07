@@ -30,6 +30,7 @@ import {
   presets,
   readEndpoints,
   serviceNames,
+  thirdParty,
   specSections,
   subcommands,
   variantsAt,
@@ -93,9 +94,14 @@ export const INVENTORIES: readonly Inventory[] = [
       { says: "is %N% services" },
       { says: "across %N% services" },
       { says: String.raw`/running/the-services/\) — what each of the %N%` },
-      { says: "all %N% are open source" },
       { says: "making the list %N%", plus: 1 },
     ],
+  },
+  {
+    what: "services taken from open source",
+    source: STACK,
+    members: (sources) => thirdParty(sources.stack),
+    claims: [{ says: "%N% are open source" }],
   },
   {
     what: "profiles",
