@@ -1,0 +1,1 @@
+../../../../vendor/integration-home-assistant/README.md

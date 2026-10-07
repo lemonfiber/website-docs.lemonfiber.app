@@ -98,7 +98,7 @@ pull that takes ten minutes has to say something before it ends.
 
 Six of them are set out field by field below — the ones a client meets first, and
 the ones whose payloads are small enough to read as a table. The other sixty-seven
-are in the artefact in full, and both SDKs generate a type for each kind in
+are in the artefact in full, and every SDK generates a type for each kind in
 their own copy of it, so nothing here is the only place their shapes are written
 down. Everything below is generated from the types that serialise the reply, so
 a field here is a field on the wire.
@@ -337,14 +337,15 @@ place their shapes are written down, which is the one thing the artefact exists 
 prevent.
 
 Read them from `contract/web-api.contract.json`, or let a generated client do it:
-[the TypeScript SDK](/api/typescript-sdk/) and [the PHP SDK](/api/php-sdk/) both
-emit one type per kind from that file, so the shapes arrive typed rather than
-transcribed.
+[the TypeScript SDK](/api/typescript-sdk/), [the PHP SDK](/api/php-sdk/) and
+[the Python SDK](/api/python-sdk/) each emit one type per kind from that file, so
+the shapes arrive typed rather than transcribed.
 
 ## Where to go next
 
 The wrapper these sit inside is [the envelope](/api/the-envelope/). To read them
 from code without transcribing any of the above, use
-[the TypeScript SDK](/api/typescript-sdk/) or [the PHP SDK](/api/php-sdk/), both
-of which generate one type per kind. Error codes have their own reference in
+[the TypeScript SDK](/api/typescript-sdk/), [the PHP SDK](/api/php-sdk/) or
+[the Python SDK](/api/python-sdk/), each of which generates one type per kind.
+Error codes have their own reference in
 [every error by code](/fixing/every-error-by-code/).

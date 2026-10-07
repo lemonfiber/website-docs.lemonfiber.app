@@ -78,10 +78,12 @@ the stack pins each by digest.
 **`lemonfiber-web` consumes `sdk-ts` and `brand`**, and is itself embedded into
 the binary as a pinned submodule at build time.
 
-**Twelve repositories feed this site** — every one but the two websites, which
-render rather than being rendered, and with the catalogue joined by the plugin
-template it registers against. Each one's own documentation arrives as a
-git submodule pinned to an exact revision and is rendered rather than copied.
+**Fifteen repositories feed this site**: the specification, the binary, the
+stack, the web surface, the companion, the three SDKs, both integrations, the
+plugin catalogue and template, the brand, the tap and `.github`. The two
+websites render rather than being rendered, and the two images and the three
+plugins have no pages here of their own. Each one's own documentation arrives as
+a git submodule pinned to an exact revision and is rendered rather than copied.
 Nothing is fetched during a build. The specification arrives the same way and is
 rendered here, at [`/spec/`](/spec/) — it is the largest body of prose the org has,
 and a reader searching the documentation for a requirement should find it rather

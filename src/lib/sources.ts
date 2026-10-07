@@ -183,25 +183,6 @@ export const specSections = (paths: readonly string[]): string[] => {
 };
 
 /**
- * The steps a composer script runs, as the commands a person runs.
- *
- * A step naming another script carries an `@`, and a `composer` of its own where
- * it names one of composer's own commands. Both are written here the way a
- * reader would type them, which is how the page writes them.
- */
-export function composerSteps(manifest: string, script: string): string[] {
-  const node = nodeAt(manifest, ["scripts", script]);
-  if (!Array.isArray(node)) return [];
-
-  return node.map((one) => {
-    const step = String(one);
-    if (!step.startsWith("@")) return step;
-    const named = step.slice(1);
-    return named.startsWith("composer ") ? named : `composer ${named}`;
-  });
-}
-
-/**
  * Every screen the console has, read from the list it draws its own menu from.
  *
  * `everyPlace` in the console's `route.ts` is the one list a screen, a story and
@@ -214,29 +195,6 @@ export const consolePlaces = (route: string): string[] => {
     /export const everyPlace: readonly Place\[\] = \[([^\]]*)\]/.exec(route);
   return said === null ? [] : matches(/"([a-z-]+)"/g, captured(said, 1));
 };
-
-/** One `export { … } from "…";` of a package's entry point. */
-const RE_EXPORTED = /export\s*\{([^}]*)\}\s*from\s*"[^"]*";/g;
-
-/** A leading `type`, which says how a name is exported rather than which name. */
-const AS_A_TYPE = /^type\s+/;
-
-/**
- * Every name the client package's entry point puts on its public surface.
- *
- * Read from the entry point rather than from the modules behind it: what a
- * package exports is what its entry point re-exports, and a name a module
- * exports and the entry point does not is not something a consumer can reach.
- * A type and a value are one list here, because the page lists them as one.
- */
-export function exportedBy(index: string): string[] {
-  const found = new Set<string>();
-  for (const block of index.matchAll(RE_EXPORTED))
-    for (const one of captured(block, 1).split(","))
-      found.add(one.trim().replace(AS_A_TYPE, ""));
-  found.delete("");
-  return [...found];
-}
 
 /** The scope every package this org publishes carries. */
 const SCOPE = /^@lemonfiber\//;

@@ -269,5 +269,5 @@ are worse than a build that stops.
 [Every payload kind](/api/kinds/) lists what `data` holds for each `kind`. The
 two numbers in play — the package version and `api_version` — do different jobs,
 which is [two version numbers](/api/two-version-numbers/). To consume it from
-code, start with [the TypeScript SDK](/api/typescript-sdk/) or
-[the PHP SDK](/api/php-sdk/).
+code, start with [the TypeScript SDK](/api/typescript-sdk/),
+[the PHP SDK](/api/php-sdk/) or [the Python SDK](/api/python-sdk/).

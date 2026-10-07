@@ -46,3 +46,15 @@
 	path = vendor/lemonfiber-companion
 	url = https://github.com/lemonfiber/lemonfiber-companion.git
 	branch = main
+[submodule "sdk-python"]
+	path = vendor/sdk-python
+	url = https://github.com/lemonfiber/sdk-python.git
+	branch = main
+[submodule "integration-home-assistant"]
+	path = vendor/integration-home-assistant
+	url = https://github.com/lemonfiber/integration-home-assistant.git
+	branch = main
+[submodule "integration-mcp"]
+	path = vendor/integration-mcp
+	url = https://github.com/lemonfiber/integration-mcp.git
+	branch = main

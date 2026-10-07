@@ -4,10 +4,8 @@ import { describe, expect, it } from "vitest";
 import { countViolations, type Page, type Sources } from "./counts.ts";
 import { INVENTORIES } from "./inventories.ts";
 import {
-  composerSteps,
   consolePlaces,
   enumAt,
-  exportedBy,
   keysAt,
   namesAt,
   variantsAt,
@@ -38,12 +36,8 @@ const theTree = (): { sources: Sources; pages: Page[] } => ({
     webApi: read("vendor/spec/20-architecture/contracts/web-api.md"),
     mirrors: read("mirrors.json"),
     repos: read("vendor/spec/30-repos/repos.toml"),
-    clientIndex: read("vendor/sdk-ts/src/index.ts"),
     webManifest: read("vendor/lemonfiber-web/package.json"),
     webRoute: read("vendor/lemonfiber-web/src/lib/route.ts"),
-    phpContract: read("vendor/sdk-php/contract/web-api.contract.json"),
-    tsContract: read("vendor/sdk-ts/contract/web-api.contract.json"),
-    phpManifest: read("vendor/sdk-php/composer.json"),
     manifests: read("vendor/spec/70-operations/versions/README.md"),
     featureSchema: read(
       "vendor/spec/10-functional/features/_meta/feature.schema.json",
@@ -65,12 +59,8 @@ const nothing: Sources = {
   webApi: "",
   mirrors: "",
   repos: "",
-  clientIndex: "",
   webManifest: "",
   webRoute: "",
-  phpContract: "",
-  tsContract: "",
-  phpManifest: "",
   manifests: "",
   featureSchema: "",
   spec: [],
@@ -358,72 +348,6 @@ describe("consolePlaces", () => {
 
   it("gives nothing for a file it cannot read", () => {
     expect(consolePlaces("")).toEqual([]);
-  });
-});
-
-describe("composerSteps", () => {
-  const manifest = JSON.stringify({
-    scripts: {
-      ci: [
-        "@composer validate --strict",
-        "@lint",
-        "@test:coverage",
-        "git diff --exit-code",
-      ],
-      lint: "pint --test",
-    },
-  });
-
-  it("writes each step the way a reader would type it", () => {
-    expect(composerSteps(manifest, "ci")).toEqual([
-      "composer validate --strict",
-      "composer lint",
-      "composer test:coverage",
-      "git diff --exit-code",
-    ]);
-  });
-
-  it("gives nothing for a script the manifest does not declare", () => {
-    expect(composerSteps(manifest, "release")).toEqual([]);
-  });
-
-  it("gives nothing for a script that is one command rather than a list", () => {
-    expect(composerSteps(manifest, "lint")).toEqual([]);
-  });
-
-  it("gives nothing for a manifest it cannot read", () => {
-    expect(composerSteps("{", "ci")).toEqual([]);
-  });
-});
-
-describe("exportedBy", () => {
-  const index = [
-    'export { address, type Address } from "./address.js";',
-    "export {",
-    "  Client,",
-    "  refusalIn,",
-    "  type Opened,",
-    '} from "./client.js";',
-  ].join("\n");
-
-  it("names every export, whichever line it is written on", () => {
-    expect(exportedBy(index)).toEqual([
-      "address",
-      "Address",
-      "Client",
-      "refusalIn",
-      "Opened",
-    ]);
-  });
-
-  // A type and a value are both something a consumer imports by name, and the
-  // page lists them in one column.
-  it("does not keep the word saying a name is a type", () => {
-    expect(exportedBy(index)).not.toContain("type Address");
-  });
-
-  it("names nothing where an entry point re-exports nothing", () => {
-    expect(exportedBy('export * from "./everything.js";')).toEqual([]);
   });
 });
 
