@@ -216,14 +216,23 @@ answering with an empty document, the endpoints below `/api` answer as usual, an
 `lemonfiber ui --assets <dir>` serves a directory instead, which is what somebody
 working on the app itself needs.
 
-## What is not built yet
+## What a stack says it can do
 
-**`GET /api/capabilities` is not served.** The contract describes it; no route in
-the binary this site pins answers it.
+`GET /api/capabilities` answers with what this stack can do, as the credential
+that asked may do it, so a client on a phone reads it rather than deducing it
+from a version. The payload is `kind: "capabilities"`, and its data maps each
+request, named by the path it is served at, to one of three states:
 
-The contract and both SDKs were published ahead of all of this deliberately: the
-boundary is a published shape rather than a compiler check, and publishing it
-first is what stops two clients inventing two answers to the same question.
+| State          | Means                                                     |
+| -------------- | --------------------------------------------------------- |
+| `available`    | This stack can do it, and this credential may             |
+| `unconfigured` | The stack has it, and a setting switched off has to be on |
+| `unpermitted`  | The stack has it, and this credential may not ask for it  |
+
+A request the stack does not have is absent from the map rather than listed, so a
+stack older than a client's request says so by not naming it. The set is generated
+from the lists the surface routes by, and each state is decided by the same rule
+every request meets.
 
 ## What a client keeps that the schema cannot say
 
