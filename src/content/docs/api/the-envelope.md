@@ -116,8 +116,12 @@ command: `GET /api/setup` says where a run stands, and `POST /api/setup/answer`,
 `GET /api/events` is a server-sent event stream, and it is described in full under
 [what a client keeps](#what-a-client-keeps-that-the-schema-cannot-say) below. Each
 event's name is the envelope's `kind`: `dashboard` for the state the stack is in,
-and `step`, `start` and `log` for the lines a walkthrough, a start or a followed
-log writes as they are written.
+`alert` when an alert starts and again when it resolves, and `step`, `start` and
+`log` for the lines a walkthrough, a start or a followed log writes as they are
+written. A line said by work an action handed to a job names that job in the
+envelope's `job`. A member's stream carries none of these: it carries their own
+`household` row, their `held` shelf and what they are `playing`, each the answer
+that read gives them.
 
 ### When a read is refused
 
@@ -184,9 +188,9 @@ admits that **member**; the `admission` envelope then carries their id, and its
 absence means the operator. A member's session is checked with the media server
 again on every request.
 
-A member may ask for two things: what the household asked for, which is always
-narrowed to themselves whatever the request named, and `GET /api/held` for their
-own shelf. Everything else — every other read and every action — is refused `403`
+A member may ask for three things, each narrowed to themselves whatever the
+request named: what the household asked for, `GET /api/held` for their own shelf,
+and `GET /api/playing` for their own sessions. Everything else — every other read and every action — is refused `403`
 with `ADMIT-6`: _This is not something this account may ask for._ Where the media
 server cannot be asked, the answer is `403` with `ADMIT-7`, saying nobody was
 identified and nothing about the account changed, so the thing to fix is the media

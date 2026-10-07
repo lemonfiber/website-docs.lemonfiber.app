@@ -225,9 +225,10 @@ to negotiate. `npm run ci` runs everything CI runs.
 
 The repository's own page is [sdk-ts](/develop/repos/sdk-ts/), and its
 specification is [the sdk-ts spec](/spec/30-repos/sdk-ts/). It generates types
-for sixty-five of them, from its own copy of the contract, which carries the
-same kinds the binary this site pins serves, so
-[every payload kind](/api/kinds/) is also the set that has a type here.
+for sixty-five of them, from its own copy of the contract, which carries a
+different set of kinds from the one the binary this site pins serves, so
+[every payload kind](/api/kinds/) sets out the set the binary serves rather than
+the set that has a type here.
 A copy taken before a kind was added still reads the
 reply: both speak wire version 1, and a kind with no type of its own still
 arrives. The reason `CONTRACT_API_VERSION` is not the package version is
