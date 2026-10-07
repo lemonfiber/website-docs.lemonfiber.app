@@ -14,6 +14,13 @@ such as `komga` is a name for the [catalogue](/plugins/the-catalogue/) to
 resolve, so a directory of that name is written `./komga`. Every flag each word
 takes is in [the command reference](/commands/reference/plugin/).
 
+**What installs today.** lemonfiber offers a plugin only what its
+[extension points](/plugins/extension-points/) need: contributing checks and
+remedies to `lemonfiber doctor`. A plugin that asks for anything else, such as
+adding a service (`service.add`) or watching its health
+(`service.health.http`), is refused, and the refusal names what it asked for.
+Every plugin in the catalogue adds a service, so none of them installs yet.
+
 ## Rehearse it first
 
 ```sh
