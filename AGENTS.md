@@ -1,6 +1,6 @@
 # AGENTS.md — website-docs.lemonfiber.app
 
-Orientation for a focused session in this repo.
+Orientation for a focused session in this repository.
 
 > **Common rules for every lemonfiber repo** live in the spec repo, at
 > [50-governance/ai-contributors.md](https://github.com/lemonfiber/spec/blob/main/50-governance/ai-contributors.md).
