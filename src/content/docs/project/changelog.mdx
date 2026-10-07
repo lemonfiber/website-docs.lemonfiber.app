@@ -9,16 +9,13 @@ import Releases from "../../../components/Releases.astro";
 
 Every release below had to earn its tag. A version's goals — a list of accepted
 requirement identifiers — are locked before the work starts, and the release
-gate refuses to tag until each one is both cited by a merged pull request and
-marked done in the implementation status. So the list under a version is not a
-summary of what happened to land; it is the set the release was measured
+gate refuses to tag until each one is built. So the list under a version is not
+a summary of what happened to land; it is the set the release was measured
 against.
 
 That is why this page counts requirements rather than commits. A commit log
 says what was written. The locked goals say what was promised, and the count
-beside each release says how much of it the implementation status holds as done
-at the revision this site pins — so a requirement the status has since marked
-only partly built counts against the release that promised it.
+beside each release is how many requirements its manifest locked.
 
 The list is read from the revisions at the foot of this page, so it is every
 release as of those and not as of this morning. A version tagged after them
@@ -41,6 +38,5 @@ specific tag.
 - [The version train](/project/the-version-train/) — how a release is staged, gated and finalised
 - [The version manifests](/spec/70-operations/versions/) — one file per release, and what it must contain
 - [The roadmap](/project/roadmap/) — the versions still ahead
-- [What is built](/project/whats-built/) — the per-deliverable record the gate reads
 
 <Pinned />

@@ -195,5 +195,4 @@ Patches appear in the changelog but never enter the goal-locked train.
 - [Release staging](/spec/70-operations/staging/) — the normative version of this page
 - [Releasing](/spec/70-operations/releasing/) — the tag-triggered mechanics underneath it
 - [The roadmap](/spec/00-overview/roadmap/) — the milestones each version serves
-- [What is built](/project/whats-built/) — the per-deliverable status the gate reads
 - [Two version numbers](/api/two-version-numbers/) — what the API's own versioning promises

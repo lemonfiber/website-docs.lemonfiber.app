@@ -10,12 +10,13 @@ import {
   revisionOf,
   sequenceOf,
   theProject,
-  type Release,
 } from "./project.ts";
-import { parseBoard, trainOf, type BoardFeature } from "./train.ts";
-
-const DONE = "✅";
-const PARTIAL = "◐";
+import {
+  parseBoard,
+  trainOf,
+  type BoardFeature,
+  type TrainVersion,
+} from "./train.ts";
 
 const board = {
   counts: { features: 1, requirements: 4, areas: "A–B" },
@@ -52,18 +53,6 @@ const board = {
   ],
 };
 
-const status = `# Implementation status
-
-## M2 — Core · ${DONE}
-
-The baseline.
-
-| Deliverable | Spec | Status | Landing |
-|-------------|------|--------|---------|
-| Parser | \`A1-R1\` | ${DONE} | #1 |
-| Driver | \`A1-R2\` | ${PARTIAL} | |
-`;
-
 let root = "";
 
 beforeAll(() => {
@@ -72,13 +61,8 @@ beforeAll(() => {
   const features = join(root, "vendor", "spec", "10-functional", "features");
   mkdirSync(versions, { recursive: true });
   mkdirSync(features, { recursive: true });
-  mkdirSync(join(root, "vendor", "lemonfiber"), { recursive: true });
 
   writeFileSync(join(features, "index.json"), JSON.stringify(board));
-  writeFileSync(
-    join(root, "vendor", "lemonfiber", "IMPLEMENTATION-STATUS.md"),
-    status,
-  );
   writeFileSync(
     join(versions, "0.1.0.toml"),
     '# The bootstrap release.\nversion = "0.1.0"\ndelivers = "Core"\ngoals = ["A1-R1", "A1-R2"]\n\n[pins]\nmedia-stack = "aaabfbb"\n',
@@ -120,25 +104,22 @@ describe("pinsIn", () => {
 
   it("names each repository the pages read", () => {
     const pins = pinsIn(process.cwd());
-    expect(pins.map((pin) => pin.repo)).toEqual(["spec", "lemonfiber"]);
+    expect(pins.map((pin) => pin.repo)).toEqual(["spec"]);
     expect(pins[0]?.date).not.toBe("");
   });
 });
 
 /** A train of one version, for the cases that need a shape rather than a file. */
-const release = (version: string, milestone: string): Release => ({
-  version: {
-    version,
-    status: "planned",
-    milestone,
-    headline: "",
-    delivers: "",
-    goals: [],
-    releasedOn: "",
-    pins: {},
-    features: [],
-  },
-  built: { done: 0, total: 0, pct: 0, status: "todo" },
+const release = (version: string, milestone: string): TrainVersion => ({
+  version,
+  status: "planned",
+  milestone,
+  headline: "",
+  delivers: "",
+  goals: [],
+  releasedOn: "",
+  pins: {},
+  features: [],
 });
 
 /** A catalogue entry, for the same reason. */
@@ -157,7 +138,7 @@ describe("sequenceOf", () => {
     const shipped = release("0.1.0", "M2");
     const sequence = sequenceOf(
       [
-        { ...shipped, version: { ...shipped.version, status: "released" } },
+        { ...shipped, status: "released" },
         release("0.2.0", "M2"),
         release("1.0.0", "M9"),
       ],
@@ -191,55 +172,28 @@ describe("sequenceOf", () => {
 });
 
 describe("project", () => {
-  it("joins the board, the manifests and the status file", () => {
+  it("joins the board and the manifests", () => {
     const read = project(root);
     expect(read.counts.requirements).toBe(4);
-    expect(read.train.map((one) => one.version.version)).toEqual([
+    expect(read.train.map((one) => one.version)).toEqual([
       "0.1.0",
       "0.2.0",
       "0.3.0",
     ]);
-    expect(read.train[0]?.built).toEqual({
-      done: 1,
-      total: 2,
-      pct: 50,
-      status: "partial",
-    });
-    expect(read.train[0]?.version.pins).toEqual({ "media-stack": "aaabfbb" });
+    expect(read.train[0]?.goals).toEqual(["A1-R1", "A1-R2"]);
+    expect(read.train[0]?.pins).toEqual({ "media-stack": "aaabfbb" });
     expect(read.sequence).toEqual({
       released: 1,
       versions: 3,
       shipped: 1,
       features: 1,
     });
-    expect(read.milestones.map((one) => one.id)).toEqual(["M2"]);
-    expect(read.features.get("A1")?.done).toBe(1);
-    expect(read.requirements.get("A1-R2")).toBe("partial");
-    expect(read.overall).toEqual({
-      done: 1,
-      total: 2,
-      pct: 50,
-      status: "partial",
-    });
-    expect(read.doneMilestones).toBe(1);
-    expect(read.totalMilestones).toBe(1);
   });
 
   it("refuses to render a checkout that holds no feature board", () => {
     expect(() => project(join(root, "nowhere"))).toThrow(
       /10-functional\/features\/index\.json is not in the checkout/,
     );
-  });
-
-  it("refuses to render a checkout that holds no implementation status", () => {
-    const half = mkdtempSync(join(tmpdir(), "lf-half-"));
-    const features = join(half, "vendor", "spec", "10-functional", "features");
-    mkdirSync(features, { recursive: true });
-    writeFileSync(join(features, "index.json"), "{}");
-    expect(() => project(half)).toThrow(
-      /IMPLEMENTATION-STATUS\.md is not in the checkout/,
-    );
-    rmSync(half, { recursive: true, force: true });
   });
 });
 
@@ -248,17 +202,6 @@ describe("theProject", () => {
     const first = theProject();
     expect(first.counts.requirements).toBeGreaterThan(0);
     expect(theProject()).toBe(first);
-  });
-
-  it("carries a train that counts every goal of each released version", () => {
-    const shipped = theProject().train.filter(
-      (one) => one.version.status === "released",
-    );
-    expect(shipped.length).toBeGreaterThan(0);
-    for (const one of shipped) {
-      expect(one.built.total).toBe(one.version.goals.length);
-      expect(one.built.done).toBeGreaterThan(0);
-    }
   });
 });
 
@@ -275,7 +218,7 @@ describe("the board this repository pins", () => {
   // say so: they render whatever the manifests declare, in the order declared.
   it("ends where both project pages say it ends", () => {
     const train = theProject().train;
-    expect(train.at(-1)?.version.version).toBe("1.0.0");
+    expect(train.at(-1)?.version).toBe("1.0.0");
   });
 
   it("names a version for every manifest the specification holds", () => {
@@ -289,10 +232,10 @@ function theProjectBoard(): string {
   return JSON.stringify({
     counts: theProject().counts,
     versions: theProject().train.map((one) => ({
-      version: one.version.version,
-      status: one.version.status,
-      milestone: one.version.milestone,
-      goals: one.version.goals.length,
+      version: one.version,
+      status: one.status,
+      milestone: one.milestone,
+      goals: one.goals.length,
     })),
     features: [],
   });

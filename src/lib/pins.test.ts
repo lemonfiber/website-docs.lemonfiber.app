@@ -271,10 +271,8 @@ describe("the trees a mirror renders", () => {
 
   it("names a mirrored file inside the repository holding it", () => {
     expect(
-      mirrored(
-        manifest({ repo: "lemonfiber", path: "IMPLEMENTATION-STATUS.md" }),
-      ),
-    ).toEqual(["vendor/lemonfiber/IMPLEMENTATION-STATUS.md"]);
+      mirrored(manifest({ repo: "lemonfiber", path: "reference/commands.md" })),
+    ).toEqual(["vendor/lemonfiber/reference/commands.md"]);
   });
 
   it("names the whole tree where a mirror takes one", () => {
@@ -317,13 +315,11 @@ describe("the trees a mirror renders", () => {
   it("is the half `GUARDED` cannot hold", () => {
     // A guard reads a source to hold this site's own prose to it; a mirrored page
     // has no prose of its own, so no guard names one and `GUARDED` knows nothing
-    // about any of them. The tracker below is the one that cost the roadmap.
-    const tracker = "vendor/lemonfiber/IMPLEMENTATION-STATUS.md";
-    expect(GUARDED).not.toContain(tracker);
+    // about any of them.
+    const readme = "vendor/lemonfiber/README.md";
+    expect(GUARDED).not.toContain(readme);
     expect(
-      mirrored(
-        manifest({ repo: "lemonfiber", path: "IMPLEMENTATION-STATUS.md" }),
-      ),
-    ).toContain(tracker);
+      mirrored(manifest({ repo: "lemonfiber", path: "README.md" })),
+    ).toContain(readme);
   });
 });

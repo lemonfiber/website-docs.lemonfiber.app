@@ -10,18 +10,17 @@ const project = theProject();
  * The releases, newest first.
  *
  * The board orders its versions by semantic version, so the released ones read
- * backwards from the newest. Each carries what its manifest states, and how
- * much of what it locked the status file marks done — which is the pair the
- * release gate itself checked before the tag was cut.
+ * backwards from the newest. Each carries what its manifest states: what it
+ * delivered, the requirements it locked, and what it embedded.
  */
 const releases = project.train
-  .filter(({ version }) => isReleased(version.status))
+  .filter((version) => isReleased(version.status))
   .reverse()
-  .map(({ version, built }) => ({
+  .map((version) => ({
     id: version.version,
     headline: version.headline,
     milestone: m.project_milestone({ id: version.milestone }),
-    proved: m.releases_proved({ done: built.done, total: built.total }),
+    proved: m.releases_proved({ total: version.goals.length }),
     releasedOn:
       version.releasedOn === ""
         ? ""

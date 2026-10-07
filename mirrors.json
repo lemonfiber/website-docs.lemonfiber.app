@@ -54,15 +54,6 @@
       "label": "lemonfiber/lemonfiber"
     },
     {
-      "route": "project/whats-built.md",
-      "repo": "lemonfiber",
-      "path": "IMPLEMENTATION-STATUS.md",
-      "remote": "https://github.com/lemonfiber/lemonfiber",
-      "branch": "main",
-      "label": "lemonfiber/lemonfiber",
-      "title": "What is built"
-    },
-    {
       "route": "contributing/how-change-gets-in.md",
       "repo": "org",
       "path": "CONTRIBUTING.md",
