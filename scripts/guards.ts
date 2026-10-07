@@ -10,12 +10,6 @@ import {
   INDEX,
   isFamilyPage,
 } from "../src/lib/codes.ts";
-import {
-  CLIENTS,
-  contractViolations,
-  SERVED,
-  type Copy,
-} from "../src/lib/contracts.ts";
 import { countViolations, type Page } from "../src/lib/counts.ts";
 import {
   formulaViolations,
@@ -230,19 +224,7 @@ const formulae: Formula[] = await Promise.all(
     })),
 );
 
-// Each client generates its types from its own copy of the contract, and its
-// page says how that copy stands against the artefact the pinned binary serves.
-// The count of kinds on each page is held to that client's copy; the sentence
-// comparing the two copies is held here.
-const copies: Copy[] = await Promise.all(
-  CLIENTS.map(async (client) => ({
-    ...client,
-    text: await text(client.source),
-  })),
-);
-
 found.push(
-  ...contractViolations(await text(SERVED), copies, prose),
   ...formulaViolations(formulae, prose),
   ...countViolations(
     INVENTORIES,
@@ -260,10 +242,6 @@ found.push(
       webApi: await text("vendor/spec/20-architecture/contracts/web-api.md"),
       mirrors: await text("mirrors.json"),
       repos: await text("vendor/spec/30-repos/repos.toml"),
-      clientIndex: await text("vendor/sdk-ts/src/index.ts"),
-      phpContract: await text("vendor/sdk-php/contract/web-api.contract.json"),
-      phpManifest: await text("vendor/sdk-php/composer.json"),
-      tsContract: await text("vendor/sdk-ts/contract/web-api.contract.json"),
       webManifest: await text("vendor/lemonfiber-web/package.json"),
       webRoute: await text("vendor/lemonfiber-web/src/lib/route.ts"),
       manifests: await text("vendor/spec/70-operations/versions/README.md"),

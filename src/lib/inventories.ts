@@ -14,13 +14,11 @@ import { FAMILIES, INDEX, isFamilyPage } from "./codes.ts";
 import { matches, type Inventory, type Page, type Sources } from "./counts.ts";
 import { captured } from "./mirror.ts";
 import {
-  composerSteps,
   consolePlaces,
   consumes,
   contracts,
   decisions,
   enumAt,
-  exportedBy,
   features,
   globalFlags,
   governed,
@@ -48,17 +46,8 @@ const VOCABULARY = "vendor/lemonfiber/contract/capability-vocabulary.json";
 const WEB_API = "vendor/spec/20-architecture/contracts/web-api.md";
 const MIRRORS = "mirrors.json";
 const REPOS = "vendor/spec/30-repos/repos.toml";
-const CLIENT_INDEX = "vendor/sdk-ts/src/index.ts";
 const WEB_MANIFEST = "vendor/lemonfiber-web/package.json";
 const WEB_ROUTE = "vendor/lemonfiber-web/src/lib/route.ts";
-// Each client is generated from a copy of the contract taken when it was last
-// re-synced, so a copy holds what the binary held then rather than what it holds
-// now. Held separately from the binary's: these are three facts, and one number
-// stated for all three is checkable only while they agree. Whether they agree,
-// and what the pages say about that, is `contracts.ts`.
-const PHP_MANIFEST = "vendor/sdk-php/composer.json";
-const PHP_CONTRACT = "vendor/sdk-php/contract/web-api.contract.json";
-const TS_CONTRACT = "vendor/sdk-ts/contract/web-api.contract.json";
 const SPEC = "vendor/spec";
 const MANIFESTS = `${SPEC}/70-operations/versions/README.md`;
 const FEATURE_SCHEMA = `${SPEC}/10-functional/features/_meta/feature.schema.json`;
@@ -68,8 +57,6 @@ const ENVELOPE_PAGE = `${DOCS}api/the-envelope.md`;
 const KINDS_PAGE = `${DOCS}api/kinds.md`;
 const TUI_PAGE = `${DOCS}commands/the-tui.md`;
 const CONSOLE_PAGE = `${DOCS}commands/the-web-console.md`;
-const CLIENT_PAGE = `${DOCS}api/typescript-sdk.md`;
-const PHP_PAGE = `${DOCS}api/php-sdk.md`;
 const REPO_MAP_PAGE = `${DOCS}develop/repo-map.md`;
 const TRAIN_PAGE = `${DOCS}project/the-version-train.md`;
 
@@ -152,18 +139,6 @@ export const INVENTORIES: readonly Inventory[] = [
       page: KINDS_PAGE,
       members: (text) => columnUnder(text, "Kind"),
     },
-  },
-  {
-    what: "kinds the PHP client generates a class for",
-    source: PHP_CONTRACT,
-    members: (sources) => keysAt(sources.phpContract, "kinds"),
-    claims: [{ says: "a class for each of %N%" }],
-  },
-  {
-    what: "kinds the TypeScript client generates a type for",
-    source: TS_CONTRACT,
-    members: (sources) => keysAt(sources.tsContract, "kinds"),
-    claims: [{ says: "types for %N% of them" }],
   },
   {
     what: "payload kinds set out field by field",
@@ -397,16 +372,6 @@ export const INVENTORIES: readonly Inventory[] = [
     claims: [{ says: "the %N% sections" }],
   },
   {
-    what: "exports the client package declares",
-    source: CLIENT_INDEX,
-    members: (sources) => exportedBy(sources.clientIndex),
-    claims: [],
-    listing: {
-      page: CLIENT_PAGE,
-      members: (text) => namesUnder(text, "Export"),
-    },
-  },
-  {
     what: "repositories the web surface consumes",
     source: WEB_MANIFEST,
     members: (sources) => consumes(sources.webManifest),
@@ -414,16 +379,6 @@ export const INVENTORIES: readonly Inventory[] = [
     listing: {
       page: REPO_MAP_PAGE,
       members: consumedByWeb,
-    },
-  },
-  {
-    what: "gates `composer ci` runs",
-    source: PHP_MANIFEST,
-    members: (sources) => composerSteps(sources.phpManifest, "ci"),
-    claims: [{ says: "runs the %N% below" }],
-    listing: {
-      page: PHP_PAGE,
-      members: (text) => columnUnder(text, "Gate"),
     },
   },
   {

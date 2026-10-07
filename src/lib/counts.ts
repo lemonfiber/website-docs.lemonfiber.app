@@ -40,15 +40,6 @@ export interface Sources {
   readonly repos: string;
   /** `mirrors.json`. */
   readonly mirrors: string;
-  /** `vendor/sdk-ts/src/index.ts`, the client package's entry point. */
-  readonly clientIndex: string;
-  /** `vendor/sdk-php/contract/web-api.contract.json`, the artefact that client
-   * was generated from, which is its own copy rather than the binary's. */
-  readonly phpContract: string;
-  /** `vendor/sdk-ts/contract/web-api.contract.json`, the same for that client. */
-  readonly tsContract: string;
-  /** `vendor/sdk-php/composer.json`, the PHP package's manifest. */
-  readonly phpManifest: string;
   /** `vendor/lemonfiber-web/package.json`, the web surface's manifest. */
   readonly webManifest: string;
   /** `vendor/lemonfiber-web/src/lib/route.ts`, the console's own list of screens. */

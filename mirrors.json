@@ -122,6 +122,14 @@
       "title": "sdk-php \u2014 the PHP client"
     },
     {
+      "route": "develop/repos/sdk-python.md",
+      "repo": "sdk-python",
+      "path": "README.md",
+      "remote": "https://github.com/lemonfiber/sdk-python",
+      "branch": "main",
+      "label": "lemonfiber/sdk-python"
+    },
+    {
       "route": "develop/repos/web.md",
       "repo": "lemonfiber-web",
       "path": "README.md",
@@ -174,6 +182,46 @@
       "branch": "main",
       "label": "lemonfiber/lemonfiber-plugins",
       "title": "The plugin catalogue"
+    },
+    {
+      "route": "api/typescript-sdk.md",
+      "repo": "sdk-ts",
+      "path": "docs/guide.md",
+      "remote": "https://github.com/lemonfiber/sdk-ts",
+      "branch": "main",
+      "label": "lemonfiber/sdk-ts"
+    },
+    {
+      "route": "api/php-sdk.md",
+      "repo": "sdk-php",
+      "path": "docs/guide.md",
+      "remote": "https://github.com/lemonfiber/sdk-php",
+      "branch": "main",
+      "label": "lemonfiber/sdk-php"
+    },
+    {
+      "route": "api/python-sdk.md",
+      "repo": "sdk-python",
+      "path": "docs/guide.md",
+      "remote": "https://github.com/lemonfiber/sdk-python",
+      "branch": "main",
+      "label": "lemonfiber/sdk-python"
+    },
+    {
+      "route": "api/home-assistant.md",
+      "repo": "integration-home-assistant",
+      "path": "README.md",
+      "remote": "https://github.com/lemonfiber/integration-home-assistant",
+      "branch": "main",
+      "label": "lemonfiber/integration-home-assistant"
+    },
+    {
+      "route": "api/ai-assistants.md",
+      "repo": "integration-mcp",
+      "path": "README.md",
+      "remote": "https://github.com/lemonfiber/integration-mcp",
+      "branch": "main",
+      "label": "lemonfiber/integration-mcp"
     }
   ]
 }

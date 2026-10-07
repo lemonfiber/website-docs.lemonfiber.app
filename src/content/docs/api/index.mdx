@@ -1,6 +1,6 @@
 ---
 title: The API
-description: One envelope, seventy-three payload kinds, a local HTTP surface, and two SDKs generated from a single contract artefact.
+description: One envelope, seventy-three payload kinds, a local HTTP surface, and three SDKs generated from a single contract artefact.
 sidebar:
   order: 0
 ---
@@ -29,8 +29,8 @@ instead. The shape of the surface is
 [the envelope](/api/the-envelope/) covers the endpoints, the guard, and how a
 stack says what it can do.
 
-The two SDKs below are written against that contract and generate their types from
-the same artefact the command line serialises with, so what they parse is what both
+The three SDKs below are written against that contract and generate their types
+from the same artefact the command line serialises with, so what they parse is what both
 surfaces already emit.
 
 <CardGrid>
@@ -52,7 +52,22 @@ surfaces already emit.
   <LinkCard
     title="The PHP SDK"
     href="/api/php-sdk/"
-    description="A peer of the TypeScript client, built on Saloon, with one class per kind."
+    description="A typed class for every kind, typed exceptions for every failure, built on Saloon."
+  />
+  <LinkCard
+    title="The Python SDK"
+    href="/api/python-sdk/"
+    description="An asynchronous and a synchronous client that answer the same calls, with typed answers for every kind."
+  />
+  <LinkCard
+    title="Home Assistant"
+    href="/api/home-assistant/"
+    description="The stack's health, downloads and disk in Home Assistant, and a few controls, through a key the operator mints."
+  />
+  <LinkCard
+    title="AI assistants over MCP"
+    href="/api/ai-assistants/"
+    description="The MCP server the specification sets out for an assistant. It has no code yet."
   />
   <LinkCard
     title="The payload reference"
