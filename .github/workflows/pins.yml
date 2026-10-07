@@ -3,9 +3,9 @@
 # revision is bumped deliberately rather than drifting under the build.
 #
 # The cost of that is a gate can be correct and still pass on the wrong input.
-# `every-error-by-code.md` claims to list every error lemonfiber can raise, and a
-# check holds it to the codes the vendored source declares — bidirectional, and
-# it works. It passed while the page was missing two codes, because the pin sat
+# The error-code pages claim to list every error lemonfiber can raise, and a
+# check holds them to the codes the vendored source declares — bidirectional,
+# and it works. It passed while they were missing two codes, because the pin sat
 # one commit before the code that raises them. Nothing was broken; the artefact
 # was old.
 #
@@ -444,7 +444,7 @@ jobs:
   notify:
     needs: telling
     if: always() && needs.telling.outputs.red == 'true'
-    uses: lemonfiber/spec/.github/workflows/discord-notify.yml@09410894c122b6395d553143417d9248bc95ade6 # v1.0.25
+    uses: lemonfiber/spec/.github/workflows/discord-notify.yml@44f27cb6e10a5cb38a858436d3b57c40ab63b1b7 # v1.0.30
     with:
       title: "📌 pins · ${{ github.event.repository.name }}"
       body: ${{ needs.telling.outputs.body }}

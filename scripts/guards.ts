@@ -3,7 +3,13 @@
 import { readdir, readFile, realpath, writeFile } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
 
-import { codeViolations, familyViolations } from "../src/lib/codes.ts";
+import {
+  ARTEFACT,
+  codeViolations,
+  familyViolations,
+  INDEX,
+  isFamilyPage,
+} from "../src/lib/codes.ts";
 import {
   CLIENTS,
   contractViolations,
@@ -148,7 +154,7 @@ const owned = kept
   .map((p) => routeOf(relative(CONTENT, p).split(sep).join("/")));
 found.push(...collisionViolations(owned, declared));
 
-// The error-code page claims to list every code lemonfiber can raise and no
+// The error-code pages claim to list every code lemonfiber can raise and no
 // others. The crate emits its own list, so the claim is checked rather than
 // maintained. A missing artefact is a violation: an unchecked-out submodule
 // leaves the claim unverified, and silently unverified is what this replaces.
@@ -159,7 +165,7 @@ const text = async (path: string): Promise<string> => {
     return "";
   }
 };
-const errorCodes = await text("vendor/lemonfiber/reference/error-codes.md");
+const errorCodes = await text(ARTEFACT);
 
 // The one dependency this repository pins to an exact revision, and the
 // revision its lockfile resolved. `npm ci` re-resolves a git dependency rather
@@ -175,10 +181,6 @@ found.push(
     await text(TOKENS),
     await text(INSTALLED),
     await text(STYLESHEET),
-  ),
-  ...codeViolations(
-    errorCodes,
-    await text("src/content/docs/fixing/every-error-by-code.md"),
   ),
   ...lockViolations(declaredPin, resolvedPin),
 );
@@ -200,6 +202,11 @@ const prose: Page[] = await Promise.all(
 // pages. Its count of payload kinds sat outside every check while the contract
 // left it behind.
 prose.push({ path: "README.md", text: await text("README.md") });
+
+// The error-code pages: the index, and one page per family of codes.
+found.push(
+  ...codeViolations(errorCodes, await text(INDEX), prose.filter(isFamilyPage)),
+);
 
 const specPaths: string[] = [];
 const specLinks: string[] = [];

@@ -50,7 +50,9 @@ which is ahead of every release. At that revision:
   build offers a plugin nothing that would run one. Of what a manifest may ask
   for in `[requires]`, this build offers only what its
   [extension points](/plugins/extension-points/) need — the names printed
-  there under _a plugin declares_ — and refuses any other.
+  there under _a plugin declares_ — and refuses any other. In practice a plugin
+  that only adds doctor checks installs, and a plugin that adds a service —
+  every plugin in the catalogue today — is refused.
 
 [What is built](/project/whats-built/) is the per-requirement record and
 [the roadmap](/project/roadmap/) says which version carries the rest.
@@ -101,8 +103,8 @@ which is ahead of every release. At that revision:
 ## Where to go next
 
 Every flag of every `plugin` word is in [the command reference](/commands/reference/plugin/),
-and what each refusal means is under
-[PLUGIN in every error by code](/fixing/every-error-by-code/#plugin--installing-and-running-plugins).
+and what each refusal means is on
+[the `PLUGIN` codes page](/fixing/codes/plugin/).
 What `lemonfiber plugin installed --json` returns is the `plugins` kind in
 [the API](/api/kinds/). The requirements this section describes are
 [F3 to F11 in the specification](/spec/10-functional/features/f-extensibility/f3-stack-manifests/),

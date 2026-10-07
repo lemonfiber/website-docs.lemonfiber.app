@@ -35,7 +35,7 @@ Nothing containerised runs without a container engine, so that is the first thin
 $ lemonfiber doctor --only environment
 ```
 
-- Codes in the `ENV`, `DOCKER` and `PROC` families all mean the engine, not your stack. [Look them up](/fixing/every-error-by-code/#env--the-container-engine).
+- Codes in the `ENV`, `DOCKER` and `PROC` families all mean the engine, not your stack. Look them up: [`ENV`](/fixing/codes/env/), [`DOCKER`](/fixing/codes/docker/), [`PROC`](/fixing/codes/proc/).
 - A `STACK` or `CONFIG` code means lemonfiber has not been set up here yet, or the stack description cannot be read. `lemonfiber setup` answers most of them — see [your first stack](/start/your-first-stack/).
 - A `FORM` code means the thing you named is not something this stack can start. `lemonfiber forms` lists what it has; [forms and slices](/running/forms-and-slices/) explains what they are.
 - Nothing printed at all? Confirm the install with [install lemonfiber](/start/install/).

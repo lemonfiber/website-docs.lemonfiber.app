@@ -50,7 +50,7 @@ digest the index carries. The record keeps the key that signed it.
 
 At the revision this site pins the answer is always no. The build carries no key
 to verify the index with, so every install by name is refused as unverifiable,
-[`PLUGIN-20`](/fixing/every-error-by-code/#plugin--installing-and-running-plugins),
+[`PLUGIN-20`](/fixing/codes/plugin/),
 and every install from a directory or a git source is recorded as unreviewed and
 shown as such.
 

@@ -14,6 +14,13 @@ such as `komga` is a name for the [catalogue](/plugins/the-catalogue/) to
 resolve, so a directory of that name is written `./komga`. Every flag each word
 takes is in [the command reference](/commands/reference/plugin/).
 
+**What installs today.** lemonfiber offers a plugin only what its
+[extension points](/plugins/extension-points/) need: contributing checks and
+remedies to `lemonfiber doctor`. A plugin that asks for anything else, such as
+adding a service (`service.add`) or watching its health
+(`service.health.http`), is refused, and the refusal names what it asked for.
+Every plugin in the catalogue adds a service, so none of them installs yet.
+
 ## Rehearse it first
 
 ```sh
@@ -104,8 +111,8 @@ There is no _disable_. A plugin is installed or it is not.
 `install`, `update` and `remove` each accept `--dry-run`, and a rehearsal exits
 zero. A real run exits non-zero when an install went back, an update did not
 hold, or a removal left something standing. Every refusal carries a code in the
-`PLUGIN` family; what each means and what to do is
-[under PLUGIN in every error by code](/fixing/every-error-by-code/#plugin--installing-and-running-plugins).
+`PLUGIN` family; what each means and what to do is on
+[the `PLUGIN` codes page](/fixing/codes/plugin/).
 What an install wrote before it stopped is on the change record, which
 `lemonfiber history` reads.
 

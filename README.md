@@ -167,8 +167,8 @@ documentation about them — the count of payload kinds in it had been left behi
 by the contract, and nothing here was looking.
 
 Where a page sets the members out in a table rather than only counting them, the
-table is compared against the source in both directions, as the error-code page
-is. Three failures are reported, not one:
+table is compared against the source in both directions, as the error-code pages
+are. Three failures are reported, not one:
 
 - a sentence whose number is not the number the source has;
 - a table with a member the source does not have, or without one it does;

@@ -68,7 +68,7 @@ Four separate things have to hold, and each is checked on its own because each f
 
 The fourth is the one that bites. **A forwarded port does not survive a reconnect, and a reboot is a reconnect.** Without that check the stack comes back looking perfectly healthy while the client listens on a port the VPN no longer forwards — everything green, incoming connections silently gone. When lemonfiber detects a changed port it re-pushes it to the client and records that it had drifted, rather than waiting to be told.
 
-If you see [`VPN-7`](/fixing/every-error-by-code/#vpn--traffic-leaving-the-tunnel), the port and the client have parted company. Running `lemonfiber up` moves the client onto the forwarded port.
+If you see [`VPN-7`](/fixing/codes/vpn/), the port and the client have parted company. Running `lemonfiber up` moves the client onto the forwarded port.
 
 ### The traps that look like a broken installation
 
@@ -79,7 +79,7 @@ Each port-forwarding provider has one failure mode that reads as a broken stack 
 | ProtonVPN | Port forwarding has to be enabled **when the WireGuard configuration is generated**, and the server has to support P2P. It cannot be fixed at runtime; it needs new credentials. |
 | NordVPN   | The credentials are the **service credentials** from the account dashboard, not the account email and password. The obvious values are rejected with no explanation.             |
 
-Where the tunnel is up and no port was granted on a provider that offers them, that provider's trap is named as the first candidate cause — which is what [`VPN-4`](/fixing/every-error-by-code/#vpn--traffic-leaving-the-tunnel) does.
+Where the tunnel is up and no port was granted on a provider that offers them, that provider's trap is named as the first candidate cause — which is what [`VPN-4`](/fixing/codes/vpn/) does.
 
 ## Testing the killswitch
 
@@ -93,8 +93,8 @@ Until it has been run, the killswitch reports `unverified` — not `pass`. Claim
 
 The test drops the tunnel on purpose and puts it back, and it verifies the restoration before reporting anything. Two outcomes are worth recognising:
 
-- [`VPN-5`](/fixing/every-error-by-code/#vpn--traffic-leaving-the-tunnel) — the tunnel went down and the client still reached the internet. Enable the tunnel container's own killswitch. For gluetun that is `FIREWALL=on`, which is its default.
-- [`VPN-6`](/fixing/every-error-by-code/#vpn--traffic-leaving-the-tunnel) — the tunnel was dropped and putting it back could not be confirmed. Restart the tunnel container now; whether traffic is flowing outside it is exactly what is currently unknown.
+- [`VPN-5`](/fixing/codes/vpn/) — the tunnel went down and the client still reached the internet. Enable the tunnel container's own killswitch. For gluetun that is `FIREWALL=on`, which is its default.
+- [`VPN-6`](/fixing/codes/vpn/) — the tunnel was dropped and putting it back could not be confirmed. Restart the tunnel container now; whether traffic is flowing outside it is exactly what is currently unknown.
 
 ## While torrents are running
 
@@ -110,13 +110,13 @@ That is a decision with a cost, and lemonfiber states the cost once rather than 
 $ lemonfiber doctor --accept vpn.unprotected
 ```
 
-The [`VPN-8`](/fixing/every-error-by-code/#vpn--traffic-leaving-the-tunnel) finding stays where it is and stops leading. It is suppressed, not deleted — "you chose this" and "this is not happening" are different claims, and only one of them would be true.
+The [`VPN-8`](/fixing/codes/vpn/) finding stays where it is and stops leading. It is suppressed, not deleted — "you chose this" and "this is not happening" are different claims, and only one of them would be true.
 
 Note that you cannot accept a `leaking` result. Only a warning can be acknowledged; a failure is not something to acknowledge away.
 
 ## Related
 
-- [Every error by code](/fixing/every-error-by-code/) — the eight `VPN` codes, side by side
+- [The tunnel's codes](/fixing/codes/vpn/) — the eight `VPN` codes, side by side
 - [Run the doctor](/fixing/run-the-doctor/) — verdicts, categories and repairs
 - [C2, VPN verification](/spec/10-functional/features/c-trust/c2-vpn-verification/) — the requirement this is written against
 - [J5, the VPN verification journey](/spec/10-functional/journeys/j5-vpn-verification/) — what a whole run of this looks like

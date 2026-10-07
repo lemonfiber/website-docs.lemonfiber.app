@@ -42,21 +42,22 @@ end state rather than a degraded one — see
 The release build targets macOS on Apple silicon, macOS on Intel, and Linux on
 x86_64 in both glibc and musl flavours.
 
-Windows is not built yet. The native binary does not currently compile there, and
-that is tracked as release-engineering work before 1.0. You can still run the
-stack on Windows through Docker Desktop, but not the `lemonfiber` binary itself.
+There is no Windows build: the binary does not compile there. On Windows you can
+still run the stack itself, with Docker Desktop and plain `docker compose`, as
+[Running without lemonfiber](/advanced/without-lemonfiber/) describes, but not
+the `lemonfiber` binary.
 
 ## Getting the binary
 
 Three routes get you a binary. The fourth, Homebrew, is a placeholder, and it is
 better to say so than to give you a command that fails.
 
-| Route                                               | What it gets you                                                                                                                                                                                                           |
-| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| One-line shell installer                            | `lemonfiber-installer.sh`, attached to every release. It puts the binary in your Cargo home.                                                                                                                               |
-| Prebuilt archive                                    | A `.tar.xz` per platform, each with a `.sha256` beside it and a `sha256.sum` over the set.                                                                                                                                 |
-| Building from source                                | The route for a change you are making yourself.                                                                                                                                                                            |
-| Homebrew — `brew install lemonfiber/tap/lemonfiber` | Nothing. The tap repository exists, but the formula in it is the placeholder it was created as: it declares version `0.0.0` and names no download, so there is nothing to fetch. The job that writes it turns on at 1.0.0. |
+| Route                                               | What it gets you                                                                                                                                                                                  |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| One-line shell installer                            | `lemonfiber-installer.sh`, attached to every release. It puts the binary in `~/.cargo/bin`, or in `$CARGO_HOME/bin` if you have set that.                                                         |
+| Prebuilt archive                                    | A `.tar.xz` per platform, each with a `.sha256` beside it and a `sha256.sum` over the set.                                                                                                        |
+| Building from source                                | The route for a change you are making yourself.                                                                                                                                                   |
+| Homebrew — `brew install lemonfiber/tap/lemonfiber` | Nothing. The tap repository exists, but the formula in it is a placeholder: it declares version `0.0.0` and names no download, so there is nothing to fetch. No release publishes to the tap yet. |
 
 ### The shell installer
 
@@ -66,7 +67,7 @@ the tag you want — the newest is on the
 
 ```sh
 $ curl --proto '=https' --tlsv1.2 -LsSf \
-    https://github.com/lemonfiber/lemonfiber/releases/download/v0.9.1/lemonfiber-installer.sh | sh
+    https://github.com/lemonfiber/lemonfiber/releases/download/v0.16.0/lemonfiber-installer.sh | sh
 ```
 
 The archives sit beside it on the same release, if you would rather check a
@@ -74,7 +75,7 @@ checksum and unpack one yourself.
 
 ### Building from source
 
-You need a Rust toolchain, 1.82 or newer.
+You need a Rust toolchain, 1.95 or newer.
 
 The stack manifest ships as a submodule and is read at build time, so the clone
 has to include it:
@@ -93,11 +94,13 @@ If you have already cloned without `--recurse-submodules`, run
 
 ## Check it worked
 
-```sh
-$ lemonfiber version
+```console
+$ lemonfiber --version
+lemonfiber 0.16.0
 ```
 
-That reports the version of the binary and the version of the stack it carries.
+`lemonfiber version` says more: the version of the binary and the version of
+the stack it carries.
 Both matter in a bug report, because a lemonfiber release pins a particular stack
 and a particular set of service image tags.
 

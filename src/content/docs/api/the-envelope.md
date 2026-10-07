@@ -121,8 +121,7 @@ log writes as they are written.
 ### When a read is refused
 
 However a read is refused, it answers with the error envelope — the same document
-`--json` writes — and its `code` says which refusal it was. The `READ` codes in
-[every error by code](/fixing/every-error-by-code/#read--asking-the-web-surface-a-question)
+`--json` writes — and its `code` says which refusal it was. The [`READ` codes](/fixing/codes/read/)
 are a read's own. The status says which of four sorts of refusal it is:
 
 | Refused because                                                       | Status |
