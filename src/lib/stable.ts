@@ -98,30 +98,42 @@ export const COMMIT = /^[0-9a-f]{40}$/;
 /** A version, as a manifest names one. */
 const VERSION = /^\d+\.\d+\.\d+$/;
 
-/** A release tag. */
-const TAG = /^v\d+\.\d+\.\d+$/;
-
 /** A release day, `YYYY-MM-DD`. */
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
 
+/** The status a manifest carries once its version is published. */
+const RELEASED = "released";
+
+/**
+ * Whether a manifest says its version is released. One that says so and still
+ * reads as no release is a manifest this site cannot follow, not a version it
+ * may leave out.
+ */
+export const saysReleased = (manifest: string): boolean =>
+  parsed(manifest)?.["status"] === RELEASED;
+
 /**
  * A manifest's release, or null for one that is not released, not readable, or
- * holding a version, a day, a tag or an embedded commit that is not one.
+ * holding a version, a day or an embedded commit that is not one.
+ *
+ * `released_as` names the patch a minor was finished under, as a version: the
+ * tag is that version with a `v` in front, the same as for a minor that
+ * shipped as itself.
  */
 export function releaseOf(manifest: string): Release | null {
   const read = parsed(manifest);
   if (read === null) return null;
   const { version, status, released_on: releasedOn } = read;
-  const releasedAs = read["released_as"] ?? `v${String(version)}`;
+  const releasedAs = read["released_as"] ?? version;
   const pins = Object.entries(record(read["pins"]) ?? {});
   if (
-    status !== "released" ||
+    status !== RELEASED ||
     typeof version !== "string" ||
     !VERSION.test(version) ||
     typeof releasedOn !== "string" ||
     !DAY.test(releasedOn) ||
     typeof releasedAs !== "string" ||
-    !TAG.test(releasedAs) ||
+    !VERSION.test(releasedAs) ||
     !pins.every(
       ([, commit]) => typeof commit === "string" && COMMIT.test(commit),
     )
@@ -130,7 +142,7 @@ export function releaseOf(manifest: string): Release | null {
   return {
     version,
     releasedOn,
-    tag: releasedAs,
+    tag: `v${releasedAs}`,
     pins: Object.fromEntries(pins) as Record<string, string>,
   };
 }

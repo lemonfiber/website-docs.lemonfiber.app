@@ -28,6 +28,7 @@ import {
   parseStable,
   releaseOf,
   renderStable,
+  saysReleased,
   settledAt,
   sourceOf,
   stableOf,
@@ -104,9 +105,13 @@ function releases(): Release[] {
   return listed.out
     .split("\n")
     .filter((path) => /\/\d+\.\d+\.\d+\.toml$/.test(path))
-    .map((path) =>
-      releaseOf(git("-C", SPEC, "show", END, `FETCH_HEAD:${path}`).out),
-    )
+    .map((path) => {
+      const manifest = git("-C", SPEC, "show", END, `FETCH_HEAD:${path}`).out;
+      const release = releaseOf(manifest);
+      if (release === null && saysReleased(manifest))
+        stop(`${path} says it is released but does not read as a release`);
+      return release;
+    })
     .filter((one): one is Release => one !== null);
 }
 
