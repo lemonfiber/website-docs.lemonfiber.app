@@ -133,4 +133,4 @@ describes.
 
 - [Backup and restore](/running/backup-and-restore/) — the safety net this page keeps pointing at
 - [Starting and stopping](/running/starting-and-stopping/) — `ps`, `logs` and what healthy means
-- [The stack manifest](/advanced/the-stack-manifest/) — where the pinned versions live
+- [The stack manifest contract](https://lemonfiber.app/spec/20-architecture/contracts/stack-manifest/#service) — where the pinned versions live

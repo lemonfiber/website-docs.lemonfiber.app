@@ -64,7 +64,7 @@ out later. What that looks like from the operator's side is
 ## The manifest entry
 
 The `[[service]]` block is where lemonfiber learns what the service is. Every
-required field is listed in [the stack manifest](/advanced/the-stack-manifest/);
+required field is listed in [the stack manifest contract](https://lemonfiber.app/spec/20-architecture/contracts/stack-manifest/#service);
 the ones people forget are `describes` and `without_it`, which are what let a
 failure be judged rather than merely reported, and `last_release`, which is the
 latest release upstream has published rather than the one you pinned.
@@ -123,8 +123,9 @@ reports which features become unavailable; it does not refuse to run.
 
 ## Where to go next
 
-[The stack manifest](/advanced/the-stack-manifest/) is the field-by-field
-reference. [Running without lemonfiber](/advanced/without-lemonfiber/) is the
+[The stack manifest contract](https://lemonfiber.app/spec/20-architecture/contracts/stack-manifest/) is the field-by-field
+reference, and [the stack manifest](/advanced/the-stack-manifest/) is what to do
+when lemonfiber refuses one. [Running without lemonfiber](/advanced/without-lemonfiber/) is the
 compose project on its own, and
 [the media-stack repository](https://contribute.lemonfiber.app/repos/media-stack/) is where these files
 live. The specification for this is
