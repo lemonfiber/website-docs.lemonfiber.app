@@ -1,5 +1,6 @@
 ---
 title: What lemonfiber is
+topic: use
 description: One binary that sets up a media stack, runs it in slices, and proves it is working.
 sidebar: { order: 1 }
 ---
@@ -78,7 +79,8 @@ How to [install](/start/install/) lemonfiber, how to
 [run a stack](/running/), what to do when
 [something is wrong](/fixing/), the
 [full command reference](/commands/every-command/), and how to
-[build on it](/develop/).
+[build on it](/api/). Changing lemonfiber itself is on
+[the contributor site](https://contribute.lemonfiber.app/).
 
 It is not the specification. The requirements lemonfiber is written against —
 every feature, every journey, every architectural decision — live in

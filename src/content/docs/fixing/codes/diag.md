@@ -1,5 +1,6 @@
 ---
 title: DIAG — narrowing a diagnosis
+topic: use
 description: Every DIAG code lemonfiber raises, what it means, and what to do about it.
 sidebar:
   hidden: true

@@ -1,5 +1,6 @@
 ---
 title: DECLINE — the service that answers an invitation's decline
+topic: use
 description: Every DECLINE code lemonfiber raises, what it means, and what to do about it.
 sidebar:
   hidden: true

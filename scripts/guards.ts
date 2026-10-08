@@ -22,6 +22,7 @@ import {
   type Formula,
 } from "../src/lib/formula.ts";
 import { INVENTORIES } from "../src/lib/inventories.ts";
+import { topicViolations } from "../src/lib/topics.ts";
 
 async function checks(tree: Tree): Promise<Violation[]> {
   const { text } = tree;
@@ -76,9 +77,6 @@ async function checks(tree: Tree): Promise<Violation[]> {
           "vendor/lemonfiber/contract/capability-vocabulary.json",
         ),
         webApi: await text("vendor/spec/20-architecture/contracts/web-api.md"),
-        mirrors: await text("mirrors.json"),
-        repos: await text("vendor/spec/30-repos/repos.toml"),
-        webManifest: await text("vendor/lemonfiber-web/package.json"),
         webRoute: await text("vendor/lemonfiber-web/src/lib/route.ts"),
         manifests: await text("vendor/spec/70-operations/versions/README.md"),
         featureSchema: await text(
@@ -89,6 +87,7 @@ async function checks(tree: Tree): Promise<Violation[]> {
       prose,
     ),
     ...familyViolations(errorCodes, prose),
+    ...topicViolations(tree.pages),
   ];
 }
 

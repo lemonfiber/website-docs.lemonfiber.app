@@ -1,11 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  columnUnder,
-  firstColumnUnder,
-  namesUnder,
-  tablesUnder,
-} from "./tables.ts";
+import { columnUnder, firstColumnUnder, tablesUnder } from "./tables.ts";
 
 describe("tablesUnder", () => {
   const page = [
@@ -70,35 +65,5 @@ describe("tablesUnder", () => {
 
   it("takes none where there is no such table", () => {
     expect(firstColumnUnder(page, "Nothing")).toEqual([]);
-  });
-});
-
-describe("namesUnder", () => {
-  const page = [
-    "| Export                         | What it is for |",
-    "| ------------------------------ | -------------- |",
-    "| `Client`, `Opened`             | Asking         |",
-    "| `Problem`, and `refused` too   | The error      |",
-    "",
-    "| Kind    | What it carries |",
-    "| ------- | --------------- |",
-    "| `status` | The stack      |",
-  ].join("\n");
-
-  it("names what a row writes as code and not the prose carrying it", () => {
-    expect(namesUnder(page, "Export")).toEqual([
-      "Client",
-      "Opened",
-      "Problem",
-      "refused",
-    ]);
-  });
-
-  it("leaves a table headed something else alone", () => {
-    expect(namesUnder(page, "Kind")).toEqual(["status"]);
-  });
-
-  it("names none where there is no such table", () => {
-    expect(namesUnder(page, "Nothing")).toEqual([]);
   });
 });

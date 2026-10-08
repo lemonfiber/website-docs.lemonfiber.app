@@ -1,5 +1,6 @@
 ---
 title: HANDOFF — pointing somebody's device at the stack
+topic: use
 description: Every HANDOFF code lemonfiber raises, what it means, and what to do about it.
 sidebar:
   hidden: true

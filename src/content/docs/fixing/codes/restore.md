@@ -1,5 +1,6 @@
 ---
 title: RESTORE — putting configuration back
+topic: use
 description: Every RESTORE code lemonfiber raises, what it means, and what to do about it.
 sidebar:
   hidden: true

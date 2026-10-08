@@ -1,4 +1,3 @@
-import { HEALTH } from "@lemonfiber/website-kit/health";
 import { watched } from "@lemonfiber/website-kit/pins";
 import { TOKENS } from "@lemonfiber/website-kit/tokens";
 import { describe, expect, it } from "vitest";
@@ -21,7 +20,7 @@ describe("what a guard reads", () => {
 
   it("holds what the guards that are not inventories read", () => {
     const sources = INVENTORIES.map((one) => one.source);
-    for (const artefact of [ARTEFACT, FORMULAE, TOKENS, HEALTH]) {
+    for (const artefact of [ARTEFACT, FORMULAE, TOKENS]) {
       expect(sources).not.toContain(artefact);
       expect(GUARDED).toContain(artefact);
     }
@@ -30,12 +29,7 @@ describe("what a guard reads", () => {
   it.each([
     ["the tap", "vendor/homebrew-tap", ["Formula"]],
     ["brand", "vendor/brand", ["tokens/tokens.css"]],
-    ["the org", "vendor/org", [""]],
-    [
-      "the web surface",
-      "vendor/lemonfiber-web",
-      ["package.json", "src/lib/route.ts"],
-    ],
+    ["the web surface", "vendor/lemonfiber-web", ["src/lib/route.ts"]],
   ])(
     "reaches into %s, which held no guarded path before",
     (_, module, paths) => {

@@ -8,6 +8,8 @@ import manifest from "../mirrors.json";
 import type { Mirror } from "@lemonfiber/website-kit/mirror";
 import { mirrorLoader } from "@lemonfiber/website-kit/mirror-loader";
 
+import { TOPIC_NAMES } from "./lib/topics.ts";
+
 const mirrors = manifest.mirrors as readonly Mirror[];
 const root = fileURLToPath(new URL("..", import.meta.url)).replace(/\/$/, "");
 
@@ -48,6 +50,13 @@ const provenance = z
 export const collections = {
   docs: defineCollection({
     loader,
-    schema: docsSchema({ extend: z.object({ mirror: provenance }) }),
+    // `topic` is what the sidebar plugin reads to place a page. A mirrored page
+    // carries none and takes the topic of the section its route sits in.
+    schema: docsSchema({
+      extend: z.object({
+        mirror: provenance,
+        topic: z.enum(TOPIC_NAMES).optional(),
+      }),
+    }),
   }),
 };

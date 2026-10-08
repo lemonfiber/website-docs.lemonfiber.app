@@ -1,5 +1,6 @@
 ---
 title: RATE — holding the stack to a share of the line
+topic: use
 description: Every RATE code lemonfiber raises, what it means, and what to do about it.
 sidebar:
   hidden: true

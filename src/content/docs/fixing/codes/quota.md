@@ -1,5 +1,6 @@
 ---
 title: QUOTA — what the household may ask for
+topic: use
 description: Every QUOTA code lemonfiber raises, what it means, and what to do about it.
 sidebar:
   hidden: true

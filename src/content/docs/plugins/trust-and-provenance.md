@@ -1,5 +1,6 @@
 ---
 title: Trust and provenance
+topic: build
 description: How lemonfiber pins what a plugin runs, what it can tell you about who published it, where every value came from, and what a plugin may never do.
 sidebar:
   order: 6

@@ -1,5 +1,6 @@
 ---
 title: Install lemonfiber
+topic: use
 description: What the machine needs first, which platforms the release build targets, and the routes that get you the binary.
 sidebar: { order: 2 }
 ---

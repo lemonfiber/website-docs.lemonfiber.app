@@ -22,10 +22,6 @@ export const ids = (stack: string, table: string): string[] =>
     stack,
   );
 
-/** The name of every `[[repo]]` the specification's register governs. */
-export const governed = (repos: string): string[] =>
-  matches(/^\[\[repo\]\]\nname = "([^"]+)"/gm, repos);
-
 /** Where the org keeps its own repositories: the forge, and the account on it. */
 const FORGE = "github.com";
 const ORG = "/lemonfiber/";
@@ -225,30 +221,6 @@ export const consolePlaces = (route: string): string[] => {
   const said =
     /export const everyPlace: readonly Place\[\] = \[([^\]]*)\]/.exec(route);
   return said === null ? [] : matches(/"([a-z-]+)"/g, captured(said, 1));
-};
-
-/** The scope every package this org publishes carries. */
-const SCOPE = /^@lemonfiber\//;
-
-/**
- * The repositories a manifest depends on at run time.
- *
- * Named as repositories rather than as packages, which is how the map of the
- * org writes them. A dependency from outside the org keeps the name it has and
- * so is reported rather than passed over.
- */
-export const consumes = (manifest: string): string[] =>
-  keysAt(manifest, "dependencies").map((name) => name.replace(SCOPE, ""));
-
-/** Every repository this site renders, each counted once however many mirrors. */
-export const mirrored = (manifest: string): string[] => {
-  const read = parsed(manifest);
-  if (typeof read !== "object" || read === null) return [];
-  const declared = (read as { mirrors?: unknown }).mirrors;
-  if (!Array.isArray(declared)) return [];
-  return [
-    ...new Set(declared.map((one) => String((one as { repo?: unknown }).repo))),
-  ];
 };
 
 /** Every feature the specification sets out, one file each. */

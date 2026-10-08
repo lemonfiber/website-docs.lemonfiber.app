@@ -42,7 +42,8 @@ untaken — the cure is to take the pin and write what the guards name.
 |                           |                                                                  |
 | ------------------------- | ---------------------------------------------------------------- |
 | `src/content/docs/`       | the pages this repository owns                                   |
-| `src/lib/sections.ts`     | the sidebar — ten sections, plus the specification               |
+| `src/lib/topics.ts`       | the two topics, Use and Build on, and the sections under each    |
+| `src/lib/sections.ts`     | the two sidebars, one per topic                                  |
 | `mirrors.json`            | which upstream tree lands at which route                         |
 | `@lemonfiber/website-kit` | mirroring, the shared guards, the link and pin checks, by commit |
 | `src/lib/inventories.ts`  | every number this site states, and the tree it is counted from   |

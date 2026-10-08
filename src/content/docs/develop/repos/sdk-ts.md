@@ -1,1 +1,0 @@
-../../../../../vendor/sdk-ts/README.md

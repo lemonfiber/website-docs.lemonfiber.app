@@ -1,1 +1,0 @@
-../../../../vendor/org/CONTRIBUTING.md

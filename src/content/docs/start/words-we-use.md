@@ -1,5 +1,6 @@
 ---
 title: Words we use
+topic: use
 description: The vocabulary this ecosystem assumes you already have, and the handful of words that belong to lemonfiber itself.
 sidebar: { order: 4 }
 ---

@@ -6,7 +6,6 @@
  * one names the artefact it holds a page to. The kit's pin check adds every
  * mirror on top, from `mirrors.json`.
  */
-import { HEALTH } from "@lemonfiber/website-kit/health";
 import { TOKENS } from "@lemonfiber/website-kit/tokens";
 
 import { ARTEFACT } from "./codes.ts";
@@ -14,7 +13,7 @@ import { FORMULAE } from "./formula.ts";
 import { INVENTORIES } from "./inventories.ts";
 
 /** The sources of the guards that are not inventories. */
-const ARTEFACTS: readonly string[] = [ARTEFACT, FORMULAE, TOKENS, HEALTH];
+const ARTEFACTS: readonly string[] = [ARTEFACT, FORMULAE, TOKENS];
 
 export const GUARDED: readonly string[] = [
   ...new Set([...ARTEFACTS, ...INVENTORIES.map((one) => one.source)]),

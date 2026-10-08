@@ -1,5 +1,6 @@
 ---
 title: BACKUP — capturing your configuration
+topic: use
 description: Every BACKUP code lemonfiber raises, what it means, and what to do about it.
 sidebar:
   hidden: true

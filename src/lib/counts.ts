@@ -36,12 +36,6 @@ export interface Sources {
   readonly vocabulary: string;
   /** `vendor/spec/20-architecture/contracts/web-api.md`. */
   readonly webApi: string;
-  /** `vendor/spec/30-repos/repos.toml`, every repository in the org. */
-  readonly repos: string;
-  /** `mirrors.json`. */
-  readonly mirrors: string;
-  /** `vendor/lemonfiber-web/package.json`, the web surface's manifest. */
-  readonly webManifest: string;
   /** `vendor/lemonfiber-web/src/lib/route.ts`, the console's own list of screens. */
   readonly webRoute: string;
   /** `vendor/spec/70-operations/versions/README.md`, the manifest's contract. */

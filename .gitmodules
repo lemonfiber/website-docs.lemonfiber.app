@@ -10,10 +10,6 @@
 	path = vendor/brand
 	url = https://github.com/lemonfiber/brand.git
 	branch = main
-[submodule "org"]
-	path = vendor/org
-	url = https://github.com/lemonfiber/.github.git
-	branch = main
 [submodule "sdk-ts"]
 	path = vendor/sdk-ts
 	url = https://github.com/lemonfiber/sdk-ts.git
@@ -41,10 +37,6 @@
 [submodule "lemonfiber-plugins"]
 	path = vendor/lemonfiber-plugins
 	url = https://github.com/lemonfiber/lemonfiber-plugins.git
-	branch = main
-[submodule "lemonfiber-companion"]
-	path = vendor/lemonfiber-companion
-	url = https://github.com/lemonfiber/lemonfiber-companion.git
 	branch = main
 [submodule "sdk-python"]
 	path = vendor/sdk-python

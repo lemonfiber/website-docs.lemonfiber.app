@@ -1,5 +1,6 @@
 ---
 title: Your first stack
+topic: use
 description: Run setup, answer the questions it cannot answer for you, and watch one thing download from end to end.
 sidebar: { order: 3 }
 ---

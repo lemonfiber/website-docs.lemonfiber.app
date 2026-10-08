@@ -1,5 +1,6 @@
 ---
 title: SEED — wiring the services together
+topic: use
 description: Every SEED code lemonfiber raises, what it means, and what to do about it.
 sidebar:
   hidden: true

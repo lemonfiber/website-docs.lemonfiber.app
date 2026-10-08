@@ -1,5 +1,6 @@
 ---
 title: The licence
+topic: use
 description: Hippocratic 3.0 for the code, CC BY-SA 4.0 for the prose, proprietary marks — and an honest account of what that choice costs.
 sidebar: { order: 4 }
 ---
@@ -92,7 +93,7 @@ project's identity does. The policy is
 Your contribution is licensed under the same licence as the repository it lands
 in. There is no contributor licence agreement and no copyright assignment: you
 keep your copyright, and you licence the work inbound on the terms the project
-ships outbound. See [sign-off and licensing](/contributing/sign-off-and-licensing/).
+ships outbound. See [sign-off and licensing](https://github.com/lemonfiber/spec/blob/main/50-governance/dco.md).
 
 ## The services lemonfiber runs are not affected
 
@@ -113,5 +114,5 @@ clause is consistent with the reciprocity instinct behind the code licence.
 
 - [Licence rationale](/spec/90-appendix/license-rationale/) — the full argument, including the per-service breakdown
 - [Trademark and forking](/spec/60-brand/trademark/) — what you may and may not do with the name
-- [Sign-off and licensing](/contributing/sign-off-and-licensing/) — the inbound terms for contributions
+- [Sign-off and licensing](https://github.com/lemonfiber/spec/blob/main/50-governance/dco.md) — the inbound terms for contributions
 - [The colophon](/spec/90-appendix/colophon/) — everything this is built on, credited

@@ -1,5 +1,6 @@
 ---
 title: Forms and slices
+topic: use
 description: Run only the part of the stack you need right now, compose slices together, and see what a form would start before you start it.
 sidebar: { order: 1 }
 ---

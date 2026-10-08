@@ -1,5 +1,6 @@
 ---
 title: The support bundle
+topic: use
 description: Ask for help without publishing your credentials — what a bundle holds, how it is redacted, and how to check it before you share it.
 sidebar:
   order: 6
@@ -103,7 +104,7 @@ Two codes elsewhere on the site point you here rather than offering advice: [`ST
 
 Open it. The whole point of writing it locally is that you can read every line before anyone else does. Check `configuration.env` in particular — that is where your own settings are, and where a value you added by hand would show up if the allow-list has never seen it. If you find one, that is worth reporting on its own.
 
-Then take it to [where to ask](/contributing/where-to-ask/), which lists the places this project answers questions.
+Then take it to [where to ask](https://contribute.lemonfiber.app/community/where-to-ask/), which lists the places this project answers questions.
 
 ## Related
 

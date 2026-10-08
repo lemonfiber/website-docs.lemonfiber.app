@@ -1,5 +1,6 @@
 ---
 title: Adopt and reset
+topic: use
 description: Your edits survive by default. How lemonfiber tells an edit from a stale default, how to make one permanent, and how to throw them all away.
 sidebar:
   order: 3

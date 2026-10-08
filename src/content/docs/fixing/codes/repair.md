@@ -1,5 +1,6 @@
 ---
 title: REPAIR — putting right what the doctor found
+topic: use
 description: Every REPAIR code lemonfiber raises, what it means, and what to do about it.
 sidebar:
   hidden: true

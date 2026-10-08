@@ -1,5 +1,6 @@
 ---
 title: Writing a plugin
+topic: build
 description: The author's path from the template to a manifest whose claims are proved, and on to the catalogue.
 sidebar:
   order: 5

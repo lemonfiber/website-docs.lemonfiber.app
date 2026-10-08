@@ -1,5 +1,6 @@
 ---
 title: KEY — keys another program reaches the stack with
+topic: use
 description: Every KEY code lemonfiber raises, what it means, and what to do about it.
 sidebar:
   hidden: true

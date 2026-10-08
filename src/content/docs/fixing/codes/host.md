@@ -1,5 +1,6 @@
 ---
 title: HOST — keeping a command running without a terminal
+topic: use
 description: Every HOST code lemonfiber raises, what it means, and what to do about it.
 sidebar:
   hidden: true

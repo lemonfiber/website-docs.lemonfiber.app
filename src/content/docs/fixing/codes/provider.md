@@ -1,5 +1,6 @@
 ---
 title: PROVIDER — accounts and indexers
+topic: use
 description: Every PROVIDER code lemonfiber raises, what it means, and what to do about it.
 sidebar:
   hidden: true

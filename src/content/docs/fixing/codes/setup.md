@@ -1,5 +1,6 @@
 ---
 title: SETUP — the first run
+topic: use
 description: Every SETUP code lemonfiber raises, what it means, and what to do about it.
 sidebar:
   hidden: true
