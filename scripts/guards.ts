@@ -2,7 +2,8 @@
 /**
  * The kit's guards, and the rules only this site keeps: every number it states
  * about a tree it does not own, the error-code pages against the codes the
- * binary raises, and the formulae the tap serves against the install pages.
+ * binary raises, the formulae the tap serves against the install pages, and the
+ * toolchain the workspace names against the page that tells a reader to build.
  */
 import { join } from "node:path";
 
@@ -26,6 +27,7 @@ import {
   type Formula,
 } from "../src/lib/formula.ts";
 import { INVENTORIES } from "../src/lib/inventories.ts";
+import { toolchainViolations, WORKSPACE } from "../src/lib/toolchain.ts";
 import { topicViolations } from "../src/lib/topics.ts";
 
 async function checks(tree: Tree): Promise<Violation[]> {
@@ -65,6 +67,7 @@ async function checks(tree: Tree): Promise<Violation[]> {
       prose.filter(isFamilyPage),
     ),
     ...formulaViolations(formulae, prose),
+    ...toolchainViolations(await text(WORKSPACE), prose),
     ...countViolations(
       INVENTORIES,
       {
