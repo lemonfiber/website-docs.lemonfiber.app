@@ -79,7 +79,7 @@ async function checks(tree: Tree): Promise<Violation[]> {
         await Promise.all(
           (await tree.files(REFERENCE))
             .filter((path) => path.endsWith(".md"))
-            .map(async (path) => text(path)),
+            .map((path) => text(path)),
         ),
       ),
       prose,

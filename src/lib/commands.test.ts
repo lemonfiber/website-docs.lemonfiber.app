@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   commandsIn,
+  fencesIn,
   commandViolations,
   fault,
   invocationsIn,
@@ -112,6 +113,7 @@ describe("commandsIn", () => {
 
   it("skips a block that is no usage", () => {
     expect(commandsIn(["```text\nno usage here\n```\n"]).size).toBe(0);
+    expect(commandsIn(["```sh\nUsage: lemonfiber bogus\n```\n"]).size).toBe(0);
   });
 
   it("reads the reference the pinned core generates", () => {
@@ -157,7 +159,7 @@ describe("invocationsIn", () => {
       ["up", "tv"],
       ["--stack-dir", "./mine", "ps"],
       ["doctor"],
-      ["up"],
+      ["up", "--dry-run"],
       ["version"],
       ["plugin"],
     ]);
@@ -167,6 +169,29 @@ describe("invocationsIn", () => {
     expect(
       text.slice(found[4]?.index).trimStart().startsWith("lemonfiber version"),
     ).toBe(true);
+  });
+});
+
+describe("fencesIn", () => {
+  it("reads each block's language, its lines and where it ends", () => {
+    const text = '```sh title="x"\none\n```\n\n```\nbare\n```  \n```text\nopen';
+    const fences = fencesIn(text);
+    expect(fences.map((fence) => fence.language)).toEqual(["sh", ""]);
+    expect(fences[0]?.lines).toEqual([{ text: "one", index: 16 }]);
+    const end = fences[0]?.end ?? 0;
+    expect(text.slice(end - 3, end)).toBe("```");
+    expect(fences[1]?.lines.map((line) => line.text)).toEqual(["bare"]);
+  });
+
+  it("opens a block only at a line that begins with the mark", () => {
+    expect(fencesIn("a ``` b\nc\n```\n")).toEqual([]);
+  });
+
+  it("carries a line ending in a backslash into the next, to the block's end", () => {
+    const found = invocationsIn(
+      "```sh\nlemonfiber up \\\n  --dry-run \\\n```\n",
+    );
+    expect(found.map((one) => one.words)).toEqual([["up", "--dry-run"]]);
   });
 });
 
@@ -181,6 +206,7 @@ describe("fault", () => {
     expect(fault(["--version"], COMMANDS)).toBeNull();
     expect(fault(["plugin"], COMMANDS)).toBeNull();
     expect(fault(["household", "{name}", "ana"], COMMANDS)).toBeNull();
+    expect(fault(["plugin", "…"], COMMANDS)).toBeNull();
   });
 
   it("names a command that is not one, and what is there instead", () => {
