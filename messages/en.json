@@ -4,6 +4,8 @@
   "site_tagline": "Run a media stack you understand.",
   "topic_use": "Use",
   "topic_build": "Build on",
+  "version_label": "Version",
+  "version_next": "next",
   "nav_start": "Start here",
   "nav_running": "Running your stack",
   "nav_fixing": "When something's wrong",

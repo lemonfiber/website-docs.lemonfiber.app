@@ -5,10 +5,19 @@ import starlightLinksValidator from "starlight-links-validator";
 import starlightSidebarTopics from "starlight-sidebar-topics";
 
 import retired from "./retired.json";
+import { baseIntegration } from "./src/lib/base";
 import { topics } from "./src/lib/sections";
+
+const base = process.env["DOCS_BASE"] ?? "/";
+// A versioned build renders the pins a release recorded (REPO-R88) and sends a
+// reader on to `next` for a page that release does not have.
+const versioned = process.env["DOCS_PINS"] !== undefined;
 
 export default defineConfig({
   site: "https://docs.lemonfiber.app",
+  // The path this build is published at (REPO-R89): `/` for the newest stable,
+  // `/next/` for the submodule pins, `/v<major>.<minor>/` for a kept version.
+  base,
   trailingSlash: "always",
   // A page that moved keeps its address: the build writes a page at the old
   // one that sends a reader on.
@@ -56,14 +65,27 @@ export default defineConfig({
         baseUrl:
           "https://github.com/lemonfiber/website-docs.lemonfiber.app/edit/main/",
       },
-      components: { Footer: "./src/components/Footer.astro" },
+      components: {
+        Footer: "./src/components/Footer.astro",
+        LanguageSelect: "./src/components/VersionSelect.astro",
+      },
       plugins: [
         starlightSidebarTopics(topics),
-        starlightLinksValidator({
-          errorOnRelativeLinks: false,
-          errorOnInvalidHashes: false,
-        }),
+        // The validator reads each page as written, against the root, and
+        // holds every page to the pages beside it. A versioned build places its
+        // addresses after the build, where it cannot see them, and lacks pages
+        // added since its release; the same pages are validated by the build
+        // from the submodule pins.
+        ...(base === "/" && !versioned
+          ? [
+              starlightLinksValidator({
+                errorOnRelativeLinks: false,
+                errorOnInvalidHashes: false,
+              }),
+            ]
+          : []),
       ],
     }),
+    baseIntegration({ base, fallback: versioned ? "/next/" : null }),
   ],
 });

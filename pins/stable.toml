@@ -1,0 +1,17 @@
+# The revisions the stable documentation renders: what 0.16.0 recorded
+# (REPO-R88). Written by `node scripts/stable.ts write`; `check` refuses any other.
+version = "0.16.0"
+# No commit on or before the release day: these pages are not in this version.
+absent = ["vendor/integration-home-assistant", "vendor/integration-mcp", "vendor/sdk-python"]
+
+[pins]
+"vendor/brand" = "115fedb01412abbaf831fca60c31285b91092fb8"  # default branch on or before 2026-09-24
+"vendor/homebrew-tap" = "2aa5d1b696a4bcf390067467c41806aa4e54d274"  # default branch on or before 2026-09-24
+"vendor/lemonfiber" = "f2519ad9ccd4d7d4ac40eea3306289a6ee400e50"  # tag v0.16.0
+"vendor/lemonfiber-media-stack" = "72395ca4ed585fe692ed3bc650fa626af3b17e44"  # the manifest's pins
+"vendor/lemonfiber-plugins" = "bb875dfe29e1ea00b0681d6d01c590c2aecd53f8"  # default branch on or before 2026-09-24
+"vendor/lemonfiber-web" = "ed49b4224f91d4e53055910e27db5d1b697a2de3"  # the manifest's pins
+"vendor/plugin-template" = "1fe68267096b81befc9f2448e66cf83d0086e338"  # default branch on or before 2026-09-24
+"vendor/sdk-php" = "d1da2fe994b471194c89bdb44e09315843cbcd79"  # default branch on or before 2026-09-24
+"vendor/sdk-ts" = "4879a0487169055555899037c1c26ed16c3e1d5c"  # default branch on or before 2026-09-24
+"vendor/spec" = "06e57133a6e117e72a5c334aa65adb027064f54f"  # default branch on or before 2026-09-24

@@ -1,0 +1,72 @@
+---
+/**
+ * The version switcher (REPO-R90), in the place Starlight keeps for choosing a
+ * language, which this single-locale site has no use for.
+ *
+ * Which versions exist is read at run time from `/versions.json`, which the
+ * deploy writes once every build is in place, so a version frozen before a newer
+ * one was released still offers it. A build with no such file beside it, as in
+ * CI or on a laptop, shows no switcher.
+ */
+import Select from "@astrojs/starlight/components/Select.astro";
+
+import { NEXT } from "../lib/versions";
+import * as m from "../paraglide/messages.js";
+
+const version = process.env["DOCS_VERSION"] ?? "";
+const label = version === NEXT ? m.version_next() : version;
+---
+
+<docs-version-select
+  hidden
+  data-version={version}
+  data-base={import.meta.env.BASE_URL}
+  data-next={m.version_next()}
+>
+  <Select
+    icon="seti:git"
+    label={m.version_label()}
+    options={[{ label, value: import.meta.env.BASE_URL, selected: true }]}
+    width="9em"
+  />
+</docs-version-select>
+
+<script>
+  import { NEXT, parseVersions, routeIn, targetOf } from "../lib/versions";
+
+  class VersionSelect extends HTMLElement {
+    async connectedCallback(): Promise<void> {
+      const { version = "", base = "/", next = NEXT } = this.dataset;
+      const select = this.querySelector("select");
+      if (version === "" || select === null) return;
+
+      let text: string;
+      try {
+        const response = await fetch("/versions.json");
+        if (!response.ok) return;
+        text = await response.text();
+      } catch {
+        return;
+      }
+      const versions = parseVersions(text);
+      if (versions === null) return;
+
+      select.replaceChildren(
+        ...versions.versions.map((one) => {
+          const option = document.createElement("option");
+          option.value = one.path;
+          option.textContent = one.label === NEXT ? next : one.label;
+          option.selected = one.path === base;
+          return option;
+        }),
+      );
+      const route = routeIn(location.pathname, base);
+      select.addEventListener("change", () => {
+        location.assign(targetOf(versions, select.value, route));
+      });
+      this.hidden = false;
+    }
+  }
+
+  customElements.define("docs-version-select", VersionSelect);
+</script>
