@@ -105,14 +105,20 @@ A bounded number of backups is kept and the oldest are pruned, because backups
 that silently fill the disk they were protecting are not much use. The last
 remaining backup is never pruned, whatever the retention setting says.
 
-## What is not automatic yet
+## Taken for you
 
-The specification asks for a backup to be taken automatically before any risky
-operation — an update, adopting an existing setup, removing your configuration.
-That is not built yet, so take one yourself before you do anything you would
-want to undo. See [E3 Backup and
-restore](https://lemonfiber.app/spec/10-functional/features/e-maintenance/e3-backup-restore/) for the
-full requirement set.
+Three operations take a backup themselves before they change anything:
+
+- `lemonfiber update stack` stops the stack, takes one while nothing can be
+  writing to a database, and only then moves any service.
+- Adopting an existing setup captures that setup's own configuration first.
+- `lemonfiber uninstall configuration` takes one after the services stop and
+  before anything goes. If that backup cannot be taken, nothing is removed.
+
+Anything else you would want to undo, take one yourself first. See
+[E3 Backup and
+restore](https://lemonfiber.app/spec/10-functional/features/e-maintenance/e3-backup-restore/)
+for the full requirement set.
 
 Media is out of scope and will stay out of scope. Use a general-purpose backup
 tool for the library; pretending to solve that here badly would be worse than not

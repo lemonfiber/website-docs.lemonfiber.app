@@ -9,9 +9,10 @@ lemonfiber runs a media stack for you: the indexers, the download clients, the
 automation services and the library interfaces that sit between a request and a
 finished episode on a shelf.
 
-It is one binary. You answer a few questions, and it writes the configuration,
-starts the services you asked for, wires them to each other through their own
-APIs, and keeps checking that what it built still matches what you asked for.
+It is one binary. You answer a few questions, and it writes the configuration
+and starts the services you asked for. One more command wires them to each other
+through their own APIs, and from then on it keeps checking that what it built
+still matches what you asked for.
 
 ## The problem it is solving
 
@@ -37,8 +38,8 @@ the wrong thing is worse than one that crashes.
 
 | Commitment                | What it means in practice                                                                                                                                                                                                                 |
 | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| No proprietary components | Every bundled service is open-source and self-hosted. Nothing phones home, nothing has a paid tier.                                                                                                                                       |
-| Runs in slices            | Named [forms](/running/forms-and-slices/) start part of the stack. `search` is three containers; `full` is eighteen. Same configuration, same data, no separate install.                                                                  |
+| No proprietary components | Every bundled service is self-hosted, and nothing has a paid tier. What leaves the machine on lemonfiber's own account is listed by `lemonfiber outbound`, and each request can be switched off.                                          |
+| Runs in slices            | Named [forms](/running/forms-and-slices/) start part of the stack. `search` is three containers; `full` is twenty-one. Same configuration, same data, no separate install.                                                                |
 | Correct by construction   | Setup creates a hardlink and inspects it rather than assuming one works. [The doctor](/fixing/run-the-doctor/) compares public IP addresses to prove the VPN is isolating traffic. Administrative interfaces bind to loopback by default. |
 
 The third one is the difference that matters most day to day. Where a claim is
@@ -84,11 +85,12 @@ How to [install](/start/install/) lemonfiber, how to
 
 It is not the specification. The requirements lemonfiber is written against —
 every feature, every journey, every architectural decision — live in
-[the specification](https://lemonfiber.app/spec/), mirrored on this site. Where a rule is normative,
+[the specification](https://lemonfiber.app/spec/), on the project's frontpage. Where a rule is normative,
 these pages link to the page that owns it rather than restating it. The
 [project vision](https://lemonfiber.app/spec/00-overview/vision/) is the best single page to read next
 if you want the reasoning rather than the instructions.
 
 lemonfiber is source-available under the Hippocratic Licence 3.0, which is
 deliberately not an OSI-approved licence. The bundled services keep their own
-licences, all of them open source.
+licences: every one taken from another project is open source, and the ones
+lemonfiber publishes itself are under the Hippocratic Licence too.

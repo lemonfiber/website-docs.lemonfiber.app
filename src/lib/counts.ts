@@ -22,7 +22,7 @@ export interface Page {
 
 /** The trees the numbers are derived from, already read. */
 export interface Sources {
-  /** `vendor/lemonfiber-media-stack/stack.toml`. */
+  /** `vendor/lemonfiber-media-stack/stack.toml`, joined with the service files it includes. */
   readonly stack: string;
   /** The web API's contract, put back together from `vendor/lemonfiber/contract/web-api/`. */
   readonly contract: string;
@@ -36,6 +36,10 @@ export interface Sources {
   readonly vocabulary: string;
   /** `vendor/spec/20-architecture/contracts/web-api.md`. */
   readonly webApi: string;
+  /** `vendor/lemonfiber/crates/lemonfiber-core/src/glossary.rs`, the words `explain` knows. */
+  readonly glossary: string;
+  /** `vendor/lemonfiber/Cargo.toml`, the core's workspace manifest. */
+  readonly workspace: string;
   /** `vendor/plugin-template/plugin.toml`, the manifest every plugin starts from. */
   readonly template: string;
   /** `vendor/lemonfiber-web/src/lib/route.ts`, the console's own list of screens. */

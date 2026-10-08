@@ -32,8 +32,9 @@ import {
   FORMULAE,
   type Formula,
 } from "../src/lib/formula.ts";
-import { INVENTORIES } from "../src/lib/inventories.ts";
+import { GLOSSARY, INVENTORIES } from "../src/lib/inventories.ts";
 import { toolchainViolations, WORKSPACE } from "../src/lib/toolchain.ts";
+import { joinedStack, STACK_CHECKOUT, STACK_ROOT } from "../src/lib/stack.ts";
 import { topicViolations } from "../src/lib/topics.ts";
 
 async function checks(tree: Tree): Promise<Violation[]> {
@@ -87,7 +88,10 @@ async function checks(tree: Tree): Promise<Violation[]> {
     ...countViolations(
       INVENTORIES,
       {
-        stack: await text("vendor/lemonfiber-media-stack/stack.toml"),
+        stack: joinedStack(
+          await text(`${STACK_CHECKOUT}/${STACK_ROOT}`),
+          (entry) => readText(join(tree.root, STACK_CHECKOUT, entry)),
+        ),
         contract: JSON.stringify(
           assembledContract((file) =>
             readText(join(tree.root, CONTRACT_DIRECTORY, file)),
@@ -104,6 +108,8 @@ async function checks(tree: Tree): Promise<Violation[]> {
         webApi: await text("vendor/spec/20-architecture/contracts/web-api.md"),
         webRoute: await text("vendor/lemonfiber-web/src/lib/route.ts"),
         template: await text("vendor/plugin-template/plugin.toml"),
+        workspace: await text(WORKSPACE),
+        glossary: await text(GLOSSARY),
       },
       prose,
     ),

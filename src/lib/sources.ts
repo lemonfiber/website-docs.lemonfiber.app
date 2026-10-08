@@ -55,9 +55,55 @@ export const thirdParty = (stack: string): string[] =>
       return id === null ? [] : [captured(id, 1)];
     });
 
-/** Each service's display name, which is how the pages write them. */
-export const serviceNames = (stack: string): string[] =>
-  matches(/^\[\[service\]\]\nid = "[^"]+"\nname = "([^"]+)"/gm, stack);
+/** The `[[table]]` entries of a TOML document, or none where it does not parse. */
+const tablesOf = (text: string, table: string): Record<string, unknown>[] => {
+  let read: unknown;
+  try {
+    read = parse(text);
+  } catch {
+    return [];
+  }
+  const entries = (read as Record<string, unknown>)[table];
+  return Array.isArray(entries) ? (entries as Record<string, unknown>[]) : [];
+};
+
+/**
+ * The services a form starts: every one whose profile is in the form's closure.
+ * None for a form the stack does not declare.
+ */
+export const formServices = (stack: string, form: string): string[] => {
+  const closure = tablesOf(stack, "form").find((one) => one["id"] === form)?.[
+    "profiles"
+  ];
+  if (!Array.isArray(closure)) return [];
+  return tablesOf(stack, "service")
+    .filter((service) => closure.includes(service["profile"]))
+    .map((service) => String(service["id"]));
+};
+
+/**
+ * The platforms a release is built for, as the core's workspace names them to
+ * cargo-dist: `[workspace.metadata.dist].targets`.
+ */
+export const releaseTargets = (workspace: string): string[] => {
+  let read: unknown;
+  try {
+    read = parse(workspace);
+  } catch {
+    return [];
+  }
+  const dist = (read as { workspace?: { metadata?: { dist?: unknown } } })
+    .workspace?.metadata?.dist;
+  const targets = (dist as { targets?: unknown } | undefined)?.targets;
+  return Array.isArray(targets) ? targets.map(String) : [];
+};
+
+/** A glossary entry's word: `Term::new(` and the string that opens it. */
+const TERM = /Term::new\(\s*"([^"]+)"/g;
+
+/** Every word `lemonfiber explain` knows, as the core's glossary declares them. */
+export const glossaryWords = (glossary: string): string[] =>
+  matches(TERM, glossary);
 
 const parsed = (json: string): unknown => {
   try {

@@ -41,11 +41,13 @@ $ lemonfiber ps
 ```
 
 This reports what each service is doing, not whether it is "up" — which is an
-ambiguity rather than a status. A service is absent, stopped, starting, healthy,
-unhealthy, crash-looping, or failed. A crash loop is reported as a crash loop
-rather than as a service that has been starting for ten minutes.
+ambiguity rather than a status. A service is `failed`, `crash-looping`,
+`unhealthy`, `absent`, `stopped`, `starting`, `running`, `healthy` or
+`host-managed`, worst first. `running` is a service that declares no probe to
+ask, which is not the same as one that answered. A crash loop is reported as a
+crash loop rather than as a service that has been starting for ten minutes.
 
-A form is inactive, partial, active, or degraded, which is the rollup of the
+A form is `inactive`, `degraded`, `partial` or `active`: the rollup of the
 services in it.
 
 For live output:
@@ -68,7 +70,7 @@ $ lemonfiber down tv
 ```
 
 Every operation lists what it will affect before it acts. Stopping `hunt` while
-`tv` is also running would stop six services, four of which `tv` still needs — so
+`tv` is also running would stop six services, every one of which `tv` still needs — so
 lemonfiber refuses to stop a service another active form requires, and names that
 form.
 

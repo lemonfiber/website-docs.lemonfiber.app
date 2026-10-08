@@ -11,12 +11,13 @@ matter to you.
 
 ## What is licensed how
 
-| What                                                                 | Licence                          |
-| -------------------------------------------------------------------- | -------------------------------- |
-| The binary, the stack, the tap, the SDKs, the web surface, the sites | Hippocratic License 3.0          |
-| The specification and the documentation                              | CC BY-SA 4.0                     |
-| The design tokens in `brand`                                         | Hippocratic License 3.0          |
-| The logo and marks in `brand`                                        | Proprietary, all rights reserved |
+| What                                                                                                                                      | Licence                          |
+| ----------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| The binary, the stack, the tap, the SDKs, the web console, the integrations, the plugins, the companion, and the sites, this one included | Hippocratic License 3.0          |
+| The specification                                                                                                                         | CC BY-SA 4.0                     |
+| The design tokens in `brand`                                                                                                              | Hippocratic License 3.0          |
+| The usage documentation in `brand`                                                                                                        | CC BY-SA 4.0                     |
+| The logo and marks in `brand`                                                                                                             | Proprietary, all rights reserved |
 
 The [Hippocratic License](https://firstdonoharm.dev/) is an _ethical source_
 licence from the Organization for Ethical Source. It grants broad permissions
@@ -97,14 +98,16 @@ ships outbound. See [sign-off and licensing](https://lemonfiber.app/spec/50-gove
 
 ## The services lemonfiber runs are not affected
 
-Every service the stack orchestrates is OSI-licensed open source, and the
-authoritative licence for each one is recorded against it in the stack manifest.
+Every service the stack takes from another project is OSI-licensed open source.
+The two lemonfiber publishes itself are under the Hippocratic License, like the
+rest of the project. The authoritative licence for each one is recorded against
+it in the stack manifest.
 The stack distributes configuration that _references_ public container images;
 it does not link against, embed or redistribute their code. **No copyleft
 obligation propagates in either direction** — this licence choice has no effect
 on theirs, and theirs has none on this one.
 
-## Why the documentation is licensed separately
+## Why the specification is licensed separately
 
 Creative Commons licences are unsuitable for software, and Creative Commons say
 so themselves. But CC BY-SA is the right tool for prose, and its ShareAlike

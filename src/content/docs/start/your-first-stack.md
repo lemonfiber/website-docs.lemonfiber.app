@@ -19,26 +19,29 @@ rather be explicit, `lemonfiber setup` does the same thing.
 
 A question is only asked if lemonfiber cannot work the answer out for itself, the
 answer changes what happens, and you can plausibly answer it. That is why your
-timezone is detected and confirmed rather than asked, and why the container user
-is only asked where file ownership is genuinely visible.
+timezone is never asked, and why the container user is asked only where file
+ownership is visible.
 
-| Step          | What happens                                                                                                        |
-| ------------- | ------------------------------------------------------------------------------------------------------------------- |
-| Welcome       | States what is about to happen and roughly how long it will take.                                                   |
-| Preflight     | Detects your operating system, checks Docker is present and its daemon reachable, and checks Compose is new enough. |
-| Protocols     | Usenet, torrents, both, or neither.                                                                                 |
-| Prerequisites | The account checklist, derived from what you just chose. Nothing is shown for a protocol you declined.              |
-| Data location | Proposes a default, then creates a hardlink there and inspects it.                                                  |
-| Credentials   | Each one tested against the live service as you enter it.                                                           |
-| Quality       | In plain language — see [Quality presets](/running/quality-presets/).                                               |
-| Library       | Whether to run Jellyfin, and how.                                                                                   |
-| Household     | Whether other people in the home will use it.                                                                       |
-| Autostart     | Whether the stack should start when the machine boots.                                                              |
-| Review        | A complete summary of every value that will be written. Nothing has touched the disk yet.                           |
-| Apply         | Writes the configuration, creates the directories, materialises the stack files.                                    |
-| Start         | Pulls the images with per-image progress, then waits for each service to report healthy.                            |
-| Wire          | Connects the services to each other through their own APIs.                                                         |
-| Finish        | Prints the URLs, and offers to walk one item through the pipeline.                                                  |
+| Step          | What happens                                                                                                 |
+| ------------- | ------------------------------------------------------------------------------------------------------------ |
+| Welcome       | States what is about to happen and roughly how long it will take.                                            |
+| Preflight     | Detects your operating system, checks Docker and Compose, and checks the Docker daemon can be reached.       |
+| Protocols     | Usenet, torrents, both, or neither.                                                                          |
+| Prerequisites | The account checklist, derived from what you just chose. Nothing is shown for a protocol you declined.       |
+| VPN           | Whether a VPN carries the torrent traffic. Asked only if you chose torrents.                                 |
+| Data location | Where downloads and the library are kept. Proposes a default, then creates a hardlink there and inspects it. |
+| Credentials   | The indexer credential, tested against the live service. Asked only if you chose a download protocol.        |
+| Provider      | The Usenet provider login, tested over NNTP. Asked only if you chose Usenet.                                 |
+| Service user  | The user and group the containers run as. Asked only where file ownership is visible.                        |
+| Library       | Whether to run Jellyfin, and how.                                                                            |
+| Household     | Whether other people in the home will use it.                                                                |
+| Notifications | How much you want to be told about: one question, three presets.                                             |
+| Autostart     | Whether the stack should start when the machine boots.                                                       |
+| Review        | A complete summary of every value that will be written. Nothing has touched the disk yet.                    |
+
+Once you confirm the review, setup writes the configuration, creates the
+directories and the stack files, and starts the stack. It ends by offering to
+fetch one thing for you, and takes no for an answer.
 
 Two things about that table are worth saying plainly.
 
@@ -87,7 +90,19 @@ The full list of flags is in [Every command](/commands/every-command/).
 ## After setup finishes
 
 Setup starts the stack and waits for the services to become healthy, so by the
-time it returns you have something running. Three things are worth doing next.
+time it returns you have something running. It does not connect the services to
+each other, so that comes first.
+
+**Wire the services to each other.**
+
+```sh
+$ lemonfiber seed
+```
+
+That connects them through their own APIs: the indexers to the automation
+services, the automation services to the download clients, and the rest. It is
+safe to run again; a link already in place is left alone. Then three things are
+worth doing.
 
 **Watch one item go through the pipeline.**
 
