@@ -74,7 +74,8 @@ pass, each naming its location, rather than one per attempt.
 
 This is the escape hatch that makes a fork possible without a lemonfiber
 release. What the manifest has to contain is
-[the stack manifest](/advanced/the-stack-manifest/).
+[the stack manifest contract](https://lemonfiber.app/spec/20-architecture/contracts/stack-manifest/), and what to do when lemonfiber refuses
+one is [the stack manifest](/advanced/the-stack-manifest/).
 
 ## `--config-dir <PATH>` and `--data-dir <PATH>`
 

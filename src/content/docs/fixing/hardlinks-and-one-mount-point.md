@@ -62,7 +62,7 @@ Every container gets **one** data mount, with subdirectories beneath it. Splitti
 
 This is rejected at manifest validation rather than left to be discovered in production. A stack that describes it raises [`STACK-6`](/fixing/codes/stack/) and names every fault it found in one pass.
 
-The reasoning is recorded in [ADR-0006, a single data mount](https://lemonfiber.app/spec/00-overview/decisions/0006-single-data-mount/). [The stack manifest](/advanced/the-stack-manifest/) covers how mounts are declared.
+The reasoning is recorded in [ADR-0006, a single data mount](https://lemonfiber.app/spec/00-overview/decisions/0006-single-data-mount/). The mount itself is declared in the stack's Compose files, as `${DATA_ROOT}:/data` on every service that touches the library; see [running without lemonfiber](/advanced/without-lemonfiber/).
 
 ## Permissions
 

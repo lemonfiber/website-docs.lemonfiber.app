@@ -1,88 +1,49 @@
 ---
 title: Two version numbers
 topic: build
-description: The package version and the wire version do different jobs, and conflating them is the mistake to avoid.
+description: The package version and the wire version do different jobs. Which one to check, and what to do when it is not the one you speak.
 sidebar:
   order: 5
 ---
 
-Anything that speaks lemonfiber's machine-readable output carries two version
-numbers, and they are not the same number wearing two hats.
+Anything that reads lemonfiber's machine-readable output deals with two version
+numbers, and they are not the same number.
 
-| Number                        | Scheme            | What it describes | What moves it                |
-| ----------------------------- | ----------------- | ----------------- | ---------------------------- |
-| The package or binary version | Semver            | The software      | Any release of that software |
-| `api_version`                 | Monotonic integer | The wire          | A field removed or retyped   |
+| Number                        | Scheme  | What it describes |
+| ----------------------------- | ------- | ----------------- |
+| The package or binary version | Semver  | The software      |
+| `api_version`                 | Integer | The wire          |
 
-`api_version` is `1` today. Many package versions may speak one wire version:
-fixing a bug in the terminal interface releases a new binary and changes nothing
-about the wire, and an SDK can publish a dozen versions while still speaking
-version 1.
+Many package versions speak one wire version. A new lemonfiber or a new SDK
+release does not, on its own, change what a payload looks like.
 
-## Why the wire version is an integer
+## Check `api_version`, not the package version
 
-Semver's minor and patch distinction implies backwards-compatible change, and for
-a **parsed format** that distinction is unreliable. A field addition is
-compatible only if every consumer ignores unknown fields; a field becoming
-optional is compatible only in one direction. An integer states the only thing
-that matters: can this parser read this document? Yes or no.
+Every payload carries `api_version` in [the envelope](/api/the-envelope/). Adding
+a field leaves it alone. Removing or retyping a field moves it. So:
 
-So additive changes leave `api_version` alone, and removing or retyping a field
-increments it. That is what makes it worth asserting on: a script can check the
-number rather than pattern-matching the shape of the output it got.
+- Read `api_version` before anything else in a payload, and refuse one your
+  client does not implement. Name both versions when you do, so the person
+  reading the error knows which side to update.
+- Ignore fields you do not know. A new field is not a new wire version.
+- Do not compare package versions to decide whether you can read a payload.
+  Two binaries a release apart can speak the same wire, and that is the usual
+  case.
 
-## Where the two are checked
+A narrower change can land without moving `api_version`, but only as a declared
+break, listed field by field in
+[the versioning contract](https://lemonfiber.app/spec/20-architecture/contracts/versioning/#the-machine-readable-output-contract).
+Read that list when you upgrade.
 
-| When                            | What happens                                                                                                                           |
-| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| At build                        | A client's declared `api_version` is validated against the binary at compile time, so a mismatched pair cannot be released             |
-| At run time                     | A mismatch is refused plainly, naming both versions, rather than rendering a page or a value whose fields have quietly changed meaning |
-| When an SDK generates its types | Generation refuses an artefact whose `api_version` the SDK does not implement, naming both versions, and writes nothing                |
+## The stack's versions are not the wire's
 
-The build-time check exists because the built web client is embedded from a
-pinned submodule. The run-time check remains anyway, because a browser may hold a
-cached older client. Types that compile and lie are worse than a build that
-stops, and a refusal that does not say which two versions disagreed sends
-somebody looking for what it already knew.
-
-## The other numbers, and where they live
-
-Two further versions exist, and they belong to the stack rather than to the wire.
-
-| Version          | Scheme            | Owns                          |
-| ---------------- | ----------------- | ----------------------------- |
-| `stack_version`  | Semver            | The service set and the forms |
-| `schema_version` | Monotonic integer | The manifest **format**       |
-
-They are separate because they change for different reasons. Bumping a service's
-pinned image tag changes `stack_version` and nothing else. Adding a manifest
-field changes `schema_version`. Fixing a bug in the binary changes only the
-binary. Both are described in
-[the stack manifest](/advanced/the-stack-manifest/), and a stack may also declare
-a `min_cli_version` to refuse a binary older than it needs.
-
-`lemonfiber version` reports the binary, the stack, the manifest schema versions
-this build can read, and the Compose version it found — or says Compose is not
-reachable, rather than leaving a blank.
-
-## What that means for a downgrade
-
-lemonfiber holds no state that migrates irreversibly, so **downgrade is
-supported** — unlike the library managers' own databases, where it is not.
-Configuration written by a **newer** binary is refused rather than modified.
-Silently downgrading a configuration file is how a downgrade-to-test becomes an
-unrecoverable state.
-
-For the manifest format, a binary supports the current `schema_version` and
-exactly one predecessor. That gives one release cycle of overlap to anyone
-maintaining a fork, without carrying parser variants indefinitely; dropping
-support is a breaking change and moves the binary's major version.
+A stack carries version numbers of its own, `schema_version` and
+`stack_version`, and they belong to `stack.toml`, not to the wire. They are on
+[the stack manifest](/advanced/the-stack-manifest/). `lemonfiber version` reports
+the binary and the stack it carries.
 
 ## Where to go next
 
-The normative account is
-[the versioning contract](https://lemonfiber.app/spec/20-architecture/contracts/versioning/). The
-envelope the wire version belongs to is [the envelope](/api/the-envelope/), and
-the manifest the other two belong to is
-[the stack manifest](/advanced/the-stack-manifest/). For keeping a running stack
-current, see [updating](/running/updating/).
+The normative account, with every rule both numbers are held to, is
+[the versioning contract](https://lemonfiber.app/spec/20-architecture/contracts/versioning/).
+For keeping a running stack current, see [updating](/running/updating/).
