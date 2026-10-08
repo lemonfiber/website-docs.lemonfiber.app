@@ -1,0 +1,50 @@
+---
+import { vendored } from "../lib/schema-source";
+import { servicesOf } from "../lib/stack";
+import * as m from "../paraglide/messages.js";
+
+/** How much each service of the pinned stack failing matters, grade by grade. */
+const services = servicesOf(vendored("lemonfiber-media-stack/stack.toml"));
+
+const GRADES = [
+  ["critical", m.grade_critical(), m.grade_critical_meaning()],
+  ["core", m.grade_core(), m.grade_core_meaning()],
+  ["important", m.grade_important(), m.grade_important_meaning()],
+  ["enhancing", m.grade_enhancing(), m.grade_enhancing_meaning()],
+  ["optional", m.grade_optional(), m.grade_optional_meaning()],
+] as const;
+
+const known = new Set<string>(GRADES.map(([grade]) => grade));
+const unknown = services.filter((service) => !known.has(service.criticality));
+const misgraded = unknown
+  .map((service) => `${service.name} (${service.criticality})`)
+  .join(", ");
+if (unknown.length > 0)
+  throw new Error(
+    `the pinned stack grades services in words this page has no meaning for: ${misgraded}`,
+  );
+---
+
+<table>
+  <thead>
+    <tr>
+      <th>{m.grades_grade()}</th>
+      <th>{m.grades_meaning()}</th>
+      <th>{m.grades_services()}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {GRADES.map(([grade, name, meaning]) => (
+      <tr>
+        <td>{name}</td>
+        <td>{meaning}</td>
+        <td>
+          {services
+            .filter((service) => service.criticality === grade)
+            .map((service) => service.name)
+            .join(", ")}
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>

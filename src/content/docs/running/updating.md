@@ -35,36 +35,59 @@ version, and **there is no downgrade path**. If you pull a newer image and find
 it unusable, you cannot simply revert: the database has already been rewritten in
 a format the previous version refuses to open.
 
-The way back from that is a restore, not a rollback. So:
+The way back from that is a restore, not a rollback, which is why the guided
+update below takes a backup before it moves anything.
+
+## Updating the stack
+
+```sh
+$ lemonfiber update stack
+```
+
+A bare run changes nothing. It says which services would move, from which
+version to which, how large each step is, and which of them migrate state and so
+cannot be walked back. To take the steps:
+
+```sh
+$ lemonfiber update stack --confirm
+```
+
+A backup is taken first, while nothing can be writing to a database. The
+services then move one at a time, in the order the manifest declares them, and
+each is proven to answer before the next is touched. A failure stops the run
+where it is, so one service that would not come back is diagnosable rather than
+twelve at once. `--service` moves one service instead of every one with an
+update, and `--wait` lets anything still downloading finish before the services
+stop.
+
+The versions it moves to are the ones this build of lemonfiber pins. A newer
+stack arrives with a newer lemonfiber, not on its own.
+
+## By hand
+
+`pull` fetches the images for the named forms and applies nothing:
+
+```sh
+$ lemonfiber pull tv
+```
+
+Your running containers keep using the images they started with, so this is
+safe at any time. Bringing the form up again is what puts the new images into
+use, recreating the containers whose image changed:
+
+```sh
+$ lemonfiber up tv
+```
+
+Done this way, the backup is yours to take first:
 
 ```sh
 $ lemonfiber down
 $ lemonfiber backup
 ```
 
-Take the backup first, every time. See [Backup and
-restore](/running/backup-and-restore/).
-
-## Fetching newer images
-
-```sh
-$ lemonfiber pull tv
-```
-
-`pull` fetches the images for the named forms and applies nothing. Your running
-containers keep using the images they started with, so this is safe to do at any
-time — including over a slow connection, hours before you intend to act on it.
-
-Bringing the form up again is what puts the new images into use, recreating the
-containers whose image changed:
-
-```sh
-$ lemonfiber up tv
-```
-
-Do that with a fresh backup in hand, and watch the services come back healthy
-before you walk away. `lemonfiber ps` is the honest answer about whether they
-did.
+Then watch the services come back healthy before you walk away.
+`lemonfiber ps` is the honest answer about whether they did.
 
 ## Updating lemonfiber itself
 
@@ -72,9 +95,19 @@ Updating the binary does not stop, restart or alter your stack. lemonfiber is a
 control surface; the containers run independently of it, and you can update the
 tool without touching a working system.
 
-How to update depends on how you installed. From the shell installer or a release
-archive, take the newer one from the tag you want. From source, pull and build
-again:
+```sh
+$ lemonfiber update self
+```
+
+That replaces nothing. It works out how this copy got onto the machine —
+Homebrew, Scoop, winget, cargo, the shell installer, or by hand — and prints the
+exact command for whichever tool owns it, because a binary that overwrote itself
+underneath a package manager leaves that manager holding a record of something
+that is no longer there. `--to <VERSION>` asks about one particular version
+instead of the newest, which is how going back is asked for, along with whether
+that version reads the configuration already on this machine.
+
+From source, pull and build again:
 
 ```sh
 $ git pull --recurse-submodules
@@ -82,15 +115,12 @@ $ cargo build --release --workspace
 ```
 
 A newer lemonfiber carries a newer pinned stack, so the version of the stack
-`lemonfiber version` reports will move with it. That does not update any running
-service by itself — the images are still the ones your containers were started
-with until you pull and bring the form up again.
+`lemonfiber version` reports moves with it. That does not update any running
+service by itself: run `lemonfiber update stack` when you want the services to
+follow. Downgrading lemonfiber is fine: unlike the service databases, it holds
+no state that migrates irreversibly.
 
-See [Install lemonfiber](/start/install/) for every install route, and
-[E2 Self-update](https://lemonfiber.app/spec/10-functional/features/e-maintenance/e2-self-update/)
-for the in-place update the binary does not yet perform for itself. Downgrading
-lemonfiber is fine: unlike the service databases, it holds no state that migrates
-irreversibly.
+See [Install lemonfiber](/start/install/) for every install route.
 
 ## Your own edits survive
 
@@ -111,23 +141,11 @@ restores lemonfiber's own files, naming exactly what will be lost and doing
 nothing until `--confirm`. Both are covered in [Adopt and
 reset](/advanced/adopt-and-reset/).
 
-## What the specification asks for that is not built yet
-
-Stack updates are specified in much more detail than lemonfiber currently
-implements. The intended behaviour is a single guided operation: show what is
-available and the size of each jump, state which updates will migrate a database
-before proceeding, take a backup automatically and refuse to continue if it
-fails, then update service by service with health verified between each so that a
-failure halts rather than continuing into a half-migrated stack.
-
-None of that is in place yet. Until it is, the sequence above — back up, pull,
-bring up, check — is the manual version of the same discipline, and the reason
-this page spends more words on the backup than on the update.
-
 [E1 Stack updates](https://lemonfiber.app/spec/10-functional/features/e-maintenance/e1-stack-updates/)
-is the requirement set, and [J7
-Upgrading](https://lemonfiber.app/spec/10-functional/journeys/j7-upgrading/) is the journey it
-describes.
+and [E2 Self-update](https://lemonfiber.app/spec/10-functional/features/e-maintenance/e2-self-update/)
+are the requirement sets, and
+[J7 Upgrading](https://lemonfiber.app/spec/10-functional/journeys/j7-upgrading/) is
+the journey they describe.
 
 ## Related
 

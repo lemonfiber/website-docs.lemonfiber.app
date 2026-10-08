@@ -15,15 +15,17 @@ import { CONTRACT_DIRECTORY } from "./contract.ts";
 import { matches, type Inventory, type Page, type Sources } from "./counts.ts";
 import {
   consolePlaces,
+  formServices,
   globalFlags,
+  glossaryWords,
   ids,
   keysAt,
   namesAt,
   offered,
   presets,
   readEndpoints,
+  releaseTargets,
   required,
-  serviceNames,
   thirdParty,
   subcommands,
   variantsAt,
@@ -47,6 +49,25 @@ const TUI_PAGE = `${DOCS}commands/the-tui.md`;
 const CONSOLE_PAGE = `${DOCS}commands/the-web-console.md`;
 const MANIFEST_PAGE = `${DOCS}plugins/the-manifest.mdx`;
 const TEMPLATE = "vendor/plugin-template/plugin.toml";
+const WORKSPACE = "vendor/lemonfiber/Cargo.toml";
+const INSTALL_PAGE = `${DOCS}start/install.md`;
+const WORDS_PAGE = `${DOCS}start/words-we-use.md`;
+const STARTING_PAGE = `${DOCS}running/starting-and-stopping.md`;
+
+/** The core's glossary: every word `lemonfiber explain` can say more about. */
+export const GLOSSARY =
+  "vendor/lemonfiber/crates/lemonfiber-core/src/glossary.rs";
+
+/**
+ * Values a page writes as the operator reads them, `Partly here` for the
+ * contract's `partly-here`, put back in the contract's spelling.
+ */
+const spoken = (cells: readonly string[]): string[] =>
+  cells.map((cell) => cell.toLowerCase().replaceAll(" ", "-"));
+
+/** A word as a reader looks it up: its case is no part of it. */
+const looked = (words: readonly string[]): string[] =>
+  words.map((word) => word.toLowerCase());
 
 /** The two sentences the manifest page holds the template to the build with. */
 const TEMPLATE_REQUIRES = "Its `[requires]` names";
@@ -107,33 +128,118 @@ export const INVENTORIES: readonly Inventory[] = [
     claims: [{ says: "%N% are open source" }],
   },
   {
+    what: "services lemonfiber publishes itself",
+    source: STACK,
+    members: (sources) => {
+      const taken = new Set(thirdParty(sources.stack));
+      return ids(sources.stack, "service").filter((id) => !taken.has(id));
+    },
+    claims: [{ says: "The %N% lemonfiber publishes itself" }],
+  },
+  {
+    what: "services the `hunt` form starts",
+    source: STACK,
+    members: (sources) => formServices(sources.stack, "hunt"),
+    claims: [{ says: "would stop %N% services" }],
+  },
+  {
+    what: "services the `tv` form starts",
+    source: STACK,
+    members: (sources) => formServices(sources.stack, "tv"),
+    claims: [{ says: "require restarting %N%" }],
+  },
+  {
     what: "profiles",
     source: STACK,
     members: (sources) => ids(sources.stack, "profile"),
     claims: [{ says: "the %N% profiles" }],
-    listing: {
-      page: `${DOCS}running/forms-and-slices.md`,
-      members: (text) => columnUnder(text, "Profile"),
-    },
   },
   {
     what: "forms",
     source: STACK,
     members: (sources) => ids(sources.stack, "form"),
     claims: [{ says: "the %N% forms" }],
+  },
+  {
+    what: "services the `search` form starts",
+    source: STACK,
+    members: (sources) => formServices(sources.stack, "search"),
+    claims: [{ says: "`search` is %N% containers" }],
+  },
+  {
+    what: "services the `full` form starts",
+    source: STACK,
+    members: (sources) => formServices(sources.stack, "full"),
+    claims: [{ says: "`full` is %N%" }],
+  },
+  {
+    what: "platforms a release is built for",
+    source: WORKSPACE,
+    members: (sources) => releaseTargets(sources.workspace),
+    claims: [],
     listing: {
-      page: `${DOCS}running/forms-and-slices.md`,
-      members: (text) => columnUnder(text, "Form"),
+      page: INSTALL_PAGE,
+      members: (text) => columnUnder(text, "Target"),
     },
   },
   {
-    what: "service names",
-    source: STACK,
-    members: (sources) => serviceNames(sources.stack),
+    what: "words `lemonfiber explain` knows",
+    source: GLOSSARY,
+    members: (sources) => looked(glossaryWords(sources.glossary)),
     claims: [],
     listing: {
-      page: `${DOCS}running/the-services.md`,
-      members: (text) => columnUnder(text, "Service"),
+      page: WORDS_PAGE,
+      members: (text) => looked(columnUnder(text, "Word")),
+    },
+  },
+  {
+    what: "states a service reports",
+    source: CONTRACT,
+    members: (sources) =>
+      variantsAt(sources.contract, "kinds", "status", "$defs", "ServiceState"),
+    claims: [],
+    listing: {
+      page: STARTING_PAGE,
+      members: (text) => namesBetween(text, "A service is", "worst first"),
+    },
+  },
+  {
+    what: "conditions a form rolls up to",
+    source: CONTRACT,
+    members: (sources) =>
+      variantsAt(sources.contract, "kinds", "status", "$defs", "Condition"),
+    claims: [],
+    listing: {
+      page: STARTING_PAGE,
+      members: (text) => namesBetween(text, "A form is", "the rollup"),
+    },
+  },
+  {
+    what: "states a household request is reported in",
+    source: CONTRACT,
+    members: (sources) =>
+      variantsAt(
+        sources.contract,
+        "kinds",
+        "household",
+        "$defs",
+        "RequestState",
+      ),
+    claims: [],
+    listing: {
+      page: `${DOCS}running/requests-and-the-household.md`,
+      members: (text) => spoken(columnUnder(text, "State")),
+    },
+  },
+  {
+    what: "stages a trace follows an item through",
+    source: CONTRACT,
+    members: (sources) =>
+      variantsAt(sources.contract, "kinds", "trace", "$defs", "Stage"),
+    claims: [],
+    listing: {
+      page: `${DOCS}running/where-is-my-show.md`,
+      members: (text) => spoken(columnUnder(text, "Stage")),
     },
   },
   {

@@ -196,6 +196,19 @@ site's own, from `src/lib/`. Together they enforce:
   is the disagreement the lockfile rule cannot see.
 - **Every authored page names its topic**, and the topic is the one its section
   sits under.
+- **Every command line a page prints, against the core's command reference.**
+  Each line of a shell block, each prompted line of a console block and each
+  code span that begins `lemonfiber ` is read against
+  `vendor/lemonfiber/reference/`, which the core generates from its own
+  declarations: the command has to exist, and it has to take every flag given
+  to it.
+- **The Rust toolchain a page names, against the workspace.** "A Rust
+  toolchain, 1.95 or newer" is held to the `rust-version` the core's
+  `Cargo.toml` names.
+
+`running/forms-and-slices` and `running/the-services` hold no copy of the stack
+at all: their profile, form, service, port and grade tables are rendered from
+the pinned `stack.toml` by the components in `src/components/`.
 
 The mirrors are declared in `mirrors.json`, which is what the mirror rules
 check against. A tree mirror's own root route is the one place an owned page may

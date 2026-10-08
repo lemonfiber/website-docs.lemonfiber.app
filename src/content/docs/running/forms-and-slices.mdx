@@ -5,6 +5,9 @@ description: Run only the part of the stack you need right now, compose slices t
 sidebar: { order: 1 }
 ---
 
+import Forms from "../../../components/Forms.astro";
+import Profiles from "../../../components/Profiles.astro";
+
 Most self-hosted media stacks are one compose file with a dozen services in it:
 all or nothing. Wanting to look one thing up means booting a media server, a
 request portal, a subtitle daemon and four automation services.
@@ -18,7 +21,8 @@ There are two layers, and only one of them is yours.
 
 A **profile** is a fact about a service. Each service carries exactly one, and it
 states what the service _is_: Sonarr is `tv`, SABnzbd is `usenet`, Jellyfin is
-`media`. You never select a profile directly.
+`media`. You never select a profile directly. Both tables below are read from the
+stack manifest this site pins.
 
 A **form** is an intent. It is a named combination of profiles, and it is what
 you type. `tv` is a form meaning "I want automated television", which happens to
@@ -27,20 +31,7 @@ without indexers and a download client is not much use.
 
 ## The twelve profiles
 
-| Profile   | What it covers                    | Services                                               |
-| --------- | --------------------------------- | ------------------------------------------------------ |
-| `search`  | Finding things                    | Prowlarr, FlareSolverr, NZBHydra2                      |
-| `usenet`  | Usenet downloading                | SABnzbd                                                |
-| `torrent` | Torrent downloading, VPN-isolated | Gluetun, qBittorrent                                   |
-| `tv`      | Television automation             | Sonarr                                                 |
-| `movies`  | Film automation                   | Radarr                                                 |
-| `music`   | Music automation                  | Lidarr                                                 |
-| `books`   | Book and audiobook automation     | Bindery                                                |
-| `subs`    | Subtitle automation               | Bazarr                                                 |
-| `media`   | Serving what you have             | Jellyfin, Seerr, Calibre-Web-Automated, Audiobookshelf |
-| `tuning`  | Quality profiles and extraction   | Recyclarr, Unpackerr                                   |
-| `dash`    | A page linking everything         | Homepage                                               |
-| `proxy`   | Friendly hostnames                | Caddy                                                  |
+<Profiles />
 
 Acquiring and serving are split deliberately. Bindery _acquires_ books and sits
 in `books` alongside the other automation services; Calibre-Web-Automated and
@@ -50,19 +41,7 @@ running an acquisition service you have no indexers for.
 
 ## The eleven forms
 
-| Form      | What it is for                                       | Profiles it expands to                                                            |
-| --------- | ---------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `search`  | Find things. Nothing else runs.                      | `search`                                                                          |
-| `dl`      | You have a link — fetch it.                          | `usenet`, `torrent`                                                               |
-| `hunt`    | Search and grab, manually.                           | `search`, `usenet`, `torrent`                                                     |
-| `tv`      | Search, download and automate television             | `search`, `usenet`, `torrent`, `tv`, `subs`                                       |
-| `movies`  | Search, download and automate film                   | `search`, `usenet`, `torrent`, `movies`, `subs`                                   |
-| `music`   | Search, download and automate music                  | `search`, `usenet`, `torrent`, `music`                                            |
-| `books`   | Search, download and automate books and audiobooks   | `search`, `usenet`, `torrent`, `books`                                            |
-| `auto`    | Everything automated, nothing served                 | `search`, `usenet`, `torrent`, `tv`, `movies`, `music`, `books`, `subs`, `tuning` |
-| `library` | Serve what exists. Requires no third-party accounts. | `media`                                                                           |
-| `full`    | The lot.                                             | Everything except `proxy`                                                         |
-| `proxy`   | Friendly hostnames. Layers onto any other form.      | `proxy`                                                                           |
+<Forms />
 
 `library` is the one worth noticing. It needs no indexer, no provider and no VPN,
 which makes it the zero-cost end state for someone who already has a folder of
@@ -117,8 +96,9 @@ flight is not interrupted just to change the stack around it.
 
 ## When a form will not start
 
-An unknown form name gets you the list of valid forms and the nearest match,
-never a bare "not found". A form whose every profile has been filtered out by
+An unknown form name gets you the list of valid forms, led by the one you
+probably meant where a declared form is close enough to say so, never a bare
+"not found". A form whose every profile has been filtered out by
 your configuration is refused, naming the configuration that is missing.
 
 If one service in a form fails to start, the rest keep running and you are told

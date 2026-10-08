@@ -40,8 +40,15 @@ end state rather than a degraded one — see
 
 ## Which platforms are built
 
-The release build targets macOS on Apple silicon, macOS on Intel, and Linux on
-x86_64 in both glibc and musl flavours.
+Each release is built for these platforms:
+
+| Target                       | Platform                           |
+| ---------------------------- | ---------------------------------- |
+| `aarch64-apple-darwin`       | macOS on Apple silicon             |
+| `x86_64-apple-darwin`        | macOS on Intel                     |
+| `aarch64-unknown-linux-musl` | Linux on ARM64, statically linked  |
+| `x86_64-unknown-linux-gnu`   | Linux on x86_64, against glibc     |
+| `x86_64-unknown-linux-musl`  | Linux on x86_64, statically linked |
 
 There is no Windows build: the binary does not compile there. On Windows you can
 still run the stack itself, with Docker Desktop and plain `docker compose`, as

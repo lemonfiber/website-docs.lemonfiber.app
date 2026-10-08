@@ -3,12 +3,15 @@ import { describe, expect, it } from "vitest";
 
 import { countViolations, type Page, type Sources } from "./counts.ts";
 import { contract } from "./schema-source.ts";
-import { INVENTORIES } from "./inventories.ts";
+import { GLOSSARY, INVENTORIES } from "./inventories.ts";
 import {
   consolePlaces,
+  formServices,
+  glossaryWords,
   keysAt,
   namesAt,
   offered,
+  releaseTargets,
   required,
   thirdParty,
   variantsAt,
@@ -39,6 +42,8 @@ const theTree = (): { sources: Sources; pages: Page[] } => ({
     vocabulary: read("vendor/lemonfiber/contract/capability-vocabulary.json"),
     webApi: read("vendor/spec/20-architecture/contracts/web-api.md"),
     webRoute: read("vendor/lemonfiber-web/src/lib/route.ts"),
+    workspace: read("vendor/lemonfiber/Cargo.toml"),
+    glossary: read(GLOSSARY),
   },
   pages: walk("src/content/docs", (path) => /\.(md|mdx)$/.test(path)).map(
     (path) => ({ path, text: read(path) }),
@@ -55,6 +60,8 @@ const nothing: Sources = {
   vocabulary: "",
   webApi: "",
   webRoute: "",
+  workspace: "",
+  glossary: "",
 };
 
 describe("the tree as it stands", () => {
@@ -278,6 +285,71 @@ describe("variantsAt", () => {
 
   it("reads nothing out of a schema that is not a choice", () => {
     expect(variantsAt('{"a": {"type": "string"}}', "a")).toEqual([]);
+  });
+});
+
+describe("glossaryWords", () => {
+  it("reads the word each entry opens with", () => {
+    const glossary = [
+      "pub const TERMS: &[Term] = &[",
+      "    Term::new(",
+      '        "indexer",',
+      '        "Search engines.",',
+      "    ),",
+      '    Term::new("NZB", "What the indexer hands over."),',
+      "];",
+    ].join("\n");
+    expect(glossaryWords(glossary)).toEqual(["indexer", "NZB"]);
+  });
+});
+
+describe("releaseTargets", () => {
+  it("reads the targets the workspace names to cargo-dist", () => {
+    expect(
+      releaseTargets(
+        '[workspace.metadata.dist]\ntargets = ["x86_64-apple-darwin"]\n',
+      ),
+    ).toEqual(["x86_64-apple-darwin"]);
+  });
+
+  it("reads none where the workspace names none, or does not parse", () => {
+    expect(releaseTargets("[workspace]\n")).toEqual([]);
+    expect(releaseTargets("[workspace.metadata.dist]\ntargets = 3\n")).toEqual(
+      [],
+    );
+    expect(releaseTargets("= not toml")).toEqual([]);
+  });
+});
+
+describe("formServices", () => {
+  const stack = [
+    "[[form]]",
+    'id = "search"',
+    'profiles = ["search"]',
+    "",
+    "[[form]]",
+    'id = "odd"',
+    'profiles = "search"',
+    "",
+    "[[service]]",
+    'id = "prowlarr"',
+    'profile = "search"',
+    "",
+    "[[service]]",
+    'id = "sonarr"',
+    'profile = "tv"',
+    "",
+  ].join("\n");
+
+  it("names the services whose profile is in the form's closure", () => {
+    expect(formServices(stack, "search")).toEqual(["prowlarr"]);
+  });
+
+  it("names none for a form the stack does not declare as one", () => {
+    expect(formServices(stack, "missing")).toEqual([]);
+    expect(formServices(stack, "odd")).toEqual([]);
+    expect(formServices("= not toml", "search")).toEqual([]);
+    expect(formServices('form = "x"', "search")).toEqual([]);
   });
 });
 

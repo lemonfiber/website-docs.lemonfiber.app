@@ -1,0 +1,38 @@
+---
+import { vendored } from "../lib/schema-source";
+import { formsOf } from "../lib/stack";
+import * as m from "../paraglide/messages.js";
+
+/** Every form the pinned stack declares, with the profiles it is made of. */
+const forms = formsOf(vendored("lemonfiber-media-stack/stack.toml"));
+if (forms.length === 0)
+  throw new Error("the pinned stack declares no form to render");
+---
+
+<table>
+  <thead>
+    <tr>
+      <th>{m.stack_form()}</th>
+      <th>{m.stack_for()}</th>
+      <th>{m.stack_expands()}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {forms.map((form) => (
+      <tr>
+        <td>
+          <code>{form.id}</code>
+        </td>
+        <td>{form.description}</td>
+        <td>
+          {form.profiles.map((profile, index) => (
+            <>
+              {index > 0 && ", "}
+              <code>{profile}</code>
+            </>
+          ))}
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>

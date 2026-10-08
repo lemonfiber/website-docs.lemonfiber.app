@@ -64,6 +64,12 @@ Hardlinking is why the download folder and the library have to sit on one volume
 Across two, the file has to be copied instead — slower, twice the room, and it
 breaks seeding.
 
+## Keys
+
+| Word | What it means                                                                                                                                                                                                                                                                      |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| PEM  | How a key is written down as text rather than as bytes. A file in this form opens with a line of dashes saying what it holds. lemonfiber reads one when you name a key to check a plugin's images against, and wants the public half: the file whose first line says `PUBLIC KEY`. |
+
 ## Quality
 
 | Word            | What it means                                                                                                                                                                                         |
@@ -80,11 +86,11 @@ good, and how much disk — and translates it.
 
 ## lemonfiber's own words
 
-| Word           | What it means                                                                                                                                                                                                                        |
+| Our word       | What it means                                                                                                                                                                                                                        |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Form           | A named slice of the stack, chosen by what you want to do: `search`, `dl`, `tv`, `library`, `full`. Forms are what you name on the command line.                                                                                     |
 | Profile        | A tag on a service saying what it _is_, rather than what you want. You never select one directly; forms are made of them.                                                                                                            |
-| Data root      | The single directory holding both `downloads/` and `media/`, mounted into every container. The one that has to be a single filesystem.                                                                                               |
+| Data root      | The single directory holding both `downloads/` and `media/`, mounted into every service that touches the library. The one that has to be a single filesystem.                                                                        |
 | Stack manifest | The file declaring the services, profiles and forms. Everything lemonfiber knows about the stack comes from there, which is why adding a service is a data change rather than a code change.                                         |
 | Seed           | Confusingly, also lemonfiber's word for wiring the services to each other through their APIs — `lemonfiber seed`. Nothing to do with torrent seeding; the two words simply collided in this domain long before either of us arrived. |
 | Drift          | A value you changed by hand that no longer matches what lemonfiber expects. Reported, never silently reverted.                                                                                                                       |

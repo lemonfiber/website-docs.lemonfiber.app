@@ -116,9 +116,10 @@ libraries applied, as the media server answers for them —
 
 ## The household never touches lemonfiber
 
-There is no lemonfiber account for a household member, no lemonfiber URL to give
-them, and no way for them to affect the stack's operation even accidentally. The
-boundary is deliberate.
+There is no lemonfiber account for a household member, and no way for them to
+affect the stack's operation even accidentally. The one page of lemonfiber's own
+they may ever open is the decline service, at the address an invitation gives
+for turning it down. The boundary is deliberate.
 
 ## Related
 
