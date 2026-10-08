@@ -8,6 +8,8 @@ import {
   fencesIn,
   commandViolations,
   fault,
+  FLAGS_PAGE,
+  flagTableViolations,
   invocationsIn,
   REFERENCE,
 } from "./commands.ts";
@@ -261,6 +263,68 @@ describe("commandViolations", () => {
   it("refuses a reference with no root usage", () => {
     expect(commandViolations(new Map(), [page("`lemonfiber up`")])).toEqual([
       expect.objectContaining({ where: REFERENCE, line: null }),
+    ]);
+  });
+});
+
+describe("flagTableViolations", () => {
+  const flags = (rows: string): Page =>
+    page(
+      [
+        "| Flag | Where |",
+        "| --- | --- |",
+        "| `--stack-dir <PATH>` | Everywhere |",
+        "| Not `--dry-run` | `household` |",
+        "Prose | `--dry-run` | `household` |",
+        rows,
+      ].join("\n"),
+      FLAGS_PAGE,
+    );
+
+  it("passes a row naming every command that takes the flag", () => {
+    expect(
+      flagTableViolations(COMMANDS, [
+        flags("| `--dry-run` | `up`, `plugin install` |"),
+      ]),
+    ).toEqual([]);
+  });
+
+  it("reads a flag split over rows as one", () => {
+    expect(
+      flagTableViolations(COMMANDS, [
+        flags("| `--dry-run` | `up` |\n| `--dry-run` | `plugin install` |"),
+      ]),
+    ).toEqual([]);
+  });
+
+  it("names a command the row leaves out, and one it invents", () => {
+    expect(
+      flagTableViolations(COMMANDS, [
+        flags("| `--dry-run` | `up`, `household` |"),
+      ]),
+    ).toEqual([
+      {
+        where: FLAGS_PAGE,
+        line: null,
+        message: "`--dry-run` is also taken by plugin install",
+      },
+      {
+        where: FLAGS_PAGE,
+        line: null,
+        message: "`--dry-run` is not taken by household",
+      },
+    ]);
+  });
+
+  it("leaves the root out of the commands that take a flag", () => {
+    expect(
+      flagTableViolations(COMMANDS, [flags("| `--stack-dir` | `up` |")]),
+    ).toEqual([]);
+  });
+
+  it("refuses a missing page", () => {
+    expect(flagTableViolations(COMMANDS, [])).toEqual([
+      expect.objectContaining({ where: FLAGS_PAGE, line: null }),
     ]);
   });
 });

@@ -334,3 +334,75 @@ export function commandViolations(
     }
   return found;
 }
+
+/** The page that says where each recurring flag appears. */
+export const FLAGS_PAGE = "src/content/docs/commands/global-flags.md";
+
+/** The flag a table row's first cell begins with, as code. */
+const FLAG_CELL = /^`(--[a-z][a-z0-9-]*)/;
+
+/** Each table row's flag, and the cell after it, where its first cell names one. */
+const flagRows = (text: string): { flag: string; cell: string }[] =>
+  text.split("\n").flatMap((line) => {
+    const cells = line.split("|").map((cell) => cell.trim());
+    const flag = FLAG_CELL.exec(cells.slice(1, 2).join(""));
+    return line.startsWith("|") && flag !== null
+      ? [{ flag: captured(flag, 1), cell: cells.slice(2, 3).join("") }]
+      : [];
+  });
+
+/** A command written as code in a cell. */
+const COMMAND_CELL = /`([a-z][a-z0-9 -]*)`/g;
+
+/**
+ * The flags-page table of flags that recur without being inherited, against
+ * every command that takes each one, in both directions. A row whose second
+ * cell names no command as code is the global table's, and is left alone.
+ */
+export function flagTableViolations(
+  commands: ReadonlyMap<string, Command>,
+  pages: readonly Page[],
+): Violation[] {
+  const page = pages.find((one) => one.path === FLAGS_PAGE);
+  if (page === undefined)
+    return [
+      at(
+        FLAGS_PAGE,
+        null,
+        "the page saying where each flag appears is not here",
+      ),
+    ];
+  const said = new Map<string, Set<string>>();
+  for (const { flag, cell } of flagRows(page.text)) {
+    const named = [...cell.matchAll(COMMAND_CELL)].map((code) =>
+      captured(code, 1),
+    );
+    if (named.length === 0) continue;
+    said.set(flag, new Set([...(said.get(flag) ?? []), ...named]));
+  }
+  const found: Violation[] = [];
+  for (const [flag, onPage] of said) {
+    const taking = [...commands.values()]
+      .filter((command) => command.path !== "" && command.flags.has(flag))
+      .map((command) => command.path);
+    const missing = taking.filter((path) => !onPage.has(path));
+    const invented = [...onPage].filter((path) => !taking.includes(path));
+    if (missing.length > 0)
+      found.push(
+        at(
+          FLAGS_PAGE,
+          null,
+          `\`${flag}\` is also taken by ${missing.join(", ")}`,
+        ),
+      );
+    if (invented.length > 0)
+      found.push(
+        at(
+          FLAGS_PAGE,
+          null,
+          `\`${flag}\` is not taken by ${invented.join(", ")}`,
+        ),
+      );
+  }
+  return found;
+}

@@ -97,12 +97,11 @@ falling back would answer it with the absence the flags were given to fill.
 Several flags recur across commands without being inherited, and they are worth
 knowing apart because their meaning is not identical everywhere.
 
-| Flag                  | Where it appears                                     | What it means there                                                                                                                       |
-| --------------------- | ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `--yes`               | `setup`, `down`, `doctor`                            | Proceed without the prompt this command would otherwise raise                                                                             |
-| `--confirm`           | `quality set`, `quality upgrade`, `reset`, `support` | Say yes to the consequence this command has just named — a software transcode, a large re-download, work discarded, or a credential shown |
-| `--service <NAME>`    | `up`, `down`                                         | Act on only these services, leaving the rest of the form alone                                                                            |
-| `--service <SERVICE>` | `backup`                                             | Back up one service's configuration instead of the whole stack                                                                            |
+| Flag        | Where it appears                                                                                                                                                                                                 | What it means there                                                                  |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `--yes`     | `doctor`, `down`, `setup`                                                                                                                                                                                        | Proceed without the prompt this command would otherwise raise                        |
+| `--confirm` | `companion certificate`, `config set`, `credentials`, `forget`, `migrate adopt`, `migrate beside`, `migrate import`, `quality set`, `quality upgrade`, `remove`, `reset`, `support`, `uninstall`, `update stack` | Say yes to the consequence this command has just named                               |
+| `--service` | `backup`, `down`, `up`, `update stack`                                                                                                                                                                           | Act on the named service rather than on everything the command would otherwise touch |
 
 A command that would throw work away or spend a lot of bandwidth states the cost
 first and does nothing until it is confirmed: `reset` names every edit it would
@@ -115,13 +114,14 @@ copied.
 
 ## What the environment decides
 
-Two environment variables are read, both at the edge of the program rather than
+These environment variables are read, all at the edge of the program rather than
 threaded through it.
 
-| Variable                     | Effect                                                                                                                                                                 |
-| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `LC_ALL`, `LC_CTYPE`, `LANG` | Read in that order. A locale naming a non-UTF-8 character set, or `C`/`POSIX`, folds output to ASCII. A locale that is simply unset is not taken as a claim either way |
-| `NO_COLOR`                   | The scrollable log viewer adds no colour. The convention is the variable's presence, so `NO_COLOR=0` refuses colour like any other value                               |
+| Variable                                                              | Effect                                                                                                                                                                 |
+| --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `LC_ALL`, `LC_CTYPE`, `LANG`                                          | Read in that order. A locale naming a non-UTF-8 character set, or `C`/`POSIX`, folds output to ASCII. A locale that is simply unset is not taken as a claim either way |
+| `NO_COLOR`                                                            | The scrollable log viewer adds no colour. The convention is the variable's presence, so `NO_COLOR=0` refuses colour like any other value                               |
+| `DOCKER_HOST`, `DOCKER_CONTEXT`, `DOCKER_TLS_VERIFY`, `DOCKER_CONFIG` | Which engine a run is pointed at, read the way Docker's own command line reads them                                                                                    |
 
 Everything else is a setting rather than a variable, kept where
 `lemonfiber config set` writes and readable with `lemonfiber config show`. The
