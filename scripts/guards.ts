@@ -2,8 +2,9 @@
 /**
  * The kit's guards, and the rules only this site keeps: every number it states
  * about a tree it does not own, the error-code pages against the codes the
- * binary raises, the formulae the tap serves against the install pages, and the
- * toolchain the workspace names against the page that tells a reader to build.
+ * binary raises, the formulae the tap serves against the install pages, the
+ * toolchain the workspace names against the page that tells a reader to build,
+ * and every command line a page prints against the commands the binary declares.
  */
 import { join } from "node:path";
 
@@ -18,6 +19,11 @@ import {
   INDEX,
   isFamilyPage,
 } from "../src/lib/codes.ts";
+import {
+  commandsIn,
+  commandViolations,
+  REFERENCE,
+} from "../src/lib/commands.ts";
 import { assembledContract, CONTRACT_DIRECTORY } from "../src/lib/contract.ts";
 import { countViolations, type Page } from "../src/lib/counts.ts";
 import { readText } from "../src/lib/checkout.ts";
@@ -68,6 +74,16 @@ async function checks(tree: Tree): Promise<Violation[]> {
     ),
     ...formulaViolations(formulae, prose),
     ...toolchainViolations(await text(WORKSPACE), prose),
+    ...commandViolations(
+      commandsIn(
+        await Promise.all(
+          (await tree.files(REFERENCE))
+            .filter((path) => path.endsWith(".md"))
+            .map(async (path) => text(path)),
+        ),
+      ),
+      prose,
+    ),
     ...countViolations(
       INVENTORIES,
       {
