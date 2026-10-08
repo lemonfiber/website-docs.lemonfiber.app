@@ -252,8 +252,8 @@ about what it **means**, and every client implements and tests them.
 
 ## Where the shapes come from
 
-The artefact is `contract/web-api.contract.json` in the lemonfiber repository,
-built from the Rust types that actually serialise the reply. It is never
+The artefact is `contract/web-api/` in the lemonfiber repository, one file per
+kind and per shared definition, built from the Rust types that actually serialise the reply. It is never
 hand-written, and regenerating it must produce no diff — a serialised shape that
 changes without the artefact changing with it fails the build rather than
 reaching a client.

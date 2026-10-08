@@ -2,6 +2,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import { countViolations, type Page, type Sources } from "./counts.ts";
+import { contract } from "./schema-source.ts";
 import { INVENTORIES } from "./inventories.ts";
 import {
   consolePlaces,
@@ -29,7 +30,7 @@ const read = (path: string): string => readFileSync(path, "utf8");
 const theTree = (): { sources: Sources; pages: Page[] } => ({
   sources: {
     stack: read("vendor/lemonfiber-media-stack/stack.toml"),
-    contract: read("vendor/lemonfiber/contract/web-api.contract.json"),
+    contract: JSON.stringify(contract()),
     commands: read("vendor/lemonfiber/reference/commands.md"),
     quality: read("vendor/lemonfiber/reference/commands/quality.md"),
     extensionPoints: read("vendor/lemonfiber/contract/extension-points.json"),

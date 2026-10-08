@@ -4,6 +4,8 @@
  * about a tree it does not own, the error-code pages against the codes the
  * binary raises, and the formulae the tap serves against the install pages.
  */
+import { join } from "node:path";
+
 import { empty, type Tree } from "@lemonfiber/website-kit/site";
 import type { Violation } from "@lemonfiber/website-kit/guards";
 import { runGuards } from "@lemonfiber/website-kit/run/guards";
@@ -15,7 +17,9 @@ import {
   INDEX,
   isFamilyPage,
 } from "../src/lib/codes.ts";
+import { assembledContract, CONTRACT_DIRECTORY } from "../src/lib/contract.ts";
 import { countViolations, type Page } from "../src/lib/counts.ts";
+import { readText } from "../src/lib/project-source.ts";
 import {
   formulaViolations,
   FORMULAE,
@@ -65,8 +69,10 @@ async function checks(tree: Tree): Promise<Violation[]> {
       INVENTORIES,
       {
         stack: await text("vendor/lemonfiber-media-stack/stack.toml"),
-        contract: await text(
-          "vendor/lemonfiber/contract/web-api.contract.json",
+        contract: JSON.stringify(
+          assembledContract((file) =>
+            readText(join(tree.root, CONTRACT_DIRECTORY, file)),
+          ),
         ),
         commands: await text("vendor/lemonfiber/reference/commands.md"),
         quality: await text("vendor/lemonfiber/reference/commands/quality.md"),

@@ -6,7 +6,7 @@ sidebar:
   hidden: true
 ---
 
-Raised by `lemonfiber ui`, while it starts serving and while it answers a request. The last two are answered to a request, with `500`. See [the web API](/api/).
+Raised by `lemonfiber ui`, while it starts serving and while it answers a request. The last three are answered to a request, with `500`. See [the web API](/api/).
 
 | Code      | What it means                                                                                                                                                                                                                                            | What to do                                                                                                                     |
 | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
@@ -17,5 +17,6 @@ Raised by `lemonfiber ui`, while it starts serving and while it answers a reques
 | `SERVE-5` | It could not serve encrypted. It presents a certificate it keeps beside its configuration, and that certificate could not be read or made; the message says which.                                                                                       | Replace the certificate with `lemonfiber companion certificate --confirm`, knowing every paired phone will need pairing again. |
 | `SERVE-6` | An answer could not be rendered. The request was understood and carried out, and what it came to could not be written down as an answer. Nothing about the request was wrong.                                                                            | Ask again. If it keeps happening, send a support bundle, made with `lemonfiber support`.                                       |
 | `SERVE-7` | Work that outlives its request could not be named, because this machine would not supply the randomness a job's name is made of. A job with no name is work nothing could ever be told about, so it was not begun, and nothing was changed.              | Ask again. If it keeps happening, send a support bundle, made with `lemonfiber support`.                                       |
+| `SERVE-8` | An action stopped before it had an answer to give. It may have changed something before it stopped, and sending it again runs it again.                                                                                                                  | Ask again. If it keeps happening, send a support bundle, made with `lemonfiber support`.                                       |
 
 How to read a row, what each severity and state means, and which exit each code leaves with are on [every error by code](/fixing/every-error-by-code/), beside every other family.

@@ -337,9 +337,9 @@ carries twelve fields — and transcribing them into this page would create a se
 place their shapes are written down, which is the one thing the artefact exists to
 prevent.
 
-Read them from `contract/web-api.contract.json`, or let a generated client do it:
+Read them from `contract/web-api/`, or let a generated client do it:
 [the TypeScript SDK](/api/typescript-sdk/), [the PHP SDK](/api/php-sdk/) and
-[the Python SDK](/api/python-sdk/) each emit one type per kind from that file, so
+[the Python SDK](/api/python-sdk/) each emit one type per kind from that contract, so
 the shapes arrive typed rather than transcribed.
 
 ## Where to go next

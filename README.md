@@ -241,14 +241,19 @@ pinned revision and there is no transcription of it to go stale.
 
 | Page                              | Rendered from                          |
 | --------------------------------- | -------------------------------------- |
-| `api/reference`                   | `contract/web-api.contract.json`       |
+| `api/reference`                   | `contract/web-api/`                    |
 | `plugins/the-manifest`            | `contract/plugin-manifest.schema.json` |
 | `plugins/extension-points`        | `contract/extension-points.json`       |
 | `plugins/capabilities-and-wiring` | `contract/capability-vocabulary.json`  |
 
-Every kind in the web-API artefact carries its own `$defs`, so a type is written
-out once per kind that uses it. They are merged by name, and a name defined two
-different ways fails the build rather than publishing either shape.
+The core keeps the web-API contract as a directory: an index, one file per kind,
+one file per shared definition under `defs/`, and the reads, the refusals and
+the key-callable actions beside them, joined by relative `$ref`s.
+`src/lib/contract.ts` puts it back together as one document in which every kind
+carries the definitions it reaches under its own `$defs`, which is what the
+guards and the reference page read. The definitions are then merged by name,
+and a name defined two different ways fails the build rather than publishing
+either shape.
 
 ## How a mirrored page is built
 

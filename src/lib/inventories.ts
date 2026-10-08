@@ -11,6 +11,7 @@
  */
 
 import { FAMILIES, INDEX, isFamilyPage } from "./codes.ts";
+import { CONTRACT_DIRECTORY } from "./contract.ts";
 import { matches, type Inventory, type Page, type Sources } from "./counts.ts";
 import {
   consolePlaces,
@@ -34,7 +35,7 @@ import {
 import { columnUnder, firstColumnUnder } from "./tables.ts";
 
 const STACK = "vendor/lemonfiber-media-stack/stack.toml";
-const CONTRACT = "vendor/lemonfiber/contract/web-api.contract.json";
+const CONTRACT = CONTRACT_DIRECTORY;
 const COMMANDS = "vendor/lemonfiber/reference/commands.md";
 // The index links one page per command; a command's own arguments are on its page.
 const QUALITY = "vendor/lemonfiber/reference/commands/quality.md";
