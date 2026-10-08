@@ -23,15 +23,18 @@ export const DASHBOARD = "vendor/lemonfiber/crates/lemonfiber/src/dashboard.rs";
 /** The page that sets the panels out. */
 export const TUI_PAGE = "src/content/docs/commands/the-tui.md";
 
-/** One panel as the layout names it: `("Front door", door),`. */
-const PANEL = /^\s+\("([^"]+)", [a-z_]+\),$/gm;
+/** One panel as the layout names it, alone on its line: `("Front door", door),`. */
+const PANEL = /^\("([^"]+)", [a-z_]+\),$/;
 
 /** The sentence counting them: `nine panels`. */
 const COUNTED = new RegExp(String.raw`\b(${SAID}) panels\b`, "gi");
 
 /** Every panel the dashboard draws, by the heading it draws it under. */
 export const panelsIn = (dashboard: string): string[] =>
-  [...dashboard.matchAll(PANEL)].map((panel) => captured(panel, 1));
+  dashboard.split("\n").flatMap((line) => {
+    const panel = PANEL.exec(line.trim());
+    return panel === null ? [] : [captured(panel, 1)];
+  });
 
 /**
  * The page's `Panel` table against the layout in both directions, and every

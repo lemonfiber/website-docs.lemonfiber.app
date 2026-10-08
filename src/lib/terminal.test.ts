@@ -9,6 +9,8 @@ const LAYOUT = [
   "    vec![",
   '        ("VPN", vpn),',
   '        ("Front door", door),',
+  '        call("Not a panel", door),',
+  '        ("Not a panel", door), // nor this',
   "    ]",
 ].join("\n");
 

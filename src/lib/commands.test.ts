@@ -274,6 +274,8 @@ describe("flagTableViolations", () => {
         "| Flag | Where |",
         "| --- | --- |",
         "| `--stack-dir <PATH>` | Everywhere |",
+        "| Not `--dry-run` | `household` |",
+        "Prose | `--dry-run` | `household` |",
         rows,
       ].join("\n"),
       FLAGS_PAGE,
