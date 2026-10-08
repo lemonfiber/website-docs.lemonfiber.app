@@ -137,7 +137,7 @@ describe("a generated reference with one section and no more", () => {
 });
 
 describe("a contract that has gained a read endpoint", () => {
-  const ENVELOPE = "src/content/docs/api/the-envelope.md";
+  const ENVELOPE = "src/content/docs/api/the-envelope.mdx";
 
   const webApi = [
     "# The web API",

@@ -41,16 +41,17 @@ Docker Compose **v2.20 or newer** is required, because `compose.yml` uses
 
 ## What is in the repository
 
-| File                  | What it is                                                                    |
-| --------------------- | ----------------------------------------------------------------------------- |
-| `stack.toml`          | The manifest lemonfiber consumes — services, profiles, forms                  |
-| `compose.yml`         | Stitches the fragments together; declares no services of its own              |
-| `compose/`            | One fragment per profile — `tv.yml`, `media.yml`, `torrent.yml`, and the rest |
-| `compose/_common.yml` | Shared service defaults, reached through `extends:`                           |
-| `.env.example`        | Every variable, documented                                                    |
-| `stacks/`             | An overlay for NAS and copy mode                                              |
-| `config/`             | Seeded templates for Recyclarr, Homepage and Caddy                            |
-| `scripts/`            | The checks CI runs, all runnable locally through `just`                       |
+| File                  | What it is                                                                                                        |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `stack.toml`          | The manifest lemonfiber consumes — profiles, forms, the wiring, and the `include` list naming each service's file |
+| `services/`           | One file per service, each holding its `[[service]]` entry                                                        |
+| `compose.yml`         | Stitches the fragments together; declares no services of its own                                                  |
+| `compose/`            | One fragment per profile — `tv.yml`, `media.yml`, `torrent.yml`, and the rest                                     |
+| `compose/_common.yml` | Shared service defaults, reached through `extends:`                                                               |
+| `.env.example`        | Every variable, documented                                                                                        |
+| `stacks/`             | An overlay for NAS and copy mode                                                                                  |
+| `config/`             | Seeded templates for Recyclarr, Homepage, Caddy and SABnzbd                                                       |
+| `scripts/`            | The checks CI runs, all runnable locally through `just`                                                           |
 
 The shortest working `.env` is `DATA_ROOT` plus, if you want torrents, a
 WireGuard key. Everything with a sensible default already has it.

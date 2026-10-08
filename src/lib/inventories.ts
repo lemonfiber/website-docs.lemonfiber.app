@@ -43,8 +43,8 @@ const WEB_API = "vendor/spec/20-architecture/contracts/web-api.md";
 const WEB_ROUTE = "vendor/lemonfiber-web/src/lib/route.ts";
 
 const DOCS = "src/content/docs/";
-const ENVELOPE_PAGE = `${DOCS}api/the-envelope.md`;
-const KINDS_PAGE = `${DOCS}api/kinds.md`;
+const ENVELOPE_PAGE = `${DOCS}api/the-envelope.mdx`;
+const KINDS_PAGE = `${DOCS}api/kinds.mdx`;
 const TUI_PAGE = `${DOCS}commands/the-tui.md`;
 const CONSOLE_PAGE = `${DOCS}commands/the-web-console.md`;
 const MANIFEST_PAGE = `${DOCS}plugins/the-manifest.mdx`;
@@ -99,7 +99,7 @@ const prose = (pages: readonly Page[], path: string): string =>
 const endpointsListed = (text: string): string[] =>
   matches(/^GET \/api\/([a-z]+)/gm, columnUnder(text, "Endpoint").join("\n"));
 
-/** The payload kinds `api/kinds.md` sets out field by field, as its headings. */
+/** The payload kinds `api/kinds.mdx` sets out field by field, as its headings. */
 const expandedKinds = (sources: Sources, pages: readonly Page[]): string[] => {
   const declared = new Set(keysAt(sources.contract, "kinds"));
   return matches(/^## `([a-z]+)`$/gm, prose(pages, KINDS_PAGE)).filter((kind) =>
@@ -272,10 +272,6 @@ export const INVENTORIES: readonly Inventory[] = [
       { says: "%N% payload kinds" },
       { says: String.raw`artefact describes\s+%N%` },
     ],
-    listing: {
-      page: KINDS_PAGE,
-      members: (text) => columnUnder(text, "Kind"),
-    },
   },
   {
     what: "payload kinds set out field by field",

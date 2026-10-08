@@ -1,0 +1,19 @@
+---
+import { kindDefinitions } from "../lib/kinds";
+import { contract } from "../lib/schema-source";
+import { payloads } from "../lib/schema";
+import Definitions from "./Definitions.astro";
+
+interface Props {
+  /** The payload kind whose `data` to set out. */
+  readonly kind: string;
+}
+
+/** One kind's `data`, field by field, and every type it is built from, read from the pinned contract. */
+const { kind } = Astro.props;
+const definitions = kindDefinitions(payloads(contract()), kind);
+if (definitions.length === 0)
+  throw new Error(`contract/web-api/ has no definition for the ${kind} kind`);
+---
+
+<Definitions definitions={definitions} prefix={`${kind}-`} />

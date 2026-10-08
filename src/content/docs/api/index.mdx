@@ -24,7 +24,7 @@ about your stack that the other would not.
 The binary carries the web app as well, embedded the way the stack beside it is:
 a submodule at `assets/web`, pinned to a built revision, and a build whose two
 halves speak different wire versions stops rather than shipping. A build told to
-carry none says so, and `lemonfiber ui --assets <dir>` serves a directory
+carry none says so, and `lemonfiber ui --assets <PATH>` serves a directory
 instead. The shape of the surface is
 [the web API contract](https://lemonfiber.app/spec/20-architecture/contracts/web-api/);
 [the envelope](/api/the-envelope/) covers the endpoints, the guard, and how a
@@ -38,7 +38,7 @@ surfaces already emit.
   <LinkCard
     title="The envelope"
     href="/api/the-envelope/"
-    description="The three fields every payload arrives in, and the rules a client has to keep."
+    description="The fields every payload arrives in, and the rules a client has to keep."
   />
   <LinkCard
     title="Every payload kind"

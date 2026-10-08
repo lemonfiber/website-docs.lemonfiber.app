@@ -1,0 +1,118 @@
+---
+title: Every payload kind
+topic: build
+description: The seventy-three payload kinds the contract artefact describes, and every field the six most-used ones carry.
+sidebar:
+  order: 2
+---
+
+import KindFields from "../../../components/KindFields.astro";
+import KindTable from "../../../components/KindTable.astro";
+
+`kind` says which payload an [envelope](/api/the-envelope/) carries, so a
+consumer can branch before parsing `data`. The contract artefact describes
+seventy-three of them, and each entry is the whole envelope with that kind's
+payload in place rather than the payload alone — a generator wants the shape it
+will actually parse.
+
+The set is closed. A kind is named in one place in the source and nowhere else, it
+cannot be constructed outside that place, and the contract is generated from the
+same list — so a kind that reaches the wire without a schema, or a schema for a
+kind nobody emits, fails the build rather than reaching a client.
+
+<KindTable />
+
+`pull` and `start` are the two whose `data` is not an object. Both are a single
+string: one line the container engine wrote, emitted as it was written, because a
+pull that takes ten minutes has to say something before it ends.
+
+Six of them are set out field by field below — the ones a client meets first, and
+the ones whose payloads are small enough to read as a table. The other sixty-seven
+are in the artefact in full, and every SDK generates a type for each kind in
+their own copy of it, so nothing here is the only place their shapes are written
+down. Every table below is rendered from that artefact at the revision this site
+pins, so a field here is a field on the wire.
+
+## `error`
+
+Something that went wrong, in the form an operator can act on. This is the kind a
+failed run emits on the error stream. `cause` is a problem of the same shape, so a
+symptom can name the root it came from without a second type existing to say so.
+
+A code is stable on purpose: an operator who searches for one should find the
+same answer a year later. Codes are declared beside the code that raises them and
+are never recycled. Severity has four levels, deliberately: more would not be
+applied consistently, and inconsistent severity is worse than coarse severity.
+
+<KindFields kind="error" />
+
+## `log`
+
+One line of output from one service. A log stream emits one envelope of this kind
+per line.
+
+`at` is kept verbatim and unparsed. Containers disagree with the host clock and
+with each other, and the only defensible ordering is each container's own account
+of itself — which a reader can apply only if it is carried rather than replaced
+by an arrival time.
+
+<KindFields kind="log" />
+
+## `setup`
+
+What a setup run came to, and what it settled on.
+
+This report is deliberately **not** the settings themselves. Setup writes an
+indexer key and a service password among them, and a report a script can read is
+a report a script can log — into a file, a CI transcript, somebody's terminal
+history. So it says what was decided and never what was entered, and its fields
+are chosen one at a time rather than by serialising a struct that might later
+gain a secret.
+
+<KindFields kind="setup" />
+
+## `walkthrough`
+
+What a first-content walkthrough did: the whole of it, narrated line by line as
+it happened.
+
+<KindFields kind="walkthrough" />
+
+## `watch`
+
+What a watch saw, once the data root it was guarding was lost.
+
+<KindFields kind="watch" />
+
+## `word`
+
+A word this product uses, and what somebody meeting it needs to know. `short` is
+enough to act on: somebody who reads only that should not be stuck.
+`also_called` exists because the services do not agree on words, and an operator
+moving between their screens should not have to work out that two of them are
+one.
+
+<KindFields kind="word" />
+
+## The other sixty-seven
+
+Every kind in the table above is in the contract artefact with its full schema,
+including the sixty-seven not expanded here. Their payloads are larger — a
+`dashboard` carries eleven panels, each with its own shape; a `lifecycle` report
+carries twelve fields — and transcribing them into this page would create a second
+place their shapes are written down, which is the one thing the artefact exists to
+prevent.
+
+Read them from `contract/web-api/`, or let a generated client do it:
+[the TypeScript SDK](/api/typescript-sdk/), [the PHP SDK](/api/php-sdk/) and
+[the Python SDK](/api/python-sdk/) each emit one type per kind from that contract, so
+the shapes arrive typed rather than transcribed.
+
+## Where to go next
+
+The wrapper these sit inside is [the envelope](/api/the-envelope/). To read them
+from code without transcribing any of the above, use
+[the TypeScript SDK](/api/typescript-sdk/), [the PHP SDK](/api/php-sdk/) or
+[the Python SDK](/api/python-sdk/), each of which generates one type per kind.
+Error codes have their own reference in
+[every error by code](/fixing/every-error-by-code/).

@@ -19,7 +19,8 @@ guessing whether a missing feature is missing or merely undocumented.
 The stack has two binding tiers and no remote path. Administrative services are
 published on `127.0.0.1` and that is not configurable. Household services —
 the media server, the request portal, the reading and listening apps, the
-dashboard — are published on the LAN address you set, because a library the
+dashboard and the reverse proxy in front of them — are published on every
+interface, or on the one address `LAN_BIND` names, because a library the
 television cannot reach is not a library.
 
 Reaching any of it from outside the house means doing it yourself today, and the
@@ -43,10 +44,10 @@ mismatch means the carrier owns the public edge and no inbound port can ever
 arrive. You are told which condition was found and why it narrows the choice,
 rather than being offered a path that cannot work on your line.
 
-| Archetype                     | What it is                                                                                                                                                         | When                                           |
-| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------- |
-| Overlay network (the default) | A self-hosted control plane with unmodified clients and a self-hosted relay, so no third party ever coordinates or carries traffic. Works behind carrier-grade NAT | Any line                                       |
-| Public ingress                | The bundled reverse proxy terminates real public TLS, with a dynamic-DNS updater keeping the record pointed at the home address                                    | Only where a publicly reachable address exists |
+| Archetype                     | What it is                                                                                                                                                           | When                                           |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| Overlay network (the default) | A self-hosted control plane with unmodified clients and a self-hostable relay, so no third party ever coordinates or carries traffic. Works behind carrier-grade NAT | Any line                                       |
+| Public ingress                | The bundled reverse proxy terminates real public TLS, with a dynamic-DNS updater keeping the record pointed at the home address                                      | Only where a publicly reachable address exists |
 
 The overlay is the default because it is the only one that works on every line
 and never exposes a service to the open internet. Public ingress is refused

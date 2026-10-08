@@ -6,11 +6,13 @@ sidebar:
   order: 1
 ---
 
-`stack.toml` sits at the root of a stack directory, beside `compose.yml`.
-Everything lemonfiber knows about the stack comes from it: the services, the
-role each plays, the forms you start them by, and how they are wired to each
-other. It knows nothing about Sonarr that the manifest does not declare, so
-adding a service is a change to this file and not a new release.
+`stack.toml` sits at the root of a stack directory, beside `compose.yml`, and
+each service is described in a file of its own under `services/`, which the
+root's `include` list names. Everything lemonfiber knows about the stack comes
+from these files: the services, the role each plays, the forms you start them
+by, and how they are wired to each other. It knows nothing about Sonarr that the
+manifest does not declare, so adding a service is a new file and an `include`
+entry, and not a new release.
 
 Every field, what it means and the rule each one is held to are in
 [the stack manifest contract](https://lemonfiber.app/spec/20-architecture/contracts/stack-manifest/).
@@ -25,7 +27,7 @@ checked before it ever reaches you.
 To run a stack of your own, point lemonfiber at its directory:
 
 ```sh
-$ lemonfiber --stack-dir <PATH> status
+$ lemonfiber --stack-dir <PATH> ps
 ```
 
 `--stack-dir` is a [global flag](/commands/global-flags/), so it goes with any
@@ -55,13 +57,14 @@ lemonfiber checks the whole manifest before it starts anything. It reports
 **every** fault it finds in one pass, and each one names where it is. The
 refusal is a [`STACK` code](/fixing/codes/stack/):
 
-| What you see | What to do                                                                                                                                                               |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `STACK-7`    | The file is not valid TOML. Fix it at the line the message names.                                                                                                        |
-| `STACK-2`    | The `schema_version` is one this lemonfiber does not read. Update lemonfiber, or use a stack written for this version.                                                   |
-| `STACK-9`    | The `min_cli_version` is newer than the lemonfiber running. Run `lemonfiber update self`.                                                                                |
-| `STACK-8`    | The file names things this lemonfiber has no meaning for, usually because it comes from a newer lemonfiber. Update lemonfiber, or change what the message names.         |
-| `STACK-6`    | The manifest contradicts itself. Common causes are a service missing from `compose.yml` (or the reverse), a floating image tag, or a reference to an undeclared profile. |
+| What you see | What to do                                                                                                                                                       |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `STACK-1`    | No readable `stack.toml` is where a stack was expected. Point `--stack-dir` at the directory that holds it.                                                      |
+| `STACK-7`    | The file is not valid TOML. Fix it at the line the message names.                                                                                                |
+| `STACK-2`    | The `schema_version` is one this lemonfiber does not read. Update lemonfiber, or use a stack written for this version.                                           |
+| `STACK-9`    | The `min_cli_version` is newer than the lemonfiber running. Run `lemonfiber update self`.                                                                        |
+| `STACK-8`    | The file names things this lemonfiber has no meaning for, usually because it comes from a newer lemonfiber. Update lemonfiber, or change what the message names. |
+| `STACK-6`    | The manifest contradicts itself. Common causes are a floating image tag, an id declared twice, or a form naming a profile nobody declares.                       |
 
 The full list of rules is the contract's
 [validation section](https://lemonfiber.app/spec/20-architecture/contracts/stack-manifest/#validation).
