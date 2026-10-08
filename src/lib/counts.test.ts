@@ -20,8 +20,6 @@ const nothing: Sources = {
   vocabulary: "",
   webApi: "",
   webRoute: "",
-  manifests: "",
-  featureSchema: "",
   spec: [],
 };
 

@@ -15,7 +15,7 @@ import type { Violation } from "@lemonfiber/website-kit/guards";
 
 /** The topics, each with the section directories under it, in reading order. */
 export const TOPICS = {
-  use: ["start", "running", "fixing", "commands", "advanced", "project"],
+  use: ["start", "running", "fixing", "commands", "advanced"],
   build: ["api", "plugins", "spec"],
 } as const;
 

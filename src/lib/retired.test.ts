@@ -9,14 +9,19 @@ const RETIRED: Record<string, string> = retired.redirects;
 const CONTENT = new URL("../content/docs/", import.meta.url);
 
 describe("the retired routes in retired.json", () => {
-  it("sends every one to a page off this site", () => {
-    for (const target of Object.values(RETIRED))
-      expect(target).toMatch(
-        /^https:\/\/(contribute\.lemonfiber\.app|github\.com\/lemonfiber\/spec\/blob\/main)\//,
-      );
+  it("sends every one to the frontpage, the contributor site, the specification, or a page this site serves", () => {
+    for (const target of Object.values(RETIRED)) {
+      if (target.startsWith("/")) {
+        const at = target.slice(1, -1);
+        expect(existsSync(new URL(`${at}.md`, CONTENT))).toBe(true);
+      } else
+        expect(target).toMatch(
+          /^https:\/\/(lemonfiber\.app|contribute\.lemonfiber\.app|github\.com\/lemonfiber\/spec\/blob\/main)\//,
+        );
+    }
   });
 
-  it("covers both sections it retired, and every page under them", () => {
+  it("covers every section it retired, and every page under them", () => {
     const routes = Object.keys(RETIRED);
     expect(
       routes.filter((one) => one.startsWith("/contributing/")),
@@ -24,6 +29,7 @@ describe("the retired routes in retired.json", () => {
     expect(routes.filter((one) => one.startsWith("/develop/"))).toHaveLength(
       26,
     );
+    expect(routes.filter((one) => one.startsWith("/project/"))).toHaveLength(6);
   });
 
   it("leaves no page of this site's own at a retired route", () => {

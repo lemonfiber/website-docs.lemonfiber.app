@@ -12,10 +12,7 @@ export default defineConfig({
   trailingSlash: "always",
   // A page that moved keeps its address: the build writes a page at the old
   // one that sends a reader on.
-  redirects: {
-    "/project/whats-built/": "/project/roadmap/",
-    ...retired.redirects,
-  },
+  redirects: retired.redirects,
   vite: {
     plugins: [
       paraglideVitePlugin({

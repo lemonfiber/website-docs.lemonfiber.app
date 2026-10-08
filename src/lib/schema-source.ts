@@ -6,7 +6,7 @@
  * arguments.
  */
 import { assembledContract, CONTRACT_DIRECTORY } from "./contract";
-import { readText } from "./project-source";
+import { readText } from "./checkout";
 import { parsedJson } from "./schema";
 
 const CONTRACT = "vendor/lemonfiber/contract";

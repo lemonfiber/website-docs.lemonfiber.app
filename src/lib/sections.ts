@@ -46,7 +46,6 @@ export const topics = [
       group(m.nav_fixing(), "fixing"),
       group(m.nav_commands(), "commands"),
       group(m.nav_advanced(), "advanced"),
-      group(m.nav_project(), "project"),
     ],
   },
   {

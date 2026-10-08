@@ -19,7 +19,7 @@ import {
 } from "../src/lib/codes.ts";
 import { assembledContract, CONTRACT_DIRECTORY } from "../src/lib/contract.ts";
 import { countViolations, type Page } from "../src/lib/counts.ts";
-import { readText } from "../src/lib/project-source.ts";
+import { readText } from "../src/lib/checkout.ts";
 import {
   formulaViolations,
   FORMULAE,
@@ -84,10 +84,6 @@ async function checks(tree: Tree): Promise<Violation[]> {
         ),
         webApi: await text("vendor/spec/20-architecture/contracts/web-api.md"),
         webRoute: await text("vendor/lemonfiber-web/src/lib/route.ts"),
-        manifests: await text("vendor/spec/70-operations/versions/README.md"),
-        featureSchema: await text(
-          "vendor/spec/10-functional/features/_meta/feature.schema.json",
-        ),
         spec,
       },
       prose,
