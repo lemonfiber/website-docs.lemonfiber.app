@@ -1,10 +1,15 @@
-# Publishes the built site to GitHub Pages. The build runs the same way CI runs
-# it, from the submodule revisions this repository pins.
+# Publishes the site to GitHub Pages, every version of it (REPO-R89): the newest
+# stable at `/`, built from `pins/stable.toml`; `next` at `/next/`, built from the
+# submodule pins; and each kept version at `/v<minor>/`, from the build frozen
+# when it was cut, which `versions.yml` keeps as a release asset and nothing here
+# rebuilds. `versions.json` then names them all for the switcher (REPO-R90).
 name: deploy
 
 on:
   push:
     branches: [main]
+  # By hand, and by `versions.yml` once it has cut a version, so the new frozen
+  # build is published without waiting for the next push.
   workflow_dispatch:
   # The sibling repositories ask for a rebuild through `rebuild-site` in the spec
   # repository, whose `site` input exists so a second site can call it rather
@@ -31,16 +36,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
+      # Read, for the checkout and for downloading the frozen builds.
       contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-          # The nine repositories under `vendor/`, and not the submodules
-          # they carry themselves. `lemonfiber` embeds
-          # `lemonfiber-media-stack`; this site renders the stack from its
-          # own pin at `vendor/lemonfiber-media-stack`, and reads that copy
-          # for the page's revision stamp, so the nested one is never read.
+          # The repositories under `vendor/`, and not the submodules they
+          # carry themselves, which are never read.
           submodules: true
 
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -50,8 +53,44 @@ jobs:
 
       - run: npm ci --ignore-scripts
 
-      - name: Build the site
-        run: npm run messages && npm run build
+      - run: npm run messages
+
+      - name: Build next, from the submodule pins
+        env:
+          DOCS_BASE: /next/
+          DOCS_VERSION: next
+        run: |
+          npm run build
+          mv dist "$RUNNER_TEMP/next"
+
+      - name: Build the newest stable, from what its release recorded
+        id: stable
+        run: |
+          node scripts/stable.ts checkout
+          version=$(sed -n 's/^version = "\(.*\)"$/\1/p' pins/stable.toml)
+          minor="${version%.*}"
+          echo "minor=$minor" >> "$GITHUB_OUTPUT"
+          DOCS_VERSION="$minor" DOCS_PINS=pins/stable.toml npm run build
+          mv "$RUNNER_TEMP/next" dist/next
+
+      - name: Put each kept version's frozen build at its path
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tags=$(gh release list --limit 100 --json tagName --jq '.[].tagName')
+          for tag in $tags; do
+            case "$tag" in docs-v*) ;; *) continue ;; esac
+            minor="${tag#docs-v}"
+            gh release download "$tag" --pattern "$tag.zip" --dir "$RUNNER_TEMP"
+            mkdir -p "dist/v$minor"
+            unzip -q "$RUNNER_TEMP/$tag.zip" -d "dist/v$minor"
+          done
+
+      - name: Name every version for the switcher
+        env:
+          LATEST: ${{ steps.stable.outputs.minor }}
+        run: node scripts/versions.ts dist "$LATEST"
 
       - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
 

@@ -2,6 +2,7 @@ import { docsSchema } from "@astrojs/starlight/schema";
 import { glob, type Loader, type LoaderContext } from "astro/loaders";
 import { defineCollection } from "astro:content";
 import { z } from "astro/zod";
+import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 import manifest from "../mirrors.json";
@@ -11,12 +12,21 @@ import {
   provenanceSchema,
 } from "@lemonfiber/website-kit/mirror-loader";
 
+import { parseStable, renderedIn } from "./lib/stable.ts";
 import { TOPIC_NAMES } from "./lib/topics.ts";
 
-const mirrors = manifest.mirrors as readonly Mirror[];
+/** The pin set a versioned build renders, where it renders one (REPO-R88). */
+const pinned = process.env["DOCS_PINS"];
+const stable =
+  pinned === undefined ? null : parseStable(readFileSync(pinned, "utf8"));
+
+const declared = manifest.mirrors as readonly Mirror[];
+const mirrors = renderedIn(declared, stable, existsSync);
 const root = fileURLToPath(new URL("..", import.meta.url)).replace(/\/$/, "");
 
-const ignore = mirrors.map((mirror) =>
+// Every declared route, rendered in this build or not, is a mirror's and never
+// an owned page.
+const ignore = declared.map((mirror) =>
   mirror.route.endsWith(".md") ? `!${mirror.route}` : `!${mirror.route}/**`,
 );
 

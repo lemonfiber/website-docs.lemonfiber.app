@@ -51,6 +51,8 @@ untaken — the cure is to take the pin and write what the guards name.
 | `src/lib/schema.ts`       | a contract artefact read as reference tables, never copied       |
 | `messages/`               | every word the chrome shows                                      |
 | `src/pages/`              | `provenance.json`, `llms.txt` and `llms-full.txt`                |
+| `pins/stable.toml`        | what the newest release recorded, rendered at `/`                |
+| `src/lib/stable.ts`       | the rule for a stable pin; `scripts/stable.ts` asks git          |
 
 ## Numbers are derived, never written down
 

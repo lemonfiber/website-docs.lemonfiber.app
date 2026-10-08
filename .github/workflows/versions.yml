@@ -1,0 +1,161 @@
+# Keeps a version of the documentation per release (REPO-R88, REPO-R89).
+#
+# For every kept release whose pins have settled and that has no frozen build,
+# it builds the site at what that release recorded, under `/v<minor>/`, and
+# keeps the build as the release asset `docs-v<minor>.zip` of this repository;
+# `deploy.yml` puts it in place and never rebuilds it. Then, where a newer
+# release has settled than the one `pins/stable.toml` renders, it opens the pull
+# request that moves the stable set, which `stable.yml` holds to the rule.
+#
+# A release settles at the end of its day, in UTC: until then a commit can still
+# join the ones on or before it. The schedule runs after midnight for that
+# reason, and `release-finalize` in the specification can ask for a run.
+name: versions
+
+on:
+  schedule:
+    - cron: "30 3 * * *"
+  workflow_dispatch:
+  repository_dispatch:
+    types: [cut-version]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: versions
+  cancel-in-progress: false
+
+jobs:
+  cut:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      # To create the releases the frozen builds are kept on, and to ask for a
+      # deploy once one is.
+      contents: write
+      actions: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          # Whole histories: a repository a release recorded nothing for is
+          # pinned at its last commit on or before the release day, which only
+          # its history can say.
+          submodules: true
+          fetch-depth: 0
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install exactly what the lockfile says
+        run: |
+          npm ci --ignore-scripts
+          npm run messages
+
+      - name: Cut every kept version that has no frozen build
+        id: cut
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          have=$(gh release list --limit 100 --json tagName --jq '.[].tagName')
+          node scripts/stable.ts kept > "$RUNNER_TEMP/kept"
+          cut=""
+          while read -r line; do
+            version=$(jq -r .version <<<"$line")
+            minor="${version%.*}"
+            tag="docs-v$minor"
+            if grep -qx "$tag" <<<"$have"; then continue; fi
+
+            node scripts/stable.ts write "$version" --out pins/cut.toml
+            node scripts/stable.ts checkout pins/cut.toml
+            DOCS_BASE="/v$minor/" DOCS_VERSION="$minor" DOCS_PINS=pins/cut.toml \
+              npm run build
+            (cd dist && zip -qr "$RUNNER_TEMP/$tag.zip" .)
+            {
+              echo "The documentation for $minor, built at what $version recorded and frozen."
+              echo
+              echo '```toml'
+              cat pins/cut.toml
+              echo '```'
+            } > "$RUNNER_TEMP/notes.md"
+            gh release create "$tag" "$RUNNER_TEMP/$tag.zip" \
+              --target "$GITHUB_SHA" \
+              --title "Documentation $minor" \
+              --notes-file "$RUNNER_TEMP/notes.md"
+            git submodule update --quiet
+            rm -rf dist pins/cut.toml
+            cut="$cut $minor"
+          done < "$RUNNER_TEMP/kept"
+          echo "cut=${cut# }" >> "$GITHUB_OUTPUT"
+
+      - name: Publish what was cut
+        if: steps.cut.outputs.cut != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml --ref main
+
+      - name: Write the stable set for the newest settled release
+        id: stable
+        run: |
+          node scripts/stable.ts write
+          if git diff --quiet -- pins/stable.toml; then
+            echo "moved=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "moved=true" >> "$GITHUB_OUTPUT"
+            version=$(sed -n 's/^version = "\(.*\)"$/\1/p' pins/stable.toml)
+            echo "version=$version" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Mint the release App token
+        if: steps.stable.outputs.moved == 'true'
+        id: token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.RELEASE_CLIENT_ID }}
+          private-key: ${{ secrets.RELEASE_APP_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: website-docs.lemonfiber.app
+          permission-contents: write
+          permission-pull-requests: write
+
+      # Committed through the API as the app, which the forge signs, onto a
+      # branch rebuilt from `main` every run, and set to merge itself at that
+      # commit once every required check passes.
+      - name: Open the pull request that moves the stable set
+        if: steps.stable.outputs.moved == 'true'
+        env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+          VERSION: ${{ steps.stable.outputs.version }}
+          BRANCH: pins/stable
+        run: |
+          set -euo pipefail
+          repo="$GITHUB_REPOSITORY"
+          title="docs(pins): render $VERSION as the stable documentation"
+          message=$(printf '%s\n\n%s\n\n%s\n' "$title" \
+            "pins/stable.toml now holds what $VERSION recorded." \
+            "Spec: REPO-R88")
+          if gh api "repos/$repo/git/ref/heads/$BRANCH" > /dev/null 2>&1; then
+            gh api -X PATCH "repos/$repo/git/refs/heads/$BRANCH" \
+              -f sha="$GITHUB_SHA" -F force=true > /dev/null
+          else
+            gh api "repos/$repo/git/refs" \
+              -f ref="refs/heads/$BRANCH" -f sha="$GITHUB_SHA" > /dev/null
+          fi
+          blob=$(gh api "repos/$repo/contents/pins/stable.toml?ref=$BRANCH" --jq .sha)
+          head=$(gh api -X PUT "repos/$repo/contents/pins/stable.toml" \
+            -f branch="$BRANCH" -f message="$message" -f sha="$blob" \
+            -f content="$(base64 -w0 pins/stable.toml)" --jq .commit.sha)
+          number=$(gh pr list --repo "$repo" --head "$BRANCH" --state open \
+            --json number --jq '.[0].number // empty')
+          if [ -z "$number" ]; then
+            url=$(gh pr create --repo "$repo" --base main --head "$BRANCH" \
+              --title "$title" \
+              --body "$(printf '%s\n\nSpec: REPO-R88\n' \
+                "The newest release whose pins have settled is $VERSION, so the stable documentation at \`/\` moves to what it recorded. Written by \`versions.yml\` with \`node scripts/stable.ts write\`.")")
+            number="${url##*/}"
+          fi
+          gh pr merge "$number" --repo "$repo" --auto --squash --match-head-commit "$head"

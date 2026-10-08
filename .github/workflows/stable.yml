@@ -1,0 +1,51 @@
+# Holds `pins/stable.toml` to what the newest release recorded (REPO-R88): the
+# core at its release tag, each embedded repository at the commit the manifest
+# names under `pins`, and every other repository at its default branch's last
+# commit on or before the release day. A stable pin that is none of these is
+# refused, and so is a set still rendering an older release a day after a newer
+# one settled, which is the time `versions.yml` has to move it.
+#
+# On every pull request, so a wrong pin stands in front of the next change, and
+# on a schedule, so a lag is said where nobody has one open. It fetches, so it
+# is not in `npm run ci`: a build may not reach the network.
+name: stable
+
+on:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "50 7 * * *"
+
+permissions:
+  contents: read
+
+# A pull request pushed again cancels the run on its old head, which nobody
+# will read and which holds runners the org shares (Q-R75). Every other event
+# is grouped by its own run, so it is never cancelled and never cancels.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  stable:
+    name: stable
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          # Whole histories, for the release day's last commit.
+          submodules: true
+          fetch-depth: 0
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install exactly what the lockfile says
+        run: npm ci --ignore-scripts
+
+      - name: Every stable pin is what the release recorded
+        run: node scripts/stable.ts check

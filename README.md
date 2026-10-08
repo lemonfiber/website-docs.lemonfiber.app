@@ -51,6 +51,34 @@ sections next to it. Moving between "how do I do this", "why is it broken" and
 "what does the API return" is the thing a reader does most, so it is the thing
 the navigation is built for.
 
+## Versions
+
+The site is published once per kept version (REPO-R88, REPO-R89, REPO-R90):
+
+| Path         | Built from                                                    | Built                |
+| ------------ | ------------------------------------------------------------- | -------------------- |
+| `/`          | `pins/stable.toml`: what the newest released version recorded | on every deploy      |
+| `/next/`     | the submodule pins                                            | on every deploy      |
+| `/v<minor>/` | what that version recorded, every minor from 0.16 on          | once, when it is cut |
+
+What a release recorded is the core at the tag it was released as, each embedded
+repository at the commit the version's manifest names under `pins`, and every other
+repository at its default branch's last commit on or before the release day. A
+repository with no commit by then, and a mirrored file its pin does not hold, are
+pages that version does not have; a link to one is sent on to `/next/`.
+`src/lib/stable.ts` is the rule, and `node scripts/stable.ts` writes the set
+(`write`), checks it (`check`) and checks the submodules out at it (`checkout`).
+
+`.github/workflows/versions.yml` runs after midnight UTC, once a release's day is
+over and its pins can no longer move. It builds each kept version that has no
+frozen build under `/v<minor>/`, keeps it as the release asset
+`docs-v<minor>.zip`, and opens the pull request that moves `pins/stable.toml` to
+the newest release. `deploy.yml` builds `/` and `/next/`, puts each frozen build
+at its path, and writes `/versions.json`, which the version switcher in the header
+reads, so a version frozen before a newer one was released still offers it.
+`stable.yml` refuses a stable pin the rule does not give, and a set still
+rendering an older release a day after a newer one settled.
+
 ## What it publishes for a machine
 
 Three files are built beside the pages, from the same collection:
