@@ -109,23 +109,30 @@ function commandOf(lines: readonly string[]): Command | null {
     if (!WORD.test(word)) break;
     words.push(word);
   }
+  return {
+    path: words.join(" "),
+    ...optionsIn(lines),
+    group: rest.slice(words.length).some((word) => word.includes("COMMAND")),
+  };
+}
+
+/** Every option a block's lines declare, and those among them that take a value. */
+function optionsIn(lines: readonly string[]): {
+  flags: Set<string>;
+  valued: Set<string>;
+} {
   const flags = new Set<string>();
   const valued = new Set<string>();
   for (const line of lines) {
     const option = OPTION.exec(line);
     if (option === null) continue;
-    for (const name of [option[1], option[2]])
-      if (name !== undefined) {
-        flags.add(name);
-        if (option[3] !== undefined) valued.add(name);
-      }
+    const names = [option[1], option[2]].filter(
+      (name): name is string => name !== undefined,
+    );
+    for (const name of names) flags.add(name);
+    if (option[3] !== undefined) for (const name of names) valued.add(name);
   }
-  return {
-    path: words.join(" "),
-    flags,
-    valued,
-    group: rest.slice(words.length).some((word) => word.includes("COMMAND")),
-  };
+  return { flags, valued };
 }
 
 /** Every command the reference files declare, by path. */
