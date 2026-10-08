@@ -36,6 +36,7 @@ import {
   type Expected,
   type Release,
   type Source,
+  type Stable,
 } from "../src/lib/stable.ts";
 
 const ROOT = new URL("..", import.meta.url).pathname;
@@ -49,6 +50,10 @@ const GIT = [
   "/opt/homebrew/bin/git",
 ].find((path) => existsSync(path));
 const SYSTEM_PATH = "/usr/bin:/bin:/usr/sbin:/sbin";
+
+// Everything after it is a ref, a remote or a path, never an option. The values
+// are held to their shapes as they are read; this is the second wall.
+const END = "--end-of-options";
 
 function stop(message: string): never {
   console.error(`::error::${message}`);
@@ -85,20 +90,23 @@ const repositoryOf = (module: string): string => {
 
 /** Every released version the specification's default branch records. */
 function releases(): Release[] {
-  if (!git("-C", SPEC, "fetch", "--quiet", "origin", DEFAULT_BRANCH).ok)
+  if (!git("-C", SPEC, "fetch", "--quiet", END, "origin", DEFAULT_BRANCH).ok)
     stop("the specification could not be fetched");
   const listed = git(
     "-C",
     SPEC,
     "ls-tree",
     "--name-only",
+    END,
     "FETCH_HEAD",
     `${MANIFESTS}/`,
   );
   return listed.out
     .split("\n")
     .filter((path) => /\/\d+\.\d+\.\d+\.toml$/.test(path))
-    .map((path) => releaseOf(git("-C", SPEC, "show", `FETCH_HEAD:${path}`).out))
+    .map((path) =>
+      releaseOf(git("-C", SPEC, "show", END, `FETCH_HEAD:${path}`).out),
+    )
     .filter((one): one is Release => one !== null);
 }
 
@@ -106,8 +114,9 @@ function releases(): Release[] {
 function fetchBranch(module: string): string | null {
   const branch = branches.get(module) ?? DEFAULT_BRANCH;
   if (git("-C", module, "rev-parse", "--is-shallow-repository").out === "true")
-    git("-C", module, "fetch", "--quiet", "--unshallow", "origin", branch);
-  if (!git("-C", module, "fetch", "--quiet", "origin", branch).ok) return null;
+    git("-C", module, "fetch", "--quiet", "--unshallow", END, "origin", branch);
+  if (!git("-C", module, "fetch", "--quiet", END, "origin", branch).ok)
+    return null;
   return "FETCH_HEAD";
 }
 
@@ -121,10 +130,18 @@ function expectedOf(module: string, source: Source): Expected {
       return commit(source.commit);
     case "tag": {
       if (
-        !git("-C", module, "fetch", "--quiet", "origin", "tag", source.tag).ok
+        !git("-C", module, "fetch", "--quiet", END, "origin", "tag", source.tag)
+          .ok
       )
         return UNREAD;
-      const found = git("-C", module, "rev-parse", `${source.tag}^{commit}`);
+      const found = git(
+        "-C",
+        module,
+        "rev-parse",
+        "--verify",
+        END,
+        `${source.tag}^{commit}`,
+      );
       return found.ok ? commit(found.out) : UNREAD;
     }
     case "day": {
@@ -136,6 +153,7 @@ function expectedOf(module: string, source: Source): Expected {
         "rev-list",
         "-1",
         `--before=${source.day}T23:59:59Z`,
+        END,
         head,
       );
       if (!found.ok) return UNREAD;
@@ -159,6 +177,24 @@ function expectedFor(release: Release): {
   return { rules, sources };
 }
 
+/**
+ * The stable set in `file`. A pin that is not a commit, or an entry naming no
+ * declared submodule, stops the run before anything is handed to git.
+ */
+function readStable(file: string): Stable {
+  const read = parseStable(
+    readFileSync(`${ROOT}${file}`, "utf8"),
+    new Set(urls.keys()),
+  );
+  if (read === null) stop(`${file} holds no stable pin set`);
+  if (read.faults.length > 0) {
+    for (const fault of read.faults)
+      console.error(`${fault.module ?? file}  ${fault.message}`);
+    stop(`${file} holds entries that are refused before git reads them`);
+  }
+  return read.stable;
+}
+
 const [command = "check", ...rest] = process.argv.slice(2);
 
 const kept = (): Release[] => keptReleases(releases());
@@ -174,7 +210,7 @@ const releaseNamed = (version: string | undefined): Release => {
   const all = kept();
   const found =
     version === undefined
-      ? all.filter((one) => settledAt(one) <= now).at(-1)
+      ? all.findLast((one) => settledAt(one) <= now)
       : all.find(
           (one) =>
             one.version === version || one.version.startsWith(`${version}.`),
@@ -218,11 +254,10 @@ switch (command) {
 
   case "checkout": {
     const file = rest[0] ?? STABLE;
-    const stable = parseStable(readFileSync(`${ROOT}${file}`, "utf8"));
-    if (stable === null) stop(`${file} holds no stable pin set`);
+    const stable = readStable(file);
     for (const [module, commit] of Object.entries(stable.pins)) {
-      git("-C", module, "fetch", "--quiet", "origin", commit);
-      if (!git("-C", module, "checkout", "--quiet", "--detach", commit).ok)
+      git("-C", module, "fetch", "--quiet", END, "origin", commit);
+      if (!git("-C", module, "checkout", "--quiet", "--detach", END, commit).ok)
         stop(`${module} could not be checked out at ${commit}`);
     }
     console.log(`stable: every submodule at what ${stable.version} recorded`);
@@ -230,8 +265,7 @@ switch (command) {
   }
 
   case "check": {
-    const stable = parseStable(readFileSync(`${ROOT}${STABLE}`, "utf8"));
-    if (stable === null) stop(`${STABLE} holds no stable pin set`);
+    const stable = readStable(STABLE);
     const all = kept();
     const release = all.find((one) => one.version === stable.version);
     if (release === undefined)

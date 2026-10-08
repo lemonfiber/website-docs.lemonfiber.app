@@ -84,31 +84,65 @@ const parsed = (text: string): Record<string, unknown> | null => {
   }
 };
 
-const strings = (value: unknown): Record<string, string> =>
-  Object.fromEntries(
-    Object.entries(record(value) ?? {}).filter(
-      (entry): entry is [string, string] => typeof entry[1] === "string",
-    ),
-  );
+/*
+ * What a value read from a file must look like before it goes anywhere near
+ * git. Every one of them reaches a command line, and git reads an argument that
+ * starts with `-` as an option wherever it stands, so a pin of
+ * `--upload-pack=<command>` would run that command. Nothing that fails these is
+ * kept.
+ */
 
-/** A manifest's release, or null for one that is not released or not readable. */
+/** A full commit id. */
+export const COMMIT = /^[0-9a-f]{40}$/;
+
+/** A version, as a manifest names one. */
+const VERSION = /^\d+\.\d+\.\d+$/;
+
+/** A release tag. */
+const TAG = /^v\d+\.\d+\.\d+$/;
+
+/** A release day, `YYYY-MM-DD`. */
+const DAY = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * A manifest's release, or null for one that is not released, not readable, or
+ * holding a version, a day, a tag or an embedded commit that is not one.
+ */
 export function releaseOf(manifest: string): Release | null {
   const read = parsed(manifest);
   if (read === null) return null;
   const { version, status, released_on: releasedOn } = read;
+  const releasedAs = read["released_as"] ?? `v${String(version)}`;
+  const pins = Object.entries(record(read["pins"]) ?? {});
   if (
     status !== "released" ||
     typeof version !== "string" ||
-    typeof releasedOn !== "string"
+    !VERSION.test(version) ||
+    typeof releasedOn !== "string" ||
+    !DAY.test(releasedOn) ||
+    typeof releasedAs !== "string" ||
+    !TAG.test(releasedAs) ||
+    !pins.every(
+      ([, commit]) => typeof commit === "string" && COMMIT.test(commit),
+    )
   )
     return null;
-  const releasedAs = read["released_as"];
   return {
     version,
     releasedOn,
-    tag: typeof releasedAs === "string" ? releasedAs : `v${version}`,
-    pins: strings(read["pins"]),
+    tag: releasedAs,
+    pins: Object.fromEntries(pins) as Record<string, string>,
   };
+}
+
+/** Every submodule `.gitmodules` declares, by the path it sits at. */
+export function modulesIn(gitmodules: string): Set<string> {
+  const found = new Set<string>();
+  for (const line of gitmodules.split("\n")) {
+    const [key = "", value] = line.split("=", 2);
+    if (key.trim() === "path" && value !== undefined) found.add(value.trim());
+  }
+  return found;
 }
 
 /** `0.16` for `0.16.0`. */
@@ -176,7 +210,14 @@ export function stableOf(
     if (rule.kind === "commit") pins[module] = rule.commit;
     else if (rule.kind === "absent") absent.push(module);
     else unread.push(module);
-  return { stable: { version, pins, absent: absent.toSorted() }, unread };
+  return {
+    stable: {
+      version,
+      pins,
+      absent: absent.toSorted((a, b) => a.localeCompare(b)),
+    },
+    unread,
+  };
 }
 
 /** A mirror, as much of one as deciding whether a version has it reads. */
@@ -208,18 +249,43 @@ export function renderedIn<T extends Declared>(
   });
 }
 
-/** The stable set in the file, or null where the file holds none. */
-export function parseStable(text: string): Stable | null {
+/**
+ * The stable set in the file, and every entry in it that is refused rather than
+ * kept: a pin that is not a full commit id, and a pin or an absent entry naming
+ * a path that is not one of `modules`. Null where the file holds no set.
+ */
+export function parseStable(
+  text: string,
+  modules: ReadonlySet<string>,
+): { stable: Stable; faults: Fault[] } | null {
   const read = parsed(text);
-  if (read === null || typeof read["version"] !== "string") return null;
-  const absent = read["absent"];
-  return {
-    version: read["version"],
-    pins: strings(read["pins"]),
-    absent: Array.isArray(absent)
-      ? absent.filter((one): one is string => typeof one === "string")
-      : [],
-  };
+  const version = read?.["version"];
+  if (read === null || typeof version !== "string" || !VERSION.test(version))
+    return null;
+  const faults: Fault[] = [];
+  const pins: Record<string, string> = {};
+  for (const [module, commit] of Object.entries(record(read["pins"]) ?? {}))
+    if (!modules.has(module))
+      faults.push({
+        module: null,
+        message: "a pin names no declared submodule",
+      });
+    else if (typeof commit !== "string" || !COMMIT.test(commit))
+      faults.push({
+        module,
+        message: "pinned at something that is not a commit",
+      });
+    else pins[module] = commit;
+  const listed = read["absent"];
+  const absent: string[] = [];
+  for (const one of Array.isArray(listed) ? listed : [])
+    if (typeof one === "string" && modules.has(one)) absent.push(one);
+    else
+      faults.push({
+        module: null,
+        message: "an absent entry names no declared submodule",
+      });
+  return { stable: { version, pins, absent }, faults };
 }
 
 /** The file for `stable`, each pin with where it came from beside it. */
@@ -228,7 +294,7 @@ export function renderStable(
   sources: Readonly<Record<string, Source>>,
 ): string {
   const lines = Object.entries(stable.pins)
-    .toSorted(([a], [b]) => (a < b ? -1 : 1))
+    .toSorted(([a], [b]) => a.localeCompare(b))
     .map(([module, commit]) => {
       const source = sources[module];
       const said = source === undefined ? "" : `  # ${describe(source)}`;
@@ -239,7 +305,7 @@ export function renderStable(
       ? []
       : [
           "# No commit on or before the release day: these pages are not in this version.",
-          `absent = [${stable.absent.map((one) => `"${one}"`).join(", ")}]`,
+          `absent = [${stable.absent.map((one) => JSON.stringify(one)).join(", ")}]`,
         ];
   return [
     `# The revisions the stable documentation renders: what ${stable.version} recorded`,
@@ -251,6 +317,31 @@ export function renderStable(
     ...lines,
     "",
   ].join("\n");
+}
+
+/** How one submodule's entry disagrees with what the rule gives, or null. */
+function moduleFault(
+  stable: Stable,
+  module: string,
+  rule: Expected,
+): string | null {
+  const pinned = stable.pins[module];
+  const absent = stable.absent.includes(module);
+  switch (rule.kind) {
+    case "unread":
+      return "the rule's commit could not be read";
+    case "absent":
+      return absent
+        ? null
+        : `has no commit on or before the release day, so ${stable.version} does not have it`;
+    case "commit":
+      if (absent) return `called absent, and the rule gives ${rule.commit}`;
+      if (pinned === undefined)
+        return `no stable pin; the rule gives ${rule.commit}`;
+      return pinned === rule.commit
+        ? null
+        : `pinned at ${pinned}, and ${stable.version} recorded ${rule.commit}`;
+  }
 }
 
 /**
@@ -270,36 +361,8 @@ export function stableFaults(
 ): Fault[] {
   const found: Fault[] = [];
   for (const [module, rule] of expected) {
-    const pinned = stable.pins[module];
-    const absent = stable.absent.includes(module);
-    if (rule.kind === "unread") {
-      found.push({ module, message: "the rule's commit could not be read" });
-      continue;
-    }
-    if (rule.kind === "absent") {
-      if (!absent)
-        found.push({
-          module,
-          message: `has no commit on or before the release day, so ${stable.version} does not have it`,
-        });
-      continue;
-    }
-    const { commit } = rule;
-    if (absent)
-      found.push({
-        module,
-        message: `called absent, and the rule gives ${commit}`,
-      });
-    else if (pinned === undefined)
-      found.push({
-        module,
-        message: `no stable pin; the rule gives ${commit}`,
-      });
-    else if (pinned !== commit)
-      found.push({
-        module,
-        message: `pinned at ${pinned}, and ${stable.version} recorded ${commit}`,
-      });
+    const message = moduleFault(stable, module, rule);
+    if (message !== null) found.push({ module, message });
   }
   for (const module of [...Object.keys(stable.pins), ...stable.absent])
     if (!expected.has(module))

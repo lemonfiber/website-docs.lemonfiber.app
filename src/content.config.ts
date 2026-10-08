@@ -12,13 +12,23 @@ import {
   provenanceSchema,
 } from "@lemonfiber/website-kit/mirror-loader";
 
-import { parseStable, renderedIn } from "./lib/stable.ts";
+import { modulesIn, parseStable, renderedIn } from "./lib/stable.ts";
 import { TOPIC_NAMES } from "./lib/topics.ts";
 
 /** The pin set a versioned build renders, where it renders one (REPO-R88). */
 const pinned = process.env["DOCS_PINS"];
-const stable =
-  pinned === undefined ? null : parseStable(readFileSync(pinned, "utf8"));
+const read =
+  pinned === undefined
+    ? null
+    : parseStable(
+        readFileSync(pinned, "utf8"),
+        modulesIn(readFileSync(".gitmodules", "utf8")),
+      );
+if (read !== null && read.faults.length > 0)
+  throw new Error(
+    `${String(pinned)}: ${read.faults.map((fault) => fault.message).join("; ")}`,
+  );
+const stable = read?.stable ?? null;
 
 const declared = manifest.mirrors as readonly Mirror[];
 const mirrors = renderedIn(declared, stable, existsSync);

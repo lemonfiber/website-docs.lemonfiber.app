@@ -5,6 +5,7 @@ import {
   describe as said,
   keptReleases,
   minorOf,
+  modulesIn,
   parseStable,
   releaseOf,
   renderedIn,
@@ -17,21 +18,24 @@ import {
   type Release,
 } from "./stable.ts";
 
+const WEB = "a".repeat(40);
+const CORE = "c".repeat(40);
+const TS = "d".repeat(40);
+
 const MANIFEST = [
   'version = "0.17.0"',
   'status = "released"',
   'released_on = "2026-10-08"',
   "",
   "[pins]",
-  'lemonfiber-web = "web-sha"',
-  "lemonfiber-media-stack = 7",
+  `lemonfiber-web = "${WEB}"`,
 ].join("\n");
 
 const release = (version: string, releasedOn = "2026-10-08"): Release => ({
   version,
   releasedOn,
   tag: `v${version}`,
-  pins: { "lemonfiber-web": "web-sha" },
+  pins: { "lemonfiber-web": WEB },
 });
 
 const commit = (sha: string): Expected => ({ kind: "commit", commit: sha });
@@ -42,7 +46,7 @@ describe("releaseOf", () => {
       version: "0.17.0",
       releasedOn: "2026-10-08",
       tag: "v0.17.0",
-      pins: { "lemonfiber-web": "web-sha" },
+      pins: { "lemonfiber-web": WEB },
     });
   });
 
@@ -60,10 +64,27 @@ describe("releaseOf", () => {
     expect(releaseOf("released_on = 2026-10-08")).toBeNull();
     expect(releaseOf("= not toml")).toBeNull();
     expect(
-      releaseOf(
-        'version = "0.1.0"\nstatus = "released"\nreleased_on = "x"\npins = 3',
-      )?.pins,
+      releaseOf(MANIFEST.replace("[pins]", "pins = 3\n[other]"))?.pins,
     ).toEqual({});
+  });
+
+  it("refuses a manifest whose values could be read as options by git", () => {
+    const head = MANIFEST.split("\n[pins]")[0] ?? "";
+    expect(releaseOf(`${head}\nreleased_as = "--x"\n`)).toBeNull();
+    expect(releaseOf(`${head}\nreleased_as = "v0.17"\n`)).toBeNull();
+    expect(releaseOf(`${head}\nreleased_as = 3\n`)).toBeNull();
+    expect(releaseOf(MANIFEST.replace('"2026-10-08"', '"x"'))).toBeNull();
+    expect(
+      releaseOf(MANIFEST.replace('"2026-10-08"', '"--before=0"')),
+    ).toBeNull();
+    expect(releaseOf(MANIFEST.replace('"0.17.0"', '"-0.17.0"'))).toBeNull();
+    expect(
+      releaseOf(
+        `${head.replace('"0.17.0"', '"--x"')}\nreleased_as = "v0.17.0"\n`,
+      ),
+    ).toBeNull();
+    expect(releaseOf(MANIFEST.replace(WEB, "--upload-pack=x"))).toBeNull();
+    expect(releaseOf(MANIFEST.replace(`"${WEB}"`, "7"))).toBeNull();
   });
 });
 
@@ -106,7 +127,7 @@ describe("sourceOf", () => {
     });
     expect(sourceOf("lemonfiber-web", one)).toEqual({
       kind: "manifest",
-      commit: "web-sha",
+      commit: WEB,
     });
     expect(sourceOf("sdk-ts", one)).toEqual({ kind: "day", day: "2026-10-08" });
   });
@@ -143,21 +164,95 @@ describe("stableOf", () => {
   });
 });
 
+const MODULES = new Set([
+  "vendor/lemonfiber",
+  "vendor/sdk-ts",
+  "vendor/sdk-python",
+]);
+
+describe("modulesIn", () => {
+  it("reads every submodule's path, and nothing else", () => {
+    expect(
+      modulesIn(
+        [
+          '[submodule "sdk-ts"]',
+          "\tpath = vendor/sdk-ts",
+          "\turl = ../sdk-ts.git",
+          "\tpath",
+        ].join("\n"),
+      ),
+    ).toEqual(new Set(["vendor/sdk-ts"]));
+  });
+});
+
 describe("the stable file", () => {
   it("writes each pin with where it came from, and reads it back", () => {
     const stable = {
       version: "0.16.0",
-      pins: { "vendor/sdk-ts": "ts", "vendor/lemonfiber": "core" },
+      pins: { "vendor/sdk-ts": TS, "vendor/lemonfiber": CORE },
       absent: ["vendor/sdk-python"],
     };
     const text = renderStable(stable, {
       "vendor/lemonfiber": { kind: "tag", tag: "v0.16.0" },
     });
     expect(text).toContain(
-      '"vendor/lemonfiber" = "core"  # tag v0.16.0\n"vendor/sdk-ts" = "ts"\n',
+      `"vendor/lemonfiber" = "${CORE}"  # tag v0.16.0\n"vendor/sdk-ts" = "${TS}"\n`,
     );
     expect(text).toContain('absent = ["vendor/sdk-python"]');
-    expect(parseStable(text)).toEqual(stable);
+    expect(parseStable(text, MODULES)).toEqual({ stable, faults: [] });
+  });
+
+  it("refuses a pin git could read as an option, one that is not a commit, and an undeclared module", () => {
+    const text = [
+      'version = "0.16.0"',
+      'absent = ["vendor/sdk-python", "--upload-pack=x", 3]',
+      "[pins]",
+      '"vendor/lemonfiber" = "--upload-pack=touch /tmp/x"',
+      '"vendor/sdk-ts" = "abc123"',
+      `"--work-tree=/" = "${CORE}"`,
+      `"vendor/sdk-python" = 7`,
+    ].join("\n");
+    expect(parseStable(text, MODULES)).toEqual({
+      stable: { version: "0.16.0", pins: {}, absent: ["vendor/sdk-python"] },
+      faults: [
+        {
+          module: "vendor/lemonfiber",
+          message: "pinned at something that is not a commit",
+        },
+        {
+          module: "vendor/sdk-ts",
+          message: "pinned at something that is not a commit",
+        },
+        { module: null, message: "a pin names no declared submodule" },
+        {
+          module: "vendor/sdk-python",
+          message: "pinned at something that is not a commit",
+        },
+        {
+          module: null,
+          message: "an absent entry names no declared submodule",
+        },
+        {
+          module: null,
+          message: "an absent entry names no declared submodule",
+        },
+      ],
+    });
+  });
+
+  it("refuses a pin that is a commit with something after it", () => {
+    expect(
+      parseStable(
+        `version = "0.16.0"\n[pins]\n"vendor/sdk-ts" = "${TS}\\n-x"`,
+        MODULES,
+      )?.faults,
+    ).toHaveLength(1);
+    expect(
+      parseStable(
+        `version = "0.16.0"\n[pins]\n"vendor/sdk-ts" = "${TS}a"`,
+        MODULES,
+      )?.faults,
+    ).toHaveLength(1);
   });
 
   it("writes the pins in path order, whatever order they were given in", () => {
@@ -179,12 +274,14 @@ describe("the stable file", () => {
     ).not.toContain("absent");
   });
 
-  it("reads nothing out of a file with no version, and no absent list out of a malformed one", () => {
-    expect(parseStable("[pins]")).toBeNull();
-    expect(parseStable('version = "0.16.0"\nabsent = "x"')?.absent).toEqual([]);
-    expect(
-      parseStable('version = "0.16.0"\nabsent = ["a", 1]')?.absent,
-    ).toEqual(["a"]);
+  it("reads nothing out of a file with no version, or one that is not a version", () => {
+    expect(parseStable("[pins]", MODULES)).toBeNull();
+    expect(parseStable("= not toml", MODULES)).toBeNull();
+    expect(parseStable('version = "--x"', MODULES)).toBeNull();
+    expect(parseStable('version = "0.16.0"\nabsent = "x"', MODULES)).toEqual({
+      stable: { version: "0.16.0", pins: {}, absent: [] },
+      faults: [],
+    });
   });
 });
 

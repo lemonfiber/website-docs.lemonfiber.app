@@ -82,6 +82,8 @@ jobs:
           for tag in $tags; do
             case "$tag" in docs-v*) ;; *) continue ;; esac
             minor="${tag#docs-v}"
+            # A tag names a path here, so only a minor is taken as one.
+            if ! [[ "$minor" =~ ^[0-9]+\.[0-9]+$ ]]; then continue; fi
             gh release download "$tag" --pattern "$tag.zip" --dir "$RUNNER_TEMP"
             mkdir -p "dist/v$minor"
             unzip -q "$RUNNER_TEMP/$tag.zip" -d "dist/v$minor"

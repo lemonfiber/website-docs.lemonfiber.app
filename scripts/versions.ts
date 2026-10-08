@@ -49,6 +49,5 @@ writeFileSync(
   join(site, "versions.json"),
   `${JSON.stringify(versionsIndex(builds))}\n`,
 );
-console.log(
-  `versions: ${builds.map((one) => `${one.label} at ${one.path}`).join(", ")}`,
-);
+const named = builds.map((one) => one.label + " at " + one.path);
+console.log(`versions: ${named.join(", ")}`);

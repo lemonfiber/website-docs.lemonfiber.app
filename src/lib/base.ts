@@ -63,7 +63,8 @@ export function place(
     prefix !== "" && address.startsWith(`${prefix}/`)
       ? address.slice(prefix.length)
       : address;
-  const path = route.replace(/[#?].*$/s, "");
+  const query = route.search(/[#?]/);
+  const path = query === -1 ? route : route.slice(0, query);
   if (placing.fallback !== null && path.endsWith("/") && !has(path))
     return `${trimmed(placing.fallback)}${route}`;
   return underBase(route, placing.base);
@@ -107,16 +108,16 @@ export async function rebase(
       ),
   );
   const has = (route: string): boolean => routes.has(route);
-  let changed = 0;
-  for (const path of files) {
-    const html = await readFile(path, "utf8");
-    const rebased = withBase(html, placing, has);
-    if (rebased !== html) {
+  const written = await Promise.all(
+    files.map(async (path) => {
+      const html = await readFile(path, "utf8");
+      const rebased = withBase(html, placing, has);
+      if (rebased === html) return false;
       await writeFile(path, rebased);
-      changed += 1;
-    }
-  }
-  return changed;
+      return true;
+    }),
+  );
+  return written.filter(Boolean).length;
 }
 
 /** The integration: once the site is built, its addresses placed. */
