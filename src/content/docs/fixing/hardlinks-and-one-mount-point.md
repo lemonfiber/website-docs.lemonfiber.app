@@ -62,7 +62,7 @@ Every container gets **one** data mount, with subdirectories beneath it. Splitti
 
 This is rejected at manifest validation rather than left to be discovered in production. A stack that describes it raises [`STACK-6`](/fixing/codes/stack/) and names every fault it found in one pass.
 
-The reasoning is recorded in [ADR-0006, a single data mount](/spec/00-overview/decisions/0006-single-data-mount/). [The stack manifest](/advanced/the-stack-manifest/) covers how mounts are declared.
+The reasoning is recorded in [ADR-0006, a single data mount](https://lemonfiber.app/spec/00-overview/decisions/0006-single-data-mount/). [The stack manifest](/advanced/the-stack-manifest/) covers how mounts are declared.
 
 ## Permissions
 
@@ -106,4 +106,4 @@ What you should know before settling for it is the third cost — you cannot see
 - [The data location's codes](/fixing/codes/storage/) — the seven `STORAGE` codes, side by side
 - [Run the doctor](/fixing/run-the-doctor/) — running just the storage category
 - [Your first stack](/start/your-first-stack/) — choosing a data location in the first place
-- [C5, storage and hardlink management](/spec/10-functional/features/c-trust/c5-storage/) — the requirement this is written against
+- [C5, storage and hardlink management](https://lemonfiber.app/spec/10-functional/features/c-trust/c5-storage/) — the requirement this is written against

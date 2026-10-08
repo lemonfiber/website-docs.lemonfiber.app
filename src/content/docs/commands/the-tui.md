@@ -116,7 +116,7 @@ a blank screen.
 
 ## What is specified and not yet built
 
-The [TUI specification](/spec/30-repos/lemonfiber-tui/) describes more screens
+The [TUI specification](https://lemonfiber.app/spec/30-repos/lemonfiber-tui/) describes more screens
 than exist today: a doctor screen with fixes offered inline, a form switcher
 showing the closure preview before it acts, a household screen with invitations
 and terminal QR codes, and the setup wizard as one step per screen with a

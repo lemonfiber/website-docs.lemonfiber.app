@@ -11,7 +11,7 @@ prove what it says. There is no plugin SDK, and that is a decision: a plugin is
 not a client, holds no connection and speaks no protocol, so a library would
 only be a second description of the manifest that could disagree with the
 reader. The reasoning is
-[F10](/spec/10-functional/features/f-extensibility/f10-authoring/).
+[F10](https://lemonfiber.app/spec/10-functional/features/f-extensibility/f10-authoring/).
 
 ## Start from the template
 

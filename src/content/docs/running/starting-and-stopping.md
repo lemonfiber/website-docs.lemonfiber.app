@@ -155,4 +155,4 @@ checks the environment rather than the symptom.
 - [Forms and slices](/running/forms-and-slices/) — what these operations apply to
 - [Stuck downloads](/fixing/stuck-downloads/) — when things are running but nothing moves
 - [Global flags](/commands/global-flags/) — `--json`, `--dry-run`, `--stack-dir` and the rest
-- [B2 Lifecycle control](/spec/10-functional/features/b-running/b2-lifecycle/) — the requirements behind this page
+- [B2 Lifecycle control](https://lemonfiber.app/spec/10-functional/features/b-running/b2-lifecycle/) — the requirements behind this page

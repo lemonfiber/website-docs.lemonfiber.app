@@ -167,5 +167,5 @@ at compile time rather than reaching you. Your own directory is
 [Adding a service](/advanced/adding-a-service/) is the same file from the other
 end. [Running without lemonfiber](/advanced/without-lemonfiber/) is the compose
 project underneath it, and
-[the manifest contract](/spec/20-architecture/contracts/stack-manifest/) is the
+[the manifest contract](https://lemonfiber.app/spec/20-architecture/contracts/stack-manifest/) is the
 normative version of this page.

@@ -20,7 +20,6 @@ const nothing: Sources = {
   vocabulary: "",
   webApi: "",
   webRoute: "",
-  spec: [],
 };
 
 const page = (text: string, path = "src/content/docs/a-page.md"): Page => ({

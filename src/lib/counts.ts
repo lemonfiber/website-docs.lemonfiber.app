@@ -38,8 +38,6 @@ export interface Sources {
   readonly webApi: string;
   /** `vendor/lemonfiber-web/src/lib/route.ts`, the console's own list of screens. */
   readonly webRoute: string;
-  /** Every path under `vendor/spec`, repository-relative. */
-  readonly spec: readonly string[];
 }
 
 /** A shape the prose states a count in. `%N%` stands where the number goes. */

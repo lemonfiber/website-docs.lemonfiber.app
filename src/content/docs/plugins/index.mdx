@@ -21,7 +21,7 @@ in which a plugin could ask for more — no environment, no devices, no kernel
 capabilities, no network mode, no fragment of Compose. A service that needs any
 of that cannot be a plugin; fork the stack with `--stack-dir` instead. The
 reasoning is
-[ADR-0021](/spec/00-overview/decisions/0021-a-plugin-is-data-and-lemonfiber-writes-its-container/).
+[ADR-0021](https://lemonfiber.app/spec/00-overview/decisions/0021-a-plugin-is-data-and-lemonfiber-writes-its-container/).
 
 A plugin **adds and never overrides**. A check it contributes to the doctor runs
 beside the bundled ones under the plugin's own name, and cannot replace,
@@ -107,6 +107,6 @@ and what each refusal means is on
 [the `PLUGIN` codes page](/fixing/codes/plugin/).
 What `lemonfiber plugin installed --json` returns is the `plugins` kind in
 [the API](/api/kinds/). The requirements this section describes are
-[F3 to F11 in the specification](/spec/10-functional/features/f-extensibility/f3-stack-manifests/),
+[F3 to F11 in the specification](https://lemonfiber.app/spec/10-functional/features/f-extensibility/f3-stack-manifests/),
 and how the core is put together behind them is
 [the architecture notes](https://contribute.lemonfiber.app/architecture/).

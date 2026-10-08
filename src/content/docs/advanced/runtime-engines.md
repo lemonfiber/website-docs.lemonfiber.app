@@ -59,7 +59,7 @@ Docker. All three are drafts and none of them is implemented.
 
 ### One interface over several engines
 
-[J1 engine abstraction](/spec/10-functional/features/j-runtime/j1-engine-abstraction/)
+[J1 engine abstraction](https://lemonfiber.app/spec/10-functional/features/j-runtime/j1-engine-abstraction/)
 is the foundation. lemonfiber would detect which engines are installed and
 classify each as usable, present-but-unusable, or absent — usability established
 from an actual round-trip command, never from a socket or a binary merely
@@ -78,7 +78,7 @@ passed.
 
 ### Podman
 
-[J2 Podman](/spec/10-functional/features/j-runtime/j2-podman/) describes two
+[J2 Podman](https://lemonfiber.app/spec/10-functional/features/j-runtime/j2-podman/) describes two
 authoring modes. **Compatibility** drives the existing forms and compose
 descriptions against Podman's Docker-compatible interface. **Native units**,
 Linux only, generate system-managed unit files that reproduce the topology rather
@@ -94,7 +94,7 @@ recipe that worked once still holds.
 
 ### No containers at all
 
-[J3 native](/spec/10-functional/features/j-runtime/j3-native/) is the
+[J3 native](https://lemonfiber.app/spec/10-functional/features/j-runtime/j3-native/) is the
 highest-effort path: services running as host services under the init system,
 with no container engine anywhere. What a shared network namespace gave for free
 would be rebuilt explicitly — a dedicated namespace holding the VPN interface,

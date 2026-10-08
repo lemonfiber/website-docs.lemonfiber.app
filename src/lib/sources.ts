@@ -179,27 +179,6 @@ export const readEndpoints = (webApi: string): string[] => [
   ...new Set(matches(/GET \/api\/([a-z]+)/g, section(webApi, "Reading"))),
 ];
 
-const FEATURE =
-  /^vendor\/spec\/10-functional\/features\/[a-z]-[a-z-]+\/[a-z]\d+-[a-z0-9-]+\.md$/;
-const JOURNEY = /^vendor\/spec\/10-functional\/journeys\/j\d+-[a-z0-9-]+\.md$/;
-const DECISION = /^vendor\/spec\/00-overview\/decisions\/\d{4}-[a-z0-9-]+\.md$/;
-const CONTRACT_SHAPE =
-  /^vendor\/spec\/20-architecture\/contracts\/[a-z0-9-]+\.md$/;
-const SECTION = /^vendor\/spec\/(\d\d-[a-z]+)\//;
-
-const specFiles = (paths: readonly string[], shape: RegExp): string[] =>
-  paths.filter((path) => shape.test(path));
-
-/** The numbered top-level directories the specification is divided into. */
-export const specSections = (paths: readonly string[]): string[] => {
-  const found = new Set<string>();
-  for (const path of paths) {
-    const match = SECTION.exec(path);
-    if (match !== null) found.add(captured(match, 1));
-  }
-  return [...found];
-};
-
 /**
  * Every screen the console has, read from the list it draws its own menu from.
  *
@@ -213,19 +192,3 @@ export const consolePlaces = (route: string): string[] => {
     /export const everyPlace: readonly Place\[\] = \[([^\]]*)\]/.exec(route);
   return said === null ? [] : matches(/"([a-z-]+)"/g, captured(said, 1));
 };
-
-/** Every feature the specification sets out, one file each. */
-export const features = (paths: readonly string[]): string[] =>
-  specFiles(paths, FEATURE);
-
-/** Every end-to-end journey it sets out. */
-export const journeys = (paths: readonly string[]): string[] =>
-  specFiles(paths, JOURNEY);
-
-/** Every architecture decision record it holds. */
-export const decisions = (paths: readonly string[]): string[] =>
-  specFiles(paths, DECISION);
-
-/** Every normative contract it holds. */
-export const contracts = (paths: readonly string[]): string[] =>
-  specFiles(paths, CONTRACT_SHAPE);

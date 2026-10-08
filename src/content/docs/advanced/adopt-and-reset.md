@@ -99,13 +99,13 @@ configuration area, unmanaged — after which lemonfiber observes it but never
 writes to it, and stops reporting drift for it. No subcommand exposes that today;
 the `unmanaged` state above is the different case of a value with no baseline
 yet. The requirement is
-[F1 customisation](/spec/10-functional/features/f-extensibility/f1-customisation/).
+[F1 customisation](https://lemonfiber.app/spec/10-functional/features/f-extensibility/f1-customisation/).
 
 ## Where to go next
 
 The normative account of all of this is
-[C9 drift detection](/spec/10-functional/features/c-trust/c9-drift/), and what
+[C9 drift detection](https://lemonfiber.app/spec/10-functional/features/c-trust/c9-drift/), and what
 seed is actually wiring is
-[D1 service auto-wiring](/spec/10-functional/features/d-content/d1-seed/). If you
+[D1 service auto-wiring](https://lemonfiber.app/spec/10-functional/features/d-content/d1-seed/). If you
 are restoring rather than resetting,
 [backup and restore](/running/backup-and-restore/) is the other direction.

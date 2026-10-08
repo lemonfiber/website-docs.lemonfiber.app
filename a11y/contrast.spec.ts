@@ -3,10 +3,9 @@ import { expect, test } from "@playwright/test";
 
 /**
  * One route of every kind the site serves, in both themes: the landing page,
- * an authored page, a section landing page, a mirrored page, a mirrored page
- * from a repository other than the specification, the error-code index and the
- * longest of the tables it leads to, and the two reference pages rendered from a
- * contract artefact.
+ * an authored page, a section landing page, mirrored pages from two different
+ * repositories, the error-code index and the longest of the tables it leads to,
+ * and the two reference pages rendered from a contract artefact.
  */
 const routes = [
   "/",
@@ -18,9 +17,6 @@ const routes = [
   "/commands/",
   "/api/reference/",
   "/plugins/the-manifest/",
-  "/spec/",
-  "/spec/00-overview/vision/",
-  "/spec/10-functional/features/b-running/b1-forms/",
   "/api/typescript-sdk/",
   "/plugins/the-template/",
 ];

@@ -84,7 +84,6 @@ async function checks(tree: Tree): Promise<Violation[]> {
         ),
         webApi: await text("vendor/spec/20-architecture/contracts/web-api.md"),
         webRoute: await text("vendor/lemonfiber-web/src/lib/route.ts"),
-        spec,
       },
       prose,
     ),

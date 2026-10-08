@@ -86,14 +86,14 @@ If you fork: rename it, bring your own logo, keep the licences and the
 attribution, and say "based on lemonfiber" as a matter of fact. Referring to
 lemonfiber by name needs no permission; using the name or mark as your own
 project's identity does. The policy is
-[trademark and forking](/spec/60-brand/trademark/).
+[trademark and forking](https://lemonfiber.app/spec/60-brand/trademark/).
 
 ## Contributions
 
 Your contribution is licensed under the same licence as the repository it lands
 in. There is no contributor licence agreement and no copyright assignment: you
 keep your copyright, and you licence the work inbound on the terms the project
-ships outbound. See [sign-off and licensing](https://github.com/lemonfiber/spec/blob/main/50-governance/dco.md).
+ships outbound. See [sign-off and licensing](https://lemonfiber.app/spec/50-governance/dco/).
 
 ## The services lemonfiber runs are not affected
 
@@ -112,7 +112,7 @@ clause is consistent with the reciprocity instinct behind the code licence.
 
 ## Related
 
-- [Licence rationale](/spec/90-appendix/license-rationale/) — the full argument, including the per-service breakdown
-- [Trademark and forking](/spec/60-brand/trademark/) — what you may and may not do with the name
-- [Sign-off and licensing](https://github.com/lemonfiber/spec/blob/main/50-governance/dco.md) — the inbound terms for contributions
-- [The colophon](/spec/90-appendix/colophon/) — everything this is built on, credited
+- [Licence rationale](https://lemonfiber.app/spec/90-appendix/license-rationale/) — the full argument, including the per-service breakdown
+- [Trademark and forking](https://lemonfiber.app/spec/60-brand/trademark/) — what you may and may not do with the name
+- [Sign-off and licensing](https://lemonfiber.app/spec/50-governance/dco/) — the inbound terms for contributions
+- [The colophon](https://lemonfiber.app/spec/90-appendix/colophon/) — everything this is built on, credited

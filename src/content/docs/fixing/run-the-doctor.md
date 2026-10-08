@@ -137,4 +137,4 @@ The human report and the parsed one are the same findings. See [global flags](/c
 
 If a finding names a code you do not recognise, [every error by code](/fixing/every-error-by-code/) has it. If the report itself is the confusing part, or nothing in it explains what you are seeing, collect [a support bundle](/fixing/the-support-bundle/) — it carries the diagnosis alongside the logs and configuration that produced it.
 
-The requirement all of this is written against is [C1, diagnostics](/spec/10-functional/features/c-trust/c1-diagnostics/). The full flag list is in [every command](/commands/every-command/).
+The requirement all of this is written against is [C1, diagnostics](https://lemonfiber.app/spec/10-functional/features/c-trust/c1-diagnostics/). The full flag list is in [every command](/commands/every-command/).

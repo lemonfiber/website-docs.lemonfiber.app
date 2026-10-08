@@ -36,7 +36,6 @@ const theTree = (): { sources: Sources; pages: Page[] } => ({
     vocabulary: read("vendor/lemonfiber/contract/capability-vocabulary.json"),
     webApi: read("vendor/spec/20-architecture/contracts/web-api.md"),
     webRoute: read("vendor/lemonfiber-web/src/lib/route.ts"),
-    spec: walk("vendor/spec", () => true),
   },
   pages: walk("src/content/docs", (path) => /\.(md|mdx)$/.test(path)).map(
     (path) => ({ path, text: read(path) }),
@@ -52,7 +51,6 @@ const nothing: Sources = {
   vocabulary: "",
   webApi: "",
   webRoute: "",
-  spec: [],
 };
 
 describe("the tree as it stands", () => {

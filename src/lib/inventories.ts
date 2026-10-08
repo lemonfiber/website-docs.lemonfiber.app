@@ -15,19 +15,14 @@ import { CONTRACT_DIRECTORY } from "./contract.ts";
 import { matches, type Inventory, type Page, type Sources } from "./counts.ts";
 import {
   consolePlaces,
-  contracts,
-  decisions,
-  features,
   globalFlags,
   ids,
-  journeys,
   keysAt,
   namesAt,
   presets,
   readEndpoints,
   serviceNames,
   thirdParty,
-  specSections,
   subcommands,
   variantsAt,
 } from "./sources.ts";
@@ -42,7 +37,6 @@ const POINTS = "vendor/lemonfiber/contract/extension-points.json";
 const VOCABULARY = "vendor/lemonfiber/contract/capability-vocabulary.json";
 const WEB_API = "vendor/spec/20-architecture/contracts/web-api.md";
 const WEB_ROUTE = "vendor/lemonfiber-web/src/lib/route.ts";
-const SPEC = "vendor/spec";
 
 const DOCS = "src/content/docs/";
 const ENVELOPE_PAGE = `${DOCS}api/the-envelope.md`;
@@ -308,36 +302,6 @@ export const INVENTORIES: readonly Inventory[] = [
     source: VOCABULARY,
     members: (sources) => namesAt(sources.vocabulary, "capabilities"),
     claims: [{ says: "%N% core capabilities" }],
-  },
-  {
-    what: "features",
-    source: SPEC,
-    members: (sources) => features(sources.spec),
-    claims: [{ says: "%N% features and" }],
-  },
-  {
-    what: "journeys",
-    source: SPEC,
-    members: (sources) => journeys(sources.spec),
-    claims: [{ says: "%N% end-to-end journeys" }],
-  },
-  {
-    what: "architecture decision records",
-    source: SPEC,
-    members: (sources) => decisions(sources.spec),
-    claims: [{ says: "the %N% architecture decision records" }],
-  },
-  {
-    what: "normative contracts",
-    source: SPEC,
-    members: (sources) => contracts(sources.spec),
-    claims: [{ says: "the %N% normative contracts" }],
-  },
-  {
-    what: "sections of the specification",
-    source: SPEC,
-    members: (sources) => specSections(sources.spec),
-    claims: [{ says: "the %N% sections" }],
   },
   {
     what: "screens the console has",

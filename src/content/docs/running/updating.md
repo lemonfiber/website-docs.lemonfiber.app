@@ -87,7 +87,7 @@ service by itself — the images are still the ones your containers were started
 with until you pull and bring the form up again.
 
 See [Install lemonfiber](/start/install/) for every install route, and
-[E2 Self-update](/spec/10-functional/features/e-maintenance/e2-self-update/)
+[E2 Self-update](https://lemonfiber.app/spec/10-functional/features/e-maintenance/e2-self-update/)
 for the in-place update the binary does not yet perform for itself. Downgrading
 lemonfiber is fine: unlike the service databases, it holds no state that migrates
 irreversibly.
@@ -124,9 +124,9 @@ None of that is in place yet. Until it is, the sequence above — back up, pull,
 bring up, check — is the manual version of the same discipline, and the reason
 this page spends more words on the backup than on the update.
 
-[E1 Stack updates](/spec/10-functional/features/e-maintenance/e1-stack-updates/)
+[E1 Stack updates](https://lemonfiber.app/spec/10-functional/features/e-maintenance/e1-stack-updates/)
 is the requirement set, and [J7
-Upgrading](/spec/10-functional/journeys/j7-upgrading/) is the journey it
+Upgrading](https://lemonfiber.app/spec/10-functional/journeys/j7-upgrading/) is the journey it
 describes.
 
 ## Related

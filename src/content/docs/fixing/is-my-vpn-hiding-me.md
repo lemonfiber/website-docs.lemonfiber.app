@@ -119,5 +119,5 @@ Note that you cannot accept a `leaking` result. Only a warning can be acknowledg
 
 - [The tunnel's codes](/fixing/codes/vpn/) — the eight `VPN` codes, side by side
 - [Run the doctor](/fixing/run-the-doctor/) — verdicts, categories and repairs
-- [C2, VPN verification](/spec/10-functional/features/c-trust/c2-vpn-verification/) — the requirement this is written against
-- [J5, the VPN verification journey](/spec/10-functional/journeys/j5-vpn-verification/) — what a whole run of this looks like
+- [C2, VPN verification](https://lemonfiber.app/spec/10-functional/features/c-trust/c2-vpn-verification/) — the requirement this is written against
+- [J5, the VPN verification journey](https://lemonfiber.app/spec/10-functional/journeys/j5-vpn-verification/) — what a whole run of this looks like

@@ -15,5 +15,4 @@ project.inlang/
 
 # Mirrored trees. The bytes belong to another repository; formatting them here
 # would rewrite files this repository does not own.
-src/content/docs/spec/
 src/content/docs/commands/every-command.md
