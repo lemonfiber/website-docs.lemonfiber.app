@@ -17,7 +17,6 @@ import {
   consolePlaces,
   contracts,
   decisions,
-  enumAt,
   features,
   globalFlags,
   ids,
@@ -44,15 +43,12 @@ const VOCABULARY = "vendor/lemonfiber/contract/capability-vocabulary.json";
 const WEB_API = "vendor/spec/20-architecture/contracts/web-api.md";
 const WEB_ROUTE = "vendor/lemonfiber-web/src/lib/route.ts";
 const SPEC = "vendor/spec";
-const MANIFESTS = `${SPEC}/70-operations/versions/README.md`;
-const FEATURE_SCHEMA = `${SPEC}/10-functional/features/_meta/feature.schema.json`;
 
 const DOCS = "src/content/docs/";
 const ENVELOPE_PAGE = `${DOCS}api/the-envelope.md`;
 const KINDS_PAGE = `${DOCS}api/kinds.md`;
 const TUI_PAGE = `${DOCS}commands/the-tui.md`;
 const CONSOLE_PAGE = `${DOCS}commands/the-web-console.md`;
-const TRAIN_PAGE = `${DOCS}project/the-version-train.md`;
 
 /** One page's prose, or none when the page is not in the tree. */
 const prose = (pages: readonly Page[], path: string): string =>
@@ -318,27 +314,6 @@ export const INVENTORIES: readonly Inventory[] = [
     source: SPEC,
     members: (sources) => features(sources.spec),
     claims: [{ says: "%N% features and" }],
-  },
-  {
-    what: "fields a version manifest carries",
-    source: MANIFESTS,
-    members: (sources) => columnUnder(sources.manifests, "Field"),
-    claims: [],
-    listing: {
-      page: TRAIN_PAGE,
-      members: (text) => columnUnder(text, "Field"),
-    },
-  },
-  {
-    what: "maturities a feature stands at",
-    source: FEATURE_SCHEMA,
-    members: (sources) =>
-      enumAt(sources.featureSchema, "properties", "maturity"),
-    claims: [],
-    listing: {
-      page: TRAIN_PAGE,
-      members: (text) => columnUnder(text, "Maturity"),
-    },
   },
   {
     what: "journeys",

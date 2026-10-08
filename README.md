@@ -28,10 +28,10 @@ rendered from.
 
 The site is read in two topics, each with a sidebar of its own (REPO-R81):
 
-| Topic    | For                                   | Sections                                                     |
-| -------- | ------------------------------------- | ------------------------------------------------------------ |
-| Use      | an operator running lemonfiber        | Start here, running, fixing, commands, advanced, the project |
-| Build on | an integrator writing against its API | the API and the SDKs, plugins, the specification             |
+| Topic    | For                                   | Sections                                         |
+| -------- | ------------------------------------- | ------------------------------------------------ |
+| Use      | an operator running lemonfiber        | Start here, running, fixing, commands, advanced  |
+| Build on | an integrator writing against its API | the API and the SDKs, plugins, the specification |
 
 `TOPICS` in `src/lib/topics.ts` says which section sits under which topic, and
 `src/lib/sections.ts` builds the two sidebars from it through
@@ -40,9 +40,11 @@ frontmatter, `topic: use` or `topic: build`, and the guards refuse a page that
 names none, or names the topic whose sections it does not sit in. A mirrored
 page takes the topic of the section its route sits in.
 
-Contributor material is on the contributor site. Every route this site
-published for it redirects there, or to the specification page that holds the
-rule, from `retired.json` (REPO-R80, REPO-R53).
+Contributor material is on the contributor site, and project status — the
+roadmap, the board, the releases — is on the [frontpage](https://lemonfiber.app),
+which reads it live. Every route this site published for either redirects to
+the page that replaced it, or to the specification page that holds the rule,
+from `retired.json` (REPO-R80, REPO-R53).
 
 Every section has a landing page, and every landing page ends by pointing at the
 sections next to it. Moving between "how do I do this", "why is it broken",

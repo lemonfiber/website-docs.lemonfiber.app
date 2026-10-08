@@ -1,5 +1,5 @@
 {
-  "$comment": "Every route this site published and no longer serves, and where each went. Contributor material lives on the contributor site, and a rule it set out is a page of the specification, linked at its home until the frontpage renders the specification (REPO-R80). The build writes a page at each old route that sends the reader on (REPO-R53). Written out rather than derived: a retired route never changes.",
+  "$comment": "Every route this site published and no longer serves, and where each went. Contributor material lives on the contributor site, and a rule it set out is a page of the specification, linked at its home until the frontpage renders the specification (REPO-R80). Project status lives on the frontpage, which reads it live. The build writes a page at each old route that sends the reader on (REPO-R53). Written out rather than derived: a retired route never changes.",
   "redirects": {
     "/contributing/": "https://contribute.lemonfiber.app/",
     "/contributing/conduct/": "https://contribute.lemonfiber.app/community/conduct/",
@@ -8,7 +8,7 @@
     "/contributing/where-to-ask/": "https://contribute.lemonfiber.app/community/where-to-ask/",
     "/contributing/cite-the-spec/": "https://github.com/lemonfiber/spec/blob/main/50-governance/contributing.md",
     "/contributing/sign-off-and-licensing/": "https://github.com/lemonfiber/spec/blob/main/50-governance/dco.md",
-    "/contributing/rfcs/": "https://github.com/lemonfiber/spec/blob/main/50-governance/rfc-process.md",
+    "/contributing/rfcs/": "https://lemonfiber.app/proposals/",
     "/contributing/ai-contributors/": "https://github.com/lemonfiber/spec/blob/main/50-governance/ai-contributors.md",
     "/contributing/where-does-my-issue-go/": "https://github.com/lemonfiber/spec/blob/main/50-governance/issue-routing.md",
     "/develop/": "https://contribute.lemonfiber.app/",
@@ -36,6 +36,12 @@
     "/develop/repos/sdk-php/": "https://contribute.lemonfiber.app/repos/sdk-php/",
     "/develop/repos/sdk-python/": "https://contribute.lemonfiber.app/repos/sdk-python/",
     "/develop/repos/sdk-ts/": "https://contribute.lemonfiber.app/repos/sdk-ts/",
-    "/develop/repos/web/": "https://contribute.lemonfiber.app/repos/web/"
+    "/develop/repos/web/": "https://contribute.lemonfiber.app/repos/web/",
+    "/project/": "https://lemonfiber.app/roadmap/",
+    "/project/roadmap/": "https://lemonfiber.app/roadmap/",
+    "/project/changelog/": "https://lemonfiber.app/releases/",
+    "/project/the-version-train/": "https://lemonfiber.app/roadmap/",
+    "/project/whats-built/": "https://lemonfiber.app/board/",
+    "/project/licence/": "/start/licence/"
   }
 }

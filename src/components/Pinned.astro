@@ -1,28 +1,32 @@
 ---
 import manifest from "../../mirrors.json";
 import { dayOf, shortSha, type Mirror } from "@lemonfiber/website-kit/mirror";
-import { theProject } from "../lib/project";
+import { revisionAt } from "../lib/checkout";
 import * as m from "../paraglide/messages.js";
 
+/** The repository the API reference is read out of. */
+const CORE = "lemonfiber";
+
 const mirrors = manifest.mirrors as readonly Mirror[];
+const label = mirrors.find((mirror) => mirror.repo === CORE)?.label ?? CORE;
 
-/** How the site names a repository, taken from the manifest that pins it. */
-const labelOf = (repo: string): string =>
-  mirrors.find((mirror) => mirror.repo === repo)?.label ?? repo;
-
-const stamps = theProject().pinned.map((pin) =>
-  m.pinned_at({
-    repo: labelOf(pin.repo),
-    revision: shortSha(pin.sha),
-    date: dayOf(pin.date),
-  }),
-);
+// The checkout is the working directory: Astro runs its build from the project
+// root, and a module's own location is rewritten by the bundler.
+const revision = revisionAt(`vendor/${CORE}`);
+const stamp =
+  revision === null
+    ? null
+    : m.pinned_at({
+        repo: label,
+        revision: shortSha(revision.sha),
+        date: dayOf(revision.date),
+      });
 ---
 
-{stamps.length > 0 && (
+{stamp !== null && (
   <p class="pinned">
     <strong>{m.pinned_lead()}</strong>
-    <span>{stamps.join(" · ")}</span>
+    <span>{stamp}</span>
   </p>
 )}
 
