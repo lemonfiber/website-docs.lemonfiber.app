@@ -142,6 +142,7 @@ describe("invocationsIn", () => {
       "lemonfiber doctor # all of it",
       "lemonfiber up \\",
       "  --dry-run",
+      "lemonfiber --stack-dir <PATH> ps > out.txt",
       "```",
       "",
       "```console",
@@ -162,6 +163,7 @@ describe("invocationsIn", () => {
       ["--stack-dir", "./mine", "ps"],
       ["doctor"],
       ["up", "--dry-run"],
+      ["--stack-dir", "<PATH>", "ps"],
       ["version"],
       ["plugin"],
     ]);
@@ -169,7 +171,7 @@ describe("invocationsIn", () => {
       text.slice(found[1]?.index).trimStart().startsWith("lemonfiber --stack"),
     ).toBe(true);
     expect(
-      text.slice(found[4]?.index).trimStart().startsWith("lemonfiber version"),
+      text.slice(found[5]?.index).trimStart().startsWith("lemonfiber version"),
     ).toBe(true);
   });
 });

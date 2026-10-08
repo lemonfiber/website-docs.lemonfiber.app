@@ -162,8 +162,13 @@ const CALLED = /(?:^|[\s;&|(])lemonfiber(?=\s|$)/g;
 /** Where the words of a command end: a pipe, a redirect, a comment. */
 const ENDS = /[;&|#>)]/;
 
+/** A word a reader replaces with a value: `<PATH>`, whose `>` redirects nothing. */
+const ANGLED = /<[A-Za-z][\w@.:-]*>/g;
+
 const wordsAfter = (text: string): string[] => {
-  const end = text.search(ENDS);
+  const end = text
+    .replaceAll(ANGLED, (word) => "_".repeat(word.length))
+    .search(ENDS);
   return (end === -1 ? text : text.slice(0, end))
     .split(/\s+/)
     .filter((word) => word !== "" && word !== "\\");

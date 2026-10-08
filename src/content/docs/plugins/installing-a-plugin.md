@@ -1,7 +1,7 @@
 ---
 title: Installing a plugin
 topic: build
-description: Rehearse an install, make it, and take it back off — and what each step checks before it counts as done.
+description: Ask for an install's offer, take it, and take the plugin back off — and what each step checks before it counts as done.
 sidebar:
   order: 1
 ---
@@ -22,29 +22,36 @@ adding a service (`service.add`) or watching its health
 (`service.health.http`), is refused, and the refusal names what it asked for.
 Every plugin in the catalogue adds a service, so none of them installs yet.
 
-## Rehearse it first
+## Ask for the offer
 
 ```sh
-lemonfiber plugin install ./my-plugin --dry-run
+lemonfiber plugin install ./my-plugin
 ```
 
-A rehearsal settles everything the real install would settle and writes nothing.
-It says which services would run and from which image and digest, where each is
-published, what it would mount, what capabilities it would fill, which settings
-it would change, what secrets it would hold, what it may reach, and which proofs
-it would have to pass. Read this before a stranger's service is on your machine:
-it is the whole of what the plugin can do, because a manifest has no field for
-anything more.
+Named on its own, `install` settles everything the real install would settle and
+writes nothing. It says which services would run and from which image and
+digest, where each is published, what it would mount, what capabilities it would
+fill, which settings it would change, what secrets it would hold, what it may
+reach, and which proofs it would have to pass. Read this before a stranger's
+service is on your machine: it is the whole of what the plugin can do, because a
+manifest has no field for anything more. It ends by printing a name for the
+offer.
 
 The same account, without anything on the stack, comes from
 `lemonfiber plugin claims <path>`, which is the author's check — see
 [writing a plugin](/plugins/writing-a-plugin/).
 
-## Install it
+## Take it
 
 ```sh
-lemonfiber plugin install ./my-plugin
+lemonfiber plugin install ./my-plugin --offer <NAME>
 ```
+
+Answering with the offer's name is the yes. The source is read again first, and
+an answer given for a different reading is refused, naming what moved
+(`PLUGIN-25`). Every value a recipe would send to another host is listed in the
+offer, and each is approved as itself with `--approve <VALUE@DESTINATION>`, once
+for each.
 
 The manifest is held to the published schema, capability vocabulary and
 extension points before anything is written, and a refusal is total: none of it
@@ -62,7 +69,10 @@ is the plugin written into the record of what is installed, `plugins.json` in
 lemonfiber's configuration directory. A plugin can therefore never be recorded
 as installed without having proved itself.
 
-Installing over a plugin that is already installed is refused: that is an update.
+Installing a plugin that is already installed is refused. From the same source
+it is an update, and the refusal says so (`PLUGIN-5`). From another source it is
+a second plugin under a name the first already holds, and the refusal names both
+sources and leaves which one runs to you (`PLUGIN-14`).
 
 ## See what is installed
 
@@ -82,10 +92,14 @@ read is refused rather than reported as _no plugins_.
 ## Update it
 
 ```sh
-lemonfiber plugin update ./my-plugin
+lemonfiber plugin update my-plugin ./my-plugin
 ```
 
-One operation, not a removal followed by an install you have to get right. The
+The first word is the plugin's id, as `plugin installed` lists it, and the second
+is the new version's source, any an install takes. Named on its own it says what
+would go back, what the new version would write and prove, and what would stop
+meanwhile, and prints a name for that offer; answering with `--offer <NAME>` is
+the yes. One operation, not a removal followed by an install you have to get right. The
 installed version comes off the way a removal takes it, the new one goes on the
 way an install puts it on — proved, and held against the stack's checks as they
 read before the update began — and the record is written last. If the new
@@ -99,7 +113,9 @@ lemonfiber plugin remove my-plugin
 ```
 
 Removal takes the plugin's id, as `plugin installed` lists it, and puts back
-everything installing it wrote. It is the rollback layer's work with a name on
+everything installing it wrote. Named on its own it says what it would stop, what
+it would put back and what the machine would be left without, and prints a name
+for that offer; answering with `--offer <NAME>` is the yes. It is the rollback layer's work with a name on
 it, so it refuses what that layer refuses: a setting you edited by hand since the
 install is left alone rather than overwritten, and a change something later
 depends on waits until that goes back first. Where a change re-pointed where data
@@ -109,8 +125,8 @@ There is no _disable_. A plugin is installed or it is not.
 
 ## When it goes wrong
 
-`install`, `update` and `remove` each accept `--dry-run`, and a rehearsal exits
-zero. A real run exits non-zero when an install went back, an update did not
+`install`, `update` and `remove` each accept `--dry-run`, which answers an offer
+the same way and writes nothing, and a rehearsal exits zero. A real run exits non-zero when an install went back, an update did not
 hold, or a removal left something standing. Every refusal carries a code in the
 `PLUGIN` family; what each means and what to do is on
 [the `PLUGIN` codes page](/fixing/codes/plugin/).

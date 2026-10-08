@@ -22,6 +22,8 @@
   "ref_type": "Type",
   "ref_required": "Required",
   "ref_meaning": "What it is",
+  "envelope_by_kind": "the payload `kind` names",
+  "kinds_summary": "In one line",
   "ref_yes": "yes",
   "ref_no": "no",
   "ref_array_of": "array of",

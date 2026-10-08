@@ -40,7 +40,8 @@ Read that list when you upgrade.
 A stack carries version numbers of its own, `schema_version` and
 `stack_version`, and they belong to `stack.toml`, not to the wire. They are on
 [the stack manifest](/advanced/the-stack-manifest/). `lemonfiber version` reports
-the binary and the stack it carries.
+the binary, the stack it operates, the manifest schema generations it reads, what the container engine reports
+where it can be asked, and what each release changed.
 
 ## Where to go next
 

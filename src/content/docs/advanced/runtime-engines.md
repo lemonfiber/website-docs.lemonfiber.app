@@ -17,15 +17,19 @@ Two routes, deliberately, and the split is not an accident of history.
 images are Compose invocations, so what lemonfiber does to your stack is
 something you can run yourself, and `--dry-run` can print it.
 
-**Reads go through the engine's own API.** Four things are asked of the daemon
-directly, each because Compose is the wrong instrument for it.
+**Reads go through the engine's own API.** At about one poll a second across
+twenty-two services, spawning a process for every look would be wasteful and
+visibly jittery.
 
-| What is asked                    | Why not Compose                                               |
-| -------------------------------- | ------------------------------------------------------------- |
-| List containers                  | One poll per second across twenty-two services                |
-| Read logs                        | It streams, and Compose cannot narrow to a service list       |
-| Read resource statistics         | Compose has no equivalent                                     |
-| Run a command inside a container | The leak test runs the same command in two network namespaces |
+| What is asked                                            | What it is for                                                                                                                                  |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| The project's containers                                 | What is running, and how it is                                                                                                                  |
+| Their logs                                               | The log viewer, and the last lines of a service that would not start. A stream is opened only for the services asked for                        |
+| Their resource use                                       | What each service is costing                                                                                                                    |
+| A command run inside one                                 | The leak test runs the same command in the VPN container and the torrent client, and compares the addresses they report                         |
+| The images it has pulled, and the projects built on each | Which other stacks share the machine and the ports they hold, before a start and in the migration survey; and which images `uninstall` may take |
+| Whether a path is on its machine                         | With an engine on another machine, a data location your own machine has and the server lacks is refused before anything runs                    |
+| What a container has mounted                             | A copy of lemonfiber running in a container refuses to start a stack whose paths the machine does not share                                     |
 
 The client is built on first use rather than at construction. The API version has
 to be settled with the daemon before anything is asked of it, and settling it is
