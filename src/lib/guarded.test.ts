@@ -27,30 +27,23 @@ describe("what a guard reads", () => {
     }
   });
 
-  it("reaches into the tap, which held no guarded path before", () => {
-    expect(watched(GUARDED, ["vendor/homebrew-tap"])).toEqual([
-      { module: "vendor/homebrew-tap", path: "Formula" },
-    ]);
-  });
-
-  it("reaches into brand, which held no guarded path before", () => {
-    expect(watched(GUARDED, ["vendor/brand"])).toEqual([
-      { module: "vendor/brand", path: "tokens/tokens.css" },
-    ]);
-  });
-
-  it("reaches into the org, which held no guarded path before", () => {
-    expect(watched(GUARDED, ["vendor/org"])).toEqual([
-      { module: "vendor/org", path: "" },
-    ]);
-  });
-
-  it("reaches into the web surface, which held no guarded path before", () => {
-    expect(watched(GUARDED, ["vendor/lemonfiber-web"])).toEqual([
-      { module: "vendor/lemonfiber-web", path: "package.json" },
-      { module: "vendor/lemonfiber-web", path: "src/lib/route.ts" },
-    ]);
-  });
+  it.each([
+    ["the tap", "vendor/homebrew-tap", ["Formula"]],
+    ["brand", "vendor/brand", ["tokens/tokens.css"]],
+    ["the org", "vendor/org", [""]],
+    [
+      "the web surface",
+      "vendor/lemonfiber-web",
+      ["package.json", "src/lib/route.ts"],
+    ],
+  ])(
+    "reaches into %s, which held no guarded path before",
+    (_, module, paths) => {
+      expect(watched(GUARDED, [module])).toEqual(
+        paths.map((path) => ({ module, path })),
+      );
+    },
+  );
 
   it("watches the artefact that made a page wrong while its guard stayed green", () => {
     expect(watched(GUARDED, ["vendor/lemonfiber"])).toContainEqual({

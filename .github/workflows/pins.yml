@@ -268,10 +268,14 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version-file: .nvmrc
+          cache: npm
 
-      # No install step. The check imports the declarations themselves and
-      # nothing from `node_modules`, so the node this repository declares is
-      # the whole of what it needs.
+      # The check is the kit's, taken by commit, so it is installed exactly
+      # as the lockfile says. Nothing here holds a secret for an install to
+      # reach.
+      - name: Install exactly what the lockfile says
+        run: npm ci --ignore-scripts
+
       - name: Which pins have gone behind on a source this site renders
         id: report
         env:
