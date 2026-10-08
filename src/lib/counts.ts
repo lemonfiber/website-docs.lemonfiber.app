@@ -164,7 +164,8 @@ export function matches(pattern: RegExp, text: string): string[] {
   return found;
 }
 
-const at = (
+/** A violation at a place in a file, or in the file as a whole. */
+export const at = (
   where: string,
   line: number | null,
   message: string,
@@ -178,7 +179,8 @@ const at = (
 const named = (all: readonly string[]): string =>
   [...new Set(all)].sort((a, b) => a.localeCompare(b)).join(", ");
 
-const lineAt = (text: string, index: number): number =>
+/** The line, counted from one, that a position in a text falls on. */
+export const lineAt = (text: string, index: number): number =>
   text.slice(0, index).split("\n").length;
 
 /**

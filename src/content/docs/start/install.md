@@ -62,14 +62,15 @@ better to say so than to give you a command that fails.
 
 ### The shell installer
 
-Every release is a **pre-release**, so `releases/latest/` does not resolve. Name
-the tag you want — the newest is on the
-[releases page](https://github.com/lemonfiber/lemonfiber/releases):
-
 ```sh
 $ curl --proto '=https' --tlsv1.2 -LsSf \
-    https://github.com/lemonfiber/lemonfiber/releases/download/v0.16.0/lemonfiber-installer.sh | sh
+    https://github.com/lemonfiber/lemonfiber/releases/latest/download/lemonfiber-installer.sh | sh
 ```
+
+`releases/latest/` is the newest release that is not marked a pre-release. For
+a particular version, put `download/v<version>` in place of `latest/download`.
+Every version is on the
+[releases page](https://github.com/lemonfiber/lemonfiber/releases).
 
 The archives sit beside it on the same release, if you would rather check a
 checksum and unpack one yourself.
@@ -97,8 +98,9 @@ If you have already cloned without `--recurse-submodules`, run
 
 ```console
 $ lemonfiber --version
-lemonfiber 0.16.0
 ```
+
+It prints `lemonfiber` and the version you installed.
 
 `lemonfiber version` says more: the version of the binary and the version of
 the stack it carries.
