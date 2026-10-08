@@ -1,5 +1,6 @@
 ---
 title: QUAL — quality against what is available
+topic: use
 description: Every QUAL code lemonfiber raises, what it means, and what to do about it.
 sidebar:
   hidden: true

@@ -1,5 +1,6 @@
 ---
 title: Runtime engines
+topic: use
 description: What actually drives the containers today, and the Podman and container-free paths that are specified but not yet built.
 sidebar:
   order: 6
@@ -48,8 +49,8 @@ socket that answers the engine's API with whatever a test wants to say, which
 drives the connection, the request, the decoding and the mapping in one pass. A
 test that required a real daemon would make the coverage gate depend on what
 happened to be running. The mechanics are in
-[the engine API notes](/develop/architecture/engine-api/), and the seam it sits
-behind is [ports and adapters](/develop/architecture/ports-and-adapters/).
+[the engine API notes](https://contribute.lemonfiber.app/architecture/engine-api/), and the seam it sits
+behind is [ports and adapters](https://contribute.lemonfiber.app/architecture/ports-and-adapters/).
 
 ## What is specified and not yet built
 
@@ -112,5 +113,5 @@ abstraction the container was giving you.
 
 [Running without lemonfiber](/advanced/without-lemonfiber/) is the other way to
 take the engine into your own hands, and it works today.
-[The architecture notes](/develop/architecture/) cover how the core is put
+[The architecture notes](https://contribute.lemonfiber.app/architecture/) cover how the core is put
 together behind these seams.

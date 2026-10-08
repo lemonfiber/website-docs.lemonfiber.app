@@ -1,5 +1,6 @@
 ---
 title: Global flags
+topic: use
 description: The six flags every lemonfiber subcommand accepts, the ones that only look global, and what the environment decides.
 sidebar:
   order: 1

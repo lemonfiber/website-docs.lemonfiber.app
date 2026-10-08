@@ -1,5 +1,6 @@
 ---
 title: REISSUE — letting somebody set a new password
+topic: use
 description: Every REISSUE code lemonfiber raises, what it means, and what to do about it.
 sidebar:
   hidden: true

@@ -12,20 +12,16 @@
 
 import { FAMILIES, INDEX, isFamilyPage } from "./codes.ts";
 import { matches, type Inventory, type Page, type Sources } from "./counts.ts";
-import { captured } from "@lemonfiber/website-kit/mirror";
 import {
   consolePlaces,
-  consumes,
   contracts,
   decisions,
   enumAt,
   features,
   globalFlags,
-  governed,
   ids,
   journeys,
   keysAt,
-  mirrored,
   namesAt,
   presets,
   readEndpoints,
@@ -35,7 +31,7 @@ import {
   subcommands,
   variantsAt,
 } from "./sources.ts";
-import { columnUnder, firstColumnUnder, namesUnder } from "./tables.ts";
+import { columnUnder, firstColumnUnder } from "./tables.ts";
 
 const STACK = "vendor/lemonfiber-media-stack/stack.toml";
 const CONTRACT = "vendor/lemonfiber/contract/web-api.contract.json";
@@ -45,9 +41,6 @@ const QUALITY = "vendor/lemonfiber/reference/commands/quality.md";
 const POINTS = "vendor/lemonfiber/contract/extension-points.json";
 const VOCABULARY = "vendor/lemonfiber/contract/capability-vocabulary.json";
 const WEB_API = "vendor/spec/20-architecture/contracts/web-api.md";
-const MIRRORS = "mirrors.json";
-const REPOS = "vendor/spec/30-repos/repos.toml";
-const WEB_MANIFEST = "vendor/lemonfiber-web/package.json";
 const WEB_ROUTE = "vendor/lemonfiber-web/src/lib/route.ts";
 const SPEC = "vendor/spec";
 const MANIFESTS = `${SPEC}/70-operations/versions/README.md`;
@@ -58,7 +51,6 @@ const ENVELOPE_PAGE = `${DOCS}api/the-envelope.md`;
 const KINDS_PAGE = `${DOCS}api/kinds.md`;
 const TUI_PAGE = `${DOCS}commands/the-tui.md`;
 const CONSOLE_PAGE = `${DOCS}commands/the-web-console.md`;
-const REPO_MAP_PAGE = `${DOCS}develop/repo-map.md`;
 const TRAIN_PAGE = `${DOCS}project/the-version-train.md`;
 
 /** One page's prose, or none when the page is not in the tree. */
@@ -68,12 +60,6 @@ const prose = (pages: readonly Page[], path: string): string =>
 /** The endpoints a page sets out one per row, named the way the contract names them. */
 const endpointsListed = (text: string): string[] =>
   matches(/^GET \/api\/([a-z]+)/gm, columnUnder(text, "Endpoint").join("\n"));
-
-/** The repositories a page says the web surface consumes. */
-const consumedByWeb = (text: string): string[] => {
-  const said = /`lemonfiber-web` consumes ([^*]+)\*\*/.exec(text);
-  return said === null ? [] : matches(/`([^`]+)`/g, captured(said, 1));
-};
 
 /** The payload kinds `api/kinds.md` sets out field by field, as its headings. */
 const expandedKinds = (sources: Sources, pages: readonly Page[]): string[] => {
@@ -378,16 +364,6 @@ export const INVENTORIES: readonly Inventory[] = [
     claims: [{ says: "the %N% sections" }],
   },
   {
-    what: "repositories the web surface consumes",
-    source: WEB_MANIFEST,
-    members: (sources) => consumes(sources.webManifest),
-    claims: [],
-    listing: {
-      page: REPO_MAP_PAGE,
-      members: consumedByWeb,
-    },
-  },
-  {
     what: "screens the console has",
     source: WEB_ROUTE,
     members: (sources) => consolePlaces(sources.webRoute),
@@ -402,26 +378,6 @@ export const INVENTORIES: readonly Inventory[] = [
           (at) => at.replace("/", "") || "overview",
         ),
     },
-  },
-  {
-    what: "repositories the specification governs",
-    source: REPOS,
-    members: (sources) => governed(sources.repos),
-    claims: [
-      { says: "lemonfiber is %N% repositories" },
-      { says: "The %N% repositories in the lemonfiber org" },
-      { says: "^## The %N%$" },
-    ],
-    listing: {
-      page: REPO_MAP_PAGE,
-      members: (text) => namesUnder(text, "Repository"),
-    },
-  },
-  {
-    what: "repositories this site renders",
-    source: MIRRORS,
-    members: (sources) => mirrored(sources.mirrors),
-    claims: [{ says: "%N% repositories feed this site" }],
   },
   {
     what: "panels on the dashboard screen",

@@ -1,5 +1,6 @@
 ---
 title: The terminal interface
+topic: use
 description: The dashboard and the scrollable log viewer, the keys they answer to, and how they degrade.
 sidebar:
   order: 2

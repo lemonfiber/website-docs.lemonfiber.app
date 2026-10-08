@@ -1,5 +1,6 @@
 ---
 title: TELLING — what the household is told about
+topic: use
 description: Every TELLING code lemonfiber raises, what it means, and what to do about it.
 sidebar:
   hidden: true

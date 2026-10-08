@@ -1,1 +1,0 @@
-../../../../../vendor/homebrew-tap/README.md

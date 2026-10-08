@@ -1,5 +1,6 @@
 ---
 title: Two version numbers
+topic: build
 description: The package version and the wire version do different jobs, and conflating them is the mistake to avoid.
 sidebar:
   order: 5

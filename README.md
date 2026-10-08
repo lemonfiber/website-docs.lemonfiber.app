@@ -1,7 +1,8 @@
 # website-docs.lemonfiber.app
 
 The lemonfiber documentation site: how to install lemonfiber, run a media stack,
-fix it when something is wrong, and build on it.
+fix it when something is wrong, and build on it. Changing lemonfiber itself is
+on [the contributor site](https://contribute.lemonfiber.app).
 
 Published at [docs.lemonfiber.app](https://docs.lemonfiber.app).
 
@@ -23,12 +24,25 @@ The specification is one of those mirrors. It is authored and checked in
 points at the repository that owns it, and its footer names the revision it was
 rendered from.
 
-## Ten sections, and the specification
+## Two topics
 
-`src/lib/sections.ts` is the sidebar. The ten authored sections address three
-audiences in order — someone using the tool, someone building on it, someone
-changing it — and the specification is rendered alongside them rather than
-linked away to a site of its own.
+The site is read in two topics, each with a sidebar of its own (REPO-R81):
+
+| Topic    | For                                   | Sections                                                     |
+| -------- | ------------------------------------- | ------------------------------------------------------------ |
+| Use      | an operator running lemonfiber        | Start here, running, fixing, commands, advanced, the project |
+| Build on | an integrator writing against its API | the API and the SDKs, plugins, the specification             |
+
+`TOPICS` in `src/lib/topics.ts` says which section sits under which topic, and
+`src/lib/sections.ts` builds the two sidebars from it through
+`starlight-sidebar-topics`. Every authored page names its topic in its
+frontmatter, `topic: use` or `topic: build`, and the guards refuse a page that
+names none, or names the topic whose sections it does not sit in. A mirrored
+page takes the topic of the section its route sits in.
+
+Contributor material is on the contributor site. Every route this site
+published for it redirects there, or to the specification page that holds the
+rule, from `retired.json` (REPO-R80, REPO-R53).
 
 Every section has a landing page, and every landing page ends by pointing at the
 sections next to it. Moving between "how do I do this", "why is it broken",
@@ -137,13 +151,10 @@ site's own, from `src/lib/`. Together they enforce:
   the submodule the brand pages are rendered from, and the npm package the
   stylesheet imports — and the two are compared with each other as well, which
   is the disagreement the lockfile rule cannot see.
-- **Every community health file the org publishes has a page here.** The mirror
-  rule catches a symlink pointing at a file that is not there. This catches the
-  other direction: a file GitHub serves for every repository in the org that no
-  page here renders, which is how the contributing section would quietly stop
-  being all of it.
+- **Every authored page names its topic**, and the topic is the one its section
+  sits under.
 
-The mirrors are declared in `mirrors.json`, which is what the last two rules
+The mirrors are declared in `mirrors.json`, which is what the mirror rules
 check against. A tree mirror's own root route is the one place an owned page may
 sit beside a mirror: it is the section landing page, and nothing upstream
 renders there.
@@ -181,9 +192,7 @@ are. Three failures are reported, not one:
 Some numbers on this site are not derivable from anything vendored and are not
 checked: the four codes raised as `critical` and the code-to-exit-code mapping
 on `fixing/every-error-by-code`, because no artefact says which severity or
-which exit any one code carries. Those stay hand-held. The repositories in the
-org were on this list until the specification began keeping a register of them,
-`30-repos/repos.toml`; the repository map is now held to it in both directions.
+which exit any one code carries. Those stay hand-held.
 
 ### When a source moves under its guard
 

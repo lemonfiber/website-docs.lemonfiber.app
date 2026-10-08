@@ -35,9 +35,6 @@ const theTree = (): { sources: Sources; pages: Page[] } => ({
     extensionPoints: read("vendor/lemonfiber/contract/extension-points.json"),
     vocabulary: read("vendor/lemonfiber/contract/capability-vocabulary.json"),
     webApi: read("vendor/spec/20-architecture/contracts/web-api.md"),
-    mirrors: read("mirrors.json"),
-    repos: read("vendor/spec/30-repos/repos.toml"),
-    webManifest: read("vendor/lemonfiber-web/package.json"),
     webRoute: read("vendor/lemonfiber-web/src/lib/route.ts"),
     manifests: read("vendor/spec/70-operations/versions/README.md"),
     featureSchema: read(
@@ -58,9 +55,6 @@ const nothing: Sources = {
   extensionPoints: "",
   vocabulary: "",
   webApi: "",
-  mirrors: "",
-  repos: "",
-  webManifest: "",
   webRoute: "",
   manifests: "",
   featureSchema: "",
@@ -218,27 +212,6 @@ describe("a contract that has gained a read endpoint", () => {
   });
 });
 
-describe("a manifest that is not what it should be", () => {
-  const repos = (mirrors: string): number =>
-    countViolations(INVENTORIES, { ...nothing, mirrors }, []).filter((one) =>
-      one.message.includes("no repositories this site renders found"),
-    ).length;
-
-  it("reads nothing out of one that is not an object", () => {
-    expect(repos("[1, 2]")).toBe(1);
-  });
-
-  it("reads nothing out of one whose mirrors are not a list", () => {
-    expect(repos('{"mirrors": "some"}')).toBe(1);
-  });
-
-  it("reads the repositories out of one that is", () => {
-    expect(
-      repos('{"mirrors": [{"repo": "a"}, {"repo": "a"}, {"repo": "b"}]}'),
-    ).toBe(0);
-  });
-});
-
 describe("namesAt", () => {
   it("names every entry of the array at a path", () => {
     expect(
@@ -389,61 +362,5 @@ describe("consolePlaces", () => {
 
   it("gives nothing for a file it cannot read", () => {
     expect(consolePlaces("")).toEqual([]);
-  });
-});
-
-describe("what the web surface consumes", () => {
-  const MAP = "src/content/docs/develop/repo-map.md";
-
-  const webManifest = JSON.stringify({
-    dependencies: {
-      "@lemonfiber/brand": "github:lemonfiber/brand#abc",
-      "@lemonfiber/sdk-ts": "github:lemonfiber/sdk-ts#def",
-    },
-    devDependencies: { svelte: "^5" },
-  });
-
-  const about = (text: string, manifest = webManifest): string[] =>
-    countViolations(INVENTORIES, { ...nothing, webManifest: manifest }, [
-      { path: MAP, text },
-    ])
-      .filter((one) => one.where === MAP)
-      .map((one) => one.message);
-
-  const SAYS = "**`lemonfiber-web` consumes `sdk-ts` and `brand`**, and is";
-
-  it("says nothing where the map names exactly what the manifest requires", () => {
-    expect(about(SAYS)).toEqual([]);
-  });
-
-  it("names the one the map has dropped", () => {
-    expect(about("**`lemonfiber-web` consumes `sdk-ts`**, and is")).toEqual([
-      expect.stringContaining("has these and the page does not: brand"),
-    ]);
-  });
-
-  it("names one the map states that the manifest does not require", () => {
-    expect(
-      about(
-        "**`lemonfiber-web` consumes `sdk-ts`, `brand` and `svelte`**, and",
-      ),
-    ).toEqual([expect.stringContaining("the page has these and")]);
-  });
-
-  it("finds nothing where the sentence has been reworded", () => {
-    expect(
-      about("**`lemonfiber-web` is built on the client and the tokens**"),
-    ).toEqual([
-      expect.stringContaining("has these and the page does not: brand, sdk-ts"),
-    ]);
-  });
-
-  it("keeps the name of a dependency from outside the org", () => {
-    expect(
-      about(SAYS, JSON.stringify({ dependencies: { svelte: "^5" } })),
-    ).toEqual([
-      expect.stringContaining("has these and the page does not: svelte"),
-      expect.stringContaining("the page has these and"),
-    ]);
   });
 });

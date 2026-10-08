@@ -9,7 +9,6 @@
  * Pure functions over text.
  */
 
-import { matches } from "./counts.ts";
 import { captured } from "@lemonfiber/website-kit/mirror";
 
 /** A cell as a reader reads it: whatever marked it up, taken off. */
@@ -60,17 +59,3 @@ export const columnUnder = (text: string, header: string): string[] => [
 /** Only the first such table, where a later one lists something else. */
 export const firstColumnUnder = (text: string, header: string): string[] =>
   tablesUnder(text, header).map((rows) => rows.map(bare))[0] ?? [];
-
-/**
- * Every name written as code in the first column of the tables headed `header`.
- *
- * For a column whose rows group several names together and say something about
- * them in the same breath. What is code is a name and what is not is the
- * sentence carrying it, so a row may read as English and still be counted
- * exactly.
- */
-export const namesUnder = (text: string, header: string): string[] => [
-  ...new Set(
-    matches(/`([^`]+)`/g, tablesUnder(text, header).flat().join("\n")),
-  ),
-];

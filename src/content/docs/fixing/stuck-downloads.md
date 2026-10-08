@@ -1,5 +1,6 @@
 ---
 title: Stuck downloads
+topic: use
 description: Why a queue jams, how to tell the six ways apart, and what fixes each of them.
 sidebar:
   order: 4

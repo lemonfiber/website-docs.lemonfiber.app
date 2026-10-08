@@ -1,5 +1,6 @@
 ---
 title: WIRE — choosing what fills a capability
+topic: use
 description: Every WIRE code lemonfiber raises, what it means, and what to do about it.
 sidebar:
   hidden: true

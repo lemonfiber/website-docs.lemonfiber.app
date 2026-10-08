@@ -1,5 +1,6 @@
 ---
 title: Adding a service
+topic: use
 description: Three data edits and no code — a compose fragment, a manifest entry, and the forms that should carry it.
 sidebar:
   order: 2
@@ -125,6 +126,6 @@ reports which features become unavailable; it does not refuse to run.
 [The stack manifest](/advanced/the-stack-manifest/) is the field-by-field
 reference. [Running without lemonfiber](/advanced/without-lemonfiber/) is the
 compose project on its own, and
-[the media-stack repository](/develop/repos/media-stack/) is where these files
+[the media-stack repository](https://contribute.lemonfiber.app/repos/media-stack/) is where these files
 live. The specification for this is
 [F3 stack manifests](/spec/10-functional/features/f-extensibility/f3-stack-manifests/).

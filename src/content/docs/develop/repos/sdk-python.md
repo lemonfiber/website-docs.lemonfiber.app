@@ -1,1 +1,0 @@
-../../../../../vendor/sdk-python/README.md

@@ -1,5 +1,6 @@
 ---
 title: REMOVE — taking somebody out of the household
+topic: use
 description: Every REMOVE code lemonfiber raises, what it means, and what to do about it.
 sidebar:
   hidden: true

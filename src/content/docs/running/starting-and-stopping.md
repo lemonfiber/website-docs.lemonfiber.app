@@ -1,5 +1,6 @@
 ---
 title: Starting and stopping
+topic: use
 description: Up, down, switch and restart — what each one will affect before it acts, and why "started" means usable rather than merely running.
 sidebar: { order: 3 }
 ---

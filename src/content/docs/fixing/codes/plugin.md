@@ -1,5 +1,6 @@
 ---
 title: PLUGIN — installing and running plugins
+topic: use
 description: Every PLUGIN code lemonfiber raises, what it means, and what to do about it.
 sidebar:
   hidden: true

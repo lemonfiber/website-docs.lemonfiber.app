@@ -1,5 +1,6 @@
 ---
 title: The stack manifest
+topic: use
 description: stack.toml is everything lemonfiber knows about the services — profiles, forms, service declarations, and what validation refuses.
 sidebar:
   order: 1

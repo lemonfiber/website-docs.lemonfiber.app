@@ -1,5 +1,6 @@
 ---
 title: Backup and restore
+topic: use
 description: Make your configuration recoverable so it stops being precious — what gets captured, what does not, and how to put it back.
 sidebar: { order: 7 }
 ---

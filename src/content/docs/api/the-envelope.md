@@ -1,5 +1,6 @@
 ---
 title: The envelope
+topic: build
 description: The three fields every machine-readable payload arrives in, and the rules a client keeps that no schema can express.
 sidebar:
   order: 1

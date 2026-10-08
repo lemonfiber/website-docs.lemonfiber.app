@@ -1,5 +1,6 @@
 ---
 title: Remote access
+topic: use
 description: Watching from outside the home without opening a port you do not understand. Specified in full, and not yet built.
 sidebar:
   order: 5

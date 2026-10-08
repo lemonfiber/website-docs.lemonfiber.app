@@ -1,5 +1,6 @@
 ---
 title: Is my VPN hiding me?
+topic: use
 description: How lemonfiber proves torrent traffic is leaving through the tunnel, what it will not claim, and how to test the killswitch.
 sidebar:
   order: 3

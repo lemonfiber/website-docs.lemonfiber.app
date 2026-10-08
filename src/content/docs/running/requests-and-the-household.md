@@ -1,5 +1,6 @@
 ---
 title: Requests and the household
+topic: use
 description: How everyone else in the home asks for things, and how you see where each request stands without opening another web interface.
 sidebar: { order: 5 }
 ---

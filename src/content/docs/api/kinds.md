@@ -1,5 +1,6 @@
 ---
 title: Every payload kind
+topic: build
 description: The seventy-three payload kinds the contract artefact describes, and every field the six most-used ones carry.
 sidebar:
   order: 2

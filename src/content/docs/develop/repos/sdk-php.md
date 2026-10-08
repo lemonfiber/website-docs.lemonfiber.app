@@ -1,1 +1,0 @@
-../../../../../vendor/sdk-php/README.md

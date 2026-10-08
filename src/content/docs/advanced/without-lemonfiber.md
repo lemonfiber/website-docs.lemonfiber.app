@@ -1,5 +1,6 @@
 ---
 title: Running without lemonfiber
+topic: use
 description: The stack is a standalone Compose project. Clone it, set the variables, run it with plain Docker — no binary anywhere.
 sidebar:
   order: 4
@@ -98,6 +99,6 @@ do, and it is worth being clear about which those are.
 [Adding a service](/advanced/adding-a-service/) is the same repository from the
 editing side, and [the stack manifest](/advanced/the-stack-manifest/) is the file
 that keeps the two halves in step.
-[The media-stack repository](/develop/repos/media-stack/) is its own page, and the
+[The media-stack repository](https://contribute.lemonfiber.app/repos/media-stack/) is its own page, and the
 requirement behind this one is
 [F1 customisation](/spec/10-functional/features/f-extensibility/f1-customisation/).

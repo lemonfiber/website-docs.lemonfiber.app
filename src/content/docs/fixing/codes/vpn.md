@@ -1,5 +1,6 @@
 ---
 title: VPN — traffic leaving the tunnel
+topic: use
 description: Every VPN code lemonfiber raises, what it means, and what to do about it.
 sidebar:
   hidden: true

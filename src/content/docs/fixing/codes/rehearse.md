@@ -1,5 +1,6 @@
 ---
 title: REHEARSE — asking what a command would do
+topic: use
 description: Every REHEARSE code lemonfiber raises, what it means, and what to do about it.
 sidebar:
   hidden: true

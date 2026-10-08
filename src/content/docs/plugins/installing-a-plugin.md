@@ -1,5 +1,6 @@
 ---
 title: Installing a plugin
+topic: build
 description: Rehearse an install, make it, and take it back off — and what each step checks before it counts as done.
 sidebar:
   order: 1

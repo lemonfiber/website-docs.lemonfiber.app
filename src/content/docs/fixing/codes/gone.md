@@ -1,5 +1,6 @@
 ---
 title: GONE — taking lemonfiber off this machine
+topic: use
 description: Every GONE code lemonfiber raises, what it means, and what to do about it.
 sidebar:
   hidden: true

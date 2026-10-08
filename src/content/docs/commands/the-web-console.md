@@ -1,5 +1,6 @@
 ---
 title: The web console
+topic: use
 description: The six screens a browser gets, what each one answers, and what it can ask the stack to do.
 sidebar:
   order: 3

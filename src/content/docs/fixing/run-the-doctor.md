@@ -1,5 +1,6 @@
 ---
 title: Run the doctor
+topic: use
 description: What lemonfiber's checks prove, how to read a verdict, and how to let it put right what it can.
 sidebar:
   order: 1

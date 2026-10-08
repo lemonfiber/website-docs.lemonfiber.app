@@ -24,9 +24,8 @@ const routes = [
   "/spec/",
   "/spec/00-overview/vision/",
   "/spec/10-functional/features/b-running/b1-forms/",
-  "/develop/architecture/error-model/",
-  "/develop/repos/sdk-ts/",
-  "/contributing/conduct/",
+  "/api/typescript-sdk/",
+  "/plugins/the-template/",
 ];
 const themes = ["light", "dark"] as const;
 

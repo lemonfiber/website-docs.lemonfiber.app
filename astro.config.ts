@@ -2,8 +2,10 @@ import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
 import { paraglideVitePlugin } from "@inlang/paraglide-js";
 import starlightLinksValidator from "starlight-links-validator";
+import starlightSidebarTopics from "starlight-sidebar-topics";
 
-import { sections } from "./src/lib/sections";
+import retired from "./retired.json";
+import { topics } from "./src/lib/sections";
 
 export default defineConfig({
   site: "https://docs.lemonfiber.app",
@@ -12,6 +14,7 @@ export default defineConfig({
   // one that sends a reader on.
   redirects: {
     "/project/whats-built/": "/project/roadmap/",
+    ...retired.redirects,
   },
   vite: {
     plugins: [
@@ -56,9 +59,9 @@ export default defineConfig({
         baseUrl:
           "https://github.com/lemonfiber/website-docs.lemonfiber.app/edit/main/",
       },
-      sidebar: sections,
       components: { Footer: "./src/components/Footer.astro" },
       plugins: [
+        starlightSidebarTopics(topics),
         starlightLinksValidator({
           errorOnRelativeLinks: false,
           errorOnInvalidHashes: false,

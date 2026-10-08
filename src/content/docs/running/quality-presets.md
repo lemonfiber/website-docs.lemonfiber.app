@@ -1,5 +1,6 @@
 ---
 title: Quality presets
+topic: use
 description: Choose how good your media should look in plain language, see what it costs in disk, and change your mind later without breaking anything.
 sidebar: { order: 4 }
 ---

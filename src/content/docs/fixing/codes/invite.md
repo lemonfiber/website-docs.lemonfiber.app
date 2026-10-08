@@ -1,5 +1,6 @@
 ---
 title: INVITE — offering somebody an account
+topic: use
 description: Every INVITE code lemonfiber raises, what it means, and what to do about it.
 sidebar:
   hidden: true
