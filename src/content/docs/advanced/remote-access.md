@@ -8,9 +8,9 @@ sidebar:
 
 **This is specified and not yet built.** Nothing described below runs today. It
 is scheduled rather than shipped, and the normative account is
-[I1 remote access](/spec/10-functional/features/i-remote-access/i1-remote-access/)
+[I1 remote access](https://lemonfiber.app/spec/10-functional/features/i-remote-access/i1-remote-access/)
 together with
-[I2 household identity](/spec/10-functional/features/i-remote-access/i2-identity/).
+[I2 household identity](https://lemonfiber.app/spec/10-functional/features/i-remote-access/i2-identity/).
 This page exists so you can see what the shape will be, and so you are not left
 guessing whether a missing feature is missing or merely undocumented.
 
@@ -105,9 +105,9 @@ running the reachability proof are each reachable as plain subcommands.
 ## Where to go next
 
 The two specification pages are
-[I1 remote access](/spec/10-functional/features/i-remote-access/i1-remote-access/)
+[I1 remote access](https://lemonfiber.app/spec/10-functional/features/i-remote-access/i1-remote-access/)
 and
-[I2 household identity](/spec/10-functional/features/i-remote-access/i2-identity/).
+[I2 household identity](https://lemonfiber.app/spec/10-functional/features/i-remote-access/i2-identity/).
 The egress-proof machinery this reuses from the outside is the same one behind
 [is my VPN hiding me?](/fixing/is-my-vpn-hiding-me/), and the household side of a
 running stack today is

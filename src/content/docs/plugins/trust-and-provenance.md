@@ -17,7 +17,7 @@ A plugin names its image by digest — `sha256:` and sixty-four hex characters �
 and the tag beside it is for people to read and is never resolved. The image
 that runs is the image that was declared, byte for byte, whatever the tag has
 since been moved to. The decision is
-[ADR-0023](/spec/00-overview/decisions/0023-a-pin-is-a-digest/).
+[ADR-0023](https://lemonfiber.app/spec/00-overview/decisions/0023-a-pin-is-a-digest/).
 
 ## Who published it
 
@@ -73,9 +73,9 @@ plugin's name, so it is in `lemonfiber history` beside every other change.
 
 No plugin contributes code to lemonfiber's own process — not in a sandbox, not
 behind an opt-in. That is a requirement of
-[F3](/spec/10-functional/features/f-extensibility/f3-stack-manifests/), enforced
+[F3](https://lemonfiber.app/spec/10-functional/features/f-extensibility/f3-stack-manifests/), enforced
 by a dependency check in the build, and
-[F11](/spec/10-functional/features/f-extensibility/f11-executing-contributed-code/)
+[F11](https://lemonfiber.app/spec/10-functional/features/f-extensibility/f11-executing-contributed-code/)
 exists only to hold the question open: nothing may be built against it, and
 changing the answer takes a new architecture decision.
 
@@ -85,10 +85,10 @@ environment, devices, kernel capabilities, privilege or network mode.
 ## What is planned
 
 Recipes — ordered calls that configure what a plugin installed — are specified
-in [F8](/spec/10-functional/features/f-extensibility/f8-recipes/) and refused by
+in [F8](https://lemonfiber.app/spec/10-functional/features/f-extensibility/f8-recipes/) and refused by
 this build. When they arrive, every value a recipe would carry to a host outside
 the machine is declared as its own pair and agreed to on its own, at rehearsal,
 and a destination is a name that is refused if it resolves inward. The reviewed,
 signed catalogue is
-[F5](/spec/10-functional/features/f-extensibility/f5-plugin-catalogue/), and what
+[F5](https://lemonfiber.app/spec/10-functional/features/f-extensibility/f5-plugin-catalogue/), and what
 this build lacks of it is the key its index is signed with.

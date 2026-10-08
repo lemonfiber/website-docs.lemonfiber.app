@@ -81,7 +81,7 @@ support is a breaking change and moves the binary's major version.
 ## Where to go next
 
 The normative account is
-[the versioning contract](/spec/20-architecture/contracts/versioning/). The
+[the versioning contract](https://lemonfiber.app/spec/20-architecture/contracts/versioning/). The
 envelope the wire version belongs to is [the envelope](/api/the-envelope/), and
 the manifest the other two belong to is
 [the stack manifest](/advanced/the-stack-manifest/). For keeping a running stack

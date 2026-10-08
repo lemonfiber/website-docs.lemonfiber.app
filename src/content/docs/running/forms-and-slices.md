@@ -135,4 +135,4 @@ service](/advanced/adding-a-service/).
 
 - [The services](/running/the-services/) — what each of the twenty-two actually does
 - [Starting and stopping](/running/starting-and-stopping/) — what happens once you name a form
-- [B1 Forms and partial stacks](/spec/10-functional/features/b-running/b1-forms/) — the requirements this page describes
+- [B1 Forms and partial stacks](https://lemonfiber.app/spec/10-functional/features/b-running/b1-forms/) — the requirements this page describes

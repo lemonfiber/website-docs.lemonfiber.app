@@ -130,4 +130,4 @@ lemonfiber's licence, which is separate and stricter.
 - [Forms and slices](/running/forms-and-slices/) — how these group into slices
 - [The stack manifest](/advanced/the-stack-manifest/) — the file this page is drawn from
 - [Adding a service](/advanced/adding-a-service/) — making the list twenty-three
-- [F2 Service catalogue](/spec/10-functional/features/f-extensibility/f2-service-catalogue/) — the requirement behind it
+- [F2 Service catalogue](https://lemonfiber.app/spec/10-functional/features/f-extensibility/f2-service-catalogue/) — the requirement behind it

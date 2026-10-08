@@ -84,9 +84,9 @@ How to [install](/start/install/) lemonfiber, how to
 
 It is not the specification. The requirements lemonfiber is written against —
 every feature, every journey, every architectural decision — live in
-[the specification](/spec/), mirrored on this site. Where a rule is normative,
+[the specification](https://lemonfiber.app/spec/), mirrored on this site. Where a rule is normative,
 these pages link to the page that owns it rather than restating it. The
-[project vision](/spec/00-overview/vision/) is the best single page to read next
+[project vision](https://lemonfiber.app/spec/00-overview/vision/) is the best single page to read next
 if you want the reasoning rather than the instructions.
 
 lemonfiber is source-available under the Hippocratic Licence 3.0, which is

@@ -111,7 +111,7 @@ The specification asks for a backup to be taken automatically before any risky
 operation — an update, adopting an existing setup, removing your configuration.
 That is not built yet, so take one yourself before you do anything you would
 want to undo. See [E3 Backup and
-restore](/spec/10-functional/features/e-maintenance/e3-backup-restore/) for the
+restore](https://lemonfiber.app/spec/10-functional/features/e-maintenance/e3-backup-restore/) for the
 full requirement set.
 
 Media is out of scope and will stay out of scope. Use a general-purpose backup

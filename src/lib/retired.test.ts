@@ -30,6 +30,7 @@ describe("the retired routes in retired.json", () => {
       26,
     );
     expect(routes.filter((one) => one.startsWith("/project/"))).toHaveLength(6);
+    expect(routes.filter((one) => one.startsWith("/spec/"))).toHaveLength(243);
   });
 
   it("leaves no page of this site's own at a retired route", () => {

@@ -110,4 +110,4 @@ Then take it to [where to ask](https://contribute.lemonfiber.app/community/where
 
 - [Run the doctor](/fixing/run-the-doctor/) — the diagnosis the bundle carries
 - [The support bundle's codes](/fixing/codes/bundle/) — the eight `BUNDLE` codes, side by side
-- [C4, the support bundle](/spec/10-functional/features/c-trust/c4-support-bundle/) — the requirement this is written against
+- [C4, the support bundle](https://lemonfiber.app/spec/10-functional/features/c-trust/c4-support-bundle/) — the requirement this is written against

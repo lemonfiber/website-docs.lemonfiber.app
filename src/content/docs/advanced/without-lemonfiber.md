@@ -101,4 +101,4 @@ editing side, and [the stack manifest](/advanced/the-stack-manifest/) is the fil
 that keeps the two halves in step.
 [The media-stack repository](https://contribute.lemonfiber.app/repos/media-stack/) is its own page, and the
 requirement behind this one is
-[F1 customisation](/spec/10-functional/features/f-extensibility/f1-customisation/).
+[F1 customisation](https://lemonfiber.app/spec/10-functional/features/f-extensibility/f1-customisation/).

@@ -18,20 +18,20 @@ page:
   The submodule is the pin: an exact upstream revision, recorded here, with no
   second copy of the bytes.
 
-The specification is one of those mirrors. It is authored and checked in
-[`lemonfiber/spec`](https://github.com/lemonfiber/spec) and published here, at
-`/spec/`, inside this site's own sidebar and search. A mirrored page's edit link
-points at the repository that owns it, and its footer names the revision it was
-rendered from.
+A mirrored page's edit link points at the repository that owns it, and its
+footer names the revision it was rendered from. The specification is not one of
+them: it is rendered on [the frontpage](https://lemonfiber.app/spec/), and this
+site pins [`lemonfiber/spec`](https://github.com/lemonfiber/spec) only to count
+what the pages say about it.
 
 ## Two topics
 
 The site is read in two topics, each with a sidebar of its own (REPO-R81):
 
-| Topic    | For                                   | Sections                                         |
-| -------- | ------------------------------------- | ------------------------------------------------ |
-| Use      | an operator running lemonfiber        | Start here, running, fixing, commands, advanced  |
-| Build on | an integrator writing against its API | the API and the SDKs, plugins, the specification |
+| Topic    | For                                   | Sections                                        |
+| -------- | ------------------------------------- | ----------------------------------------------- |
+| Use      | an operator running lemonfiber        | Start here, running, fixing, commands, advanced |
+| Build on | an integrator writing against its API | the API and the SDKs, plugins                   |
 
 `TOPICS` in `src/lib/topics.ts` says which section sits under which topic, and
 `src/lib/sections.ts` builds the two sidebars from it through
@@ -40,16 +40,16 @@ frontmatter, `topic: use` or `topic: build`, and the guards refuse a page that
 names none, or names the topic whose sections it does not sit in. A mirrored
 page takes the topic of the section its route sits in.
 
-Contributor material is on the contributor site, and project status — the
-roadmap, the board, the releases — is on the [frontpage](https://lemonfiber.app),
-which reads it live. Every route this site published for either redirects to
-the page that replaced it, or to the specification page that holds the rule,
-from `retired.json` (REPO-R80, REPO-R53).
+Contributor material is on the contributor site. The specification and project
+status — the roadmap, the board, the releases — are on the
+[frontpage](https://lemonfiber.app), which reads them live. Every route this site
+published for any of them redirects to the page that replaced it, from
+`retired.json` (REPO-R80, REPO-R53).
 
 Every section has a landing page, and every landing page ends by pointing at the
-sections next to it. Moving between "how do I do this", "why is it broken",
-"what does the API return" and "what does the specification require" is the
-thing a reader does most, so it is the thing the navigation is built for.
+sections next to it. Moving between "how do I do this", "why is it broken" and
+"what does the API return" is the thing a reader does most, so it is the thing
+the navigation is built for.
 
 ## What it publishes for a machine
 
@@ -177,9 +177,8 @@ renders there.
 ### Counts, against what is counted
 
 This site's pages state numbers about the trees under `vendor/`: the twenty-two
-services, seventy-three payload kinds, 111 features and nine end-to-end
-journeys. Each one is a transcription of something machine-readable, and goes
-false when a pin moves.
+services and the seventy-three payload kinds among them. Each one is a
+transcription of something machine-readable, and goes false when a pin moves.
 
 `src/lib/inventories.ts` names, for each such set, the tree it is declared in,
 which reader takes the members out of it, and the sentence shapes the prose
@@ -348,9 +347,8 @@ routes named in `a11y/contrast.spec.ts`, in both themes, at WCAG 2.1 AA. In
 serves the one this run produced.
 
 Those routes are one of each kind the site serves rather than all of them: the
-landing page, an authored page, a section landing page, a mirrored page, a
-mirrored page from a repository other than the specification, and a long
-reference table. Adding a kind of page means adding a route to that list; adding
+landing page, an authored page, a section landing page, mirrored pages from two
+different repositories, and a long reference table. Adding a kind of page means adding a route to that list; adding
 a page of a kind already there does not.
 
 ## Licence

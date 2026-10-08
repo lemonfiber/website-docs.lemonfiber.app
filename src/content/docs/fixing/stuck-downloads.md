@@ -129,4 +129,4 @@ Each repair says what it would do and what else changes if it does, and waits to
 - [Every error by code](/fixing/every-error-by-code/) — every code named on this page
 - [Where is my show?](/running/where-is-my-show/) — reading a trace in full
 - [Requests and the household](/running/requests-and-the-household/) — what was asked for, and by whom
-- [C7, queue health and stuck items](/spec/10-functional/features/c-trust/c7-queue-health/) — the requirement this is written against
+- [C7, queue health and stuck items](https://lemonfiber.app/spec/10-functional/features/c-trust/c7-queue-health/) — the requirement this is written against

@@ -144,4 +144,4 @@ That is [Requests and the household](/running/requests-and-the-household/).
 
 - [Stuck downloads](/fixing/stuck-downloads/) — the remedies for each stall
 - [Hardlinks and one mount point](/fixing/hardlinks-and-one-mount-point/) — the usual cause of "downloaded, never imported"
-- [D9 Pipeline trace](/spec/10-functional/features/d-content/d9-pipeline-trace/) — the requirements behind this page
+- [D9 Pipeline trace](https://lemonfiber.app/spec/10-functional/features/d-content/d9-pipeline-trace/) — the requirements behind this page

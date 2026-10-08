@@ -36,7 +36,7 @@ credential against the live service before storing it.
 You can also run nothing but the library: point lemonfiber at a folder of media
 you already have and serve it, with no accounts and no spend. That is a supported
 end state rather than a degraded one — see
-[Prerequisites and account guidance](/spec/10-functional/features/a-getting-started/a1-prerequisites/).
+[Prerequisites and account guidance](https://lemonfiber.app/spec/10-functional/features/a-getting-started/a1-prerequisites/).
 
 ## Which platforms are built
 

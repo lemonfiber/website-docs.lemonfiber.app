@@ -96,7 +96,7 @@ manifest](/advanced/the-stack-manifest/). Drift, and what to do about it, is in
 
 ## The longer definitions
 
-The specification keeps its own [glossary](/spec/00-overview/glossary/), which is
+The specification keeps its own [glossary](https://lemonfiber.app/spec/00-overview/glossary/), which is
 more precise and less friendly than this page. Where a word has a loose
 colloquial meaning and a specific one, that is the page where the specific one
 wins.

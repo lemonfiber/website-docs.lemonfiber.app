@@ -128,4 +128,4 @@ rejected, or never found at all.
 ## Related
 
 - [Words we use](/start/words-we-use/) — quality profile, custom format, bitrate, transcode
-- [D2 Quality presets in plain language](/spec/10-functional/features/d-content/d2-quality-presets/) — the requirements behind this page
+- [D2 Quality presets in plain language](https://lemonfiber.app/spec/10-functional/features/d-content/d2-quality-presets/) — the requirements behind this page

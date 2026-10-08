@@ -18,7 +18,7 @@ schema the binary is generated from and validates against, and the one
 `lemonfiber plugin schema` prints for your editor. It starts at the root,
 `PluginManifest`, and every type a field names links to its own entry. The
 normative prose, with the reasons, is
-[the plugin manifest contract](/spec/20-architecture/contracts/plugin-manifest/).
+[the plugin manifest contract](https://lemonfiber.app/spec/20-architecture/contracts/plugin-manifest/).
 
 ## What the reader refuses that a schema cannot say
 
@@ -26,13 +26,13 @@ A manifest can match the schema and still be refused: an `id` with a character
 that is not a lower-case letter, a digit or a hyphen, a `port` with no `bind`, a
 `hostname` on a service nobody proxies, a `[requires]` naming something this
 build does not offer. The rules, each with its reason, are the contract's
-[validation](/spec/20-architecture/contracts/plugin-manifest/#validation), and
+[validation](https://lemonfiber.app/spec/20-architecture/contracts/plugin-manifest/#validation), and
 the fields a manifest has no room for at all — environment, kernel
 capabilities, devices, privilege, a fragment of Compose — are
-[the fields that are absent, and why](/spec/20-architecture/contracts/plugin-manifest/#the-fields-that-are-absent-and-why).
+[the fields that are absent, and why](https://lemonfiber.app/spec/20-architecture/contracts/plugin-manifest/#the-fields-that-are-absent-and-why).
 Neither is restated here, because the specification says the schema is the only
 description of the format published to authors
-([`F10-R2`](/spec/10-functional/features/f-extensibility/f10-authoring/)), and
+([`F10-R2`](https://lemonfiber.app/spec/10-functional/features/f-extensibility/f10-authoring/)), and
 a second list is one more to fall behind.
 
 The way to know what this build refuses is to ask it.

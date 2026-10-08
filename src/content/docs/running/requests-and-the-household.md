@@ -93,7 +93,7 @@ failure.
 
 Three commands look after the people in the house, and none of them has you
 choosing or seeing anybody's password — the shape
-[D6 Household identity and invitations](/spec/10-functional/features/d-content/d6-household-identity/)
+[D6 Household identity and invitations](https://lemonfiber.app/spec/10-functional/features/d-content/d6-household-identity/)
 asks for.
 
 - [`lemonfiber invite <name>`](/commands/reference/invite/) makes them an
@@ -124,5 +124,5 @@ boundary is deliberate.
 
 - [Where is my show?](/running/where-is-my-show/) — the detailed answer behind a request's one-word state
 - [The services](/running/the-services/) — Seerr, Jellyfin, and where they listen
-- [D4 Household request flow](/spec/10-functional/features/d-content/d4-request-flow/) — the requirements behind this page
-- [J9 Getting the household watching](/spec/10-functional/journeys/j9-household/) — the same story end to end
+- [D4 Household request flow](https://lemonfiber.app/spec/10-functional/features/d-content/d4-request-flow/) — the requirements behind this page
+- [J9 Getting the household watching](https://lemonfiber.app/spec/10-functional/journeys/j9-household/) — the same story end to end
