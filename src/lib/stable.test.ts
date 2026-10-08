@@ -10,6 +10,7 @@ import {
   releaseOf,
   renderedIn,
   renderStable,
+  saysReleased,
   settledAt,
   sourceOf,
   stableFaults,
@@ -50,12 +51,12 @@ describe("releaseOf", () => {
     });
   });
 
-  it("takes the tag a release was finished under", () => {
+  it("takes the tag a release was finished under from the patch it names", () => {
     expect(
       releaseOf(
-        `${MANIFEST.split("\n[pins]")[0] ?? ""}\nreleased_as = "v0.17.1"\n`,
-      )?.tag,
-    ).toBe("v0.17.1");
+        `${MANIFEST.split("\n[pins]")[0] ?? ""}\nreleased_as = "0.17.1"\n`,
+      ),
+    ).toMatchObject({ version: "0.17.0", tag: "v0.17.1" });
   });
 
   it("reads nothing out of a manifest that is not released, or not a manifest", () => {
@@ -71,7 +72,8 @@ describe("releaseOf", () => {
   it("refuses a manifest whose values could be read as options by git", () => {
     const head = MANIFEST.split("\n[pins]")[0] ?? "";
     expect(releaseOf(`${head}\nreleased_as = "--x"\n`)).toBeNull();
-    expect(releaseOf(`${head}\nreleased_as = "v0.17"\n`)).toBeNull();
+    expect(releaseOf(`${head}\nreleased_as = "0.17"\n`)).toBeNull();
+    expect(releaseOf(`${head}\nreleased_as = "v0.17.1"\n`)).toBeNull();
     expect(releaseOf(`${head}\nreleased_as = 3\n`)).toBeNull();
     expect(releaseOf(MANIFEST.replace('"2026-10-08"', '"x"'))).toBeNull();
     expect(
@@ -80,11 +82,24 @@ describe("releaseOf", () => {
     expect(releaseOf(MANIFEST.replace('"0.17.0"', '"-0.17.0"'))).toBeNull();
     expect(
       releaseOf(
-        `${head.replace('"0.17.0"', '"--x"')}\nreleased_as = "v0.17.0"\n`,
+        `${head.replace('"0.17.0"', '"--x"')}\nreleased_as = "0.17.0"\n`,
       ),
     ).toBeNull();
     expect(releaseOf(MANIFEST.replace(WEB, "--upload-pack=x"))).toBeNull();
     expect(releaseOf(MANIFEST.replace(`"${WEB}"`, "7"))).toBeNull();
+  });
+});
+
+describe("saysReleased", () => {
+  it("tells a manifest that claims a release from one that does not", () => {
+    expect(saysReleased(MANIFEST)).toBe(true);
+    expect(saysReleased(MANIFEST.replace("[pins]", "[pins]\nx = 3"))).toBe(
+      true,
+    );
+    expect(saysReleased(MANIFEST.replace("released", "releasable"))).toBe(
+      false,
+    );
+    expect(saysReleased("= not toml")).toBe(false);
   });
 });
 
