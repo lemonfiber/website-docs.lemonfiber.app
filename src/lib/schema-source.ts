@@ -8,6 +8,7 @@
 import { assembledContract, CONTRACT_DIRECTORY } from "./contract";
 import { readText } from "./checkout";
 import { parsedJson } from "./schema";
+import { joinedStack, STACK_CHECKOUT, STACK_ROOT } from "./stack";
 
 const CONTRACT = "vendor/lemonfiber/contract";
 
@@ -22,3 +23,10 @@ export const contract = (): unknown =>
 /** One file of a pinned tree, as text, or empty where the checkout lacks it. */
 export const vendored = (path: string): string =>
   readText(`vendor/${path}`) ?? "";
+
+/** One file of the pinned media stack, by its path from the stack's root, or null. */
+export const inStack = (entry: string): string | null =>
+  readText(`${STACK_CHECKOUT}/${entry}`);
+
+/** The pinned stack manifest, its root and every service file it includes, as one. */
+export const stack = (): string => joinedStack(inStack(STACK_ROOT), inStack);

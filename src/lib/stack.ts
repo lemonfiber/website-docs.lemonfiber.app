@@ -38,7 +38,48 @@ export interface Service {
   readonly smallestForm: string | null;
 }
 
+/** The media stack's checkout, and its manifest's root within it. */
+export const STACK_CHECKOUT = "vendor/lemonfiber-media-stack";
+export const STACK_ROOT = "stack.toml";
+
 type Table = Record<string, unknown>;
+
+/**
+ * The files a manifest's root names in its `include` list, in order: none for a
+ * root that keeps its services in itself, as stacks before ARCH-R171 do.
+ */
+export function includedIn(root: string): string[] {
+  let read: Table;
+  try {
+    read = parse(root);
+  } catch {
+    return [];
+  }
+  const listed = read["include"];
+  return Array.isArray(listed)
+    ? listed.filter((entry): entry is string => typeof entry === "string")
+    : [];
+}
+
+/**
+ * The manifest as one document: the root first, then each file its `include`
+ * list names, in that order, the way the core and the media stack join it. A
+ * root with no `include` is the whole manifest already. `read` answers an
+ * entry, relative to the stack's root, with its text, or null; an entry it
+ * cannot answer is left out, and a root that is not there is an empty manifest.
+ */
+export function joinedStack(
+  root: string | null,
+  read: (entry: string) => string | null,
+): string {
+  if (root === null) return "";
+  const parts = [root];
+  for (const entry of includedIn(root)) {
+    const text = read(entry);
+    if (text !== null) parts.push(`\n# ${entry}\n${text}`);
+  }
+  return parts.join("");
+}
 
 /** The `[[name]]` entries of the manifest, or none where it does not parse. */
 const entries = (stack: string, name: string): Table[] => {

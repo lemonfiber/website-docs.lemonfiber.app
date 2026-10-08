@@ -1,10 +1,10 @@
 ---
-import { vendored } from "../lib/schema-source";
+import { stack } from "../lib/schema-source";
 import { formsOf } from "../lib/stack";
 import * as m from "../paraglide/messages.js";
 
 /** Every form the pinned stack declares, with the profiles it is made of. */
-const forms = formsOf(vendored("lemonfiber-media-stack/stack.toml"));
+const forms = formsOf(stack());
 if (forms.length === 0)
   throw new Error("the pinned stack declares no form to render");
 ---

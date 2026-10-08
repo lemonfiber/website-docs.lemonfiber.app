@@ -1,8 +1,18 @@
 import { readFileSync } from "node:fs";
 
+import { inStack, stack } from "./schema-source.ts";
+
 import { describe, expect, it } from "vitest";
 
-import { formsOf, profilesOf, servicesOf } from "./stack.ts";
+import {
+  formsOf,
+  includedIn,
+  joinedStack,
+  profilesOf,
+  servicesOf,
+  STACK_CHECKOUT,
+  STACK_ROOT,
+} from "./stack.ts";
 
 const STACK = [
   "[[profile]]",
@@ -52,9 +62,9 @@ describe("profilesOf", () => {
   });
 
   it("reads the stack this site pins", () => {
-    const read = profilesOf(
-      readFileSync("vendor/lemonfiber-media-stack/stack.toml", "utf8"),
-    );
+    const text = (path: string): string =>
+      readFileSync(`${STACK_CHECKOUT}/${path}`, "utf8");
+    const read = profilesOf(joinedStack(text(STACK_ROOT), text));
     expect(read.length).toBeGreaterThan(0);
     expect(read.every((profile) => profile.services.length > 0)).toBe(true);
   });
@@ -136,5 +146,57 @@ describe("servicesOf", () => {
         smallestForm: null,
       },
     ]);
+  });
+});
+
+describe("joinedStack", () => {
+  const root = [
+    "schema_version = 1",
+    'include = ["services/prowlarr.toml", "services/gone.toml", 3]',
+    "",
+    "[[profile]]",
+    'id = "search"',
+    'description = "Finding things"',
+  ].join("\n");
+  const files: Record<string, string> = {
+    "services/prowlarr.toml":
+      '[[service]]\nid = "prowlarr"\nname = "Prowlarr"\nprofile = "search"\n',
+  };
+  const read = (entry: string): string | null => files[entry] ?? null;
+
+  it("names the files a root includes, in order, and only the paths", () => {
+    expect(includedIn(root)).toEqual([
+      "services/prowlarr.toml",
+      "services/gone.toml",
+    ]);
+    expect(includedIn("schema_version = 1")).toEqual([]);
+    expect(includedIn('include = "services/x.toml"')).toEqual([]);
+    expect(includedIn("= not toml")).toEqual([]);
+  });
+
+  it("reads a split manifest as one, root first, leaving out what it cannot read", () => {
+    const joined = joinedStack(root, read);
+    expect(joined.startsWith(root)).toBe(true);
+    expect(joined).toContain("# services/prowlarr.toml");
+    expect(joined).not.toContain("services/gone.toml\n[");
+    expect(profilesOf(joined)).toEqual([
+      { id: "search", description: "Finding things", services: ["Prowlarr"] },
+    ]);
+  });
+
+  it("takes a manifest with no include list as it stands", () => {
+    expect(joinedStack(STACK, read)).toBe(STACK);
+  });
+
+  it("reads a root that is not there as an empty manifest", () => {
+    expect(joinedStack(null, read)).toBe("");
+  });
+});
+
+describe("the pinned stack", () => {
+  it("is read from the checkout, its service files with it", () => {
+    expect(profilesOf(stack()).length).toBeGreaterThan(0);
+    expect(inStack(STACK_ROOT)).not.toBeNull();
+    expect(inStack("services/not-a-service.toml")).toBeNull();
   });
 });

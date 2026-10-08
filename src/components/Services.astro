@@ -1,10 +1,10 @@
 ---
-import { vendored } from "../lib/schema-source";
+import { stack } from "../lib/schema-source";
 import { servicesOf } from "../lib/stack";
 import * as m from "../paraglide/messages.js";
 
 /** Every service the pinned stack declares: what it does, and what its absence costs. */
-const services = servicesOf(vendored("lemonfiber-media-stack/stack.toml"));
+const services = servicesOf(stack());
 if (services.length === 0)
   throw new Error("the pinned stack declares no service to render");
 ---

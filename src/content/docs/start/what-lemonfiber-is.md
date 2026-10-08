@@ -9,9 +9,10 @@ lemonfiber runs a media stack for you: the indexers, the download clients, the
 automation services and the library interfaces that sit between a request and a
 finished episode on a shelf.
 
-It is one binary. You answer a few questions, and it writes the configuration,
-starts the services you asked for, wires them to each other through their own
-APIs, and keeps checking that what it built still matches what you asked for.
+It is one binary. You answer a few questions, and it writes the configuration
+and starts the services you asked for. One more command wires them to each other
+through their own APIs, and from then on it keeps checking that what it built
+still matches what you asked for.
 
 ## The problem it is solving
 

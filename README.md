@@ -198,7 +198,7 @@ site's own, from `src/lib/`. Together they enforce:
   sits under.
 - **Every command line a page prints, against the core's command reference.**
   Each line of a shell block, each prompted line of a console block and each
-  code span that begins `lemonfiber ` is read against
+  code span that begins with the word `lemonfiber` is read against
   `vendor/lemonfiber/reference/`, which the core generates from its own
   declarations: the command has to exist, and it has to take every flag given
   to it.

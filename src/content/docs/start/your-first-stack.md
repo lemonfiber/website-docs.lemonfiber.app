@@ -90,7 +90,19 @@ The full list of flags is in [Every command](/commands/every-command/).
 ## After setup finishes
 
 Setup starts the stack and waits for the services to become healthy, so by the
-time it returns you have something running. Three things are worth doing next.
+time it returns you have something running. It does not connect the services to
+each other, so that comes first.
+
+**Wire the services to each other.**
+
+```sh
+$ lemonfiber seed
+```
+
+That connects them through their own APIs: the indexers to the automation
+services, the automation services to the download clients, and the rest. It is
+safe to run again; a link already in place is left alone. Then three things are
+worth doing.
 
 **Watch one item go through the pipeline.**
 

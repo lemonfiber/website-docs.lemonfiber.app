@@ -1,10 +1,10 @@
 ---
-import { vendored } from "../lib/schema-source";
+import { stack } from "../lib/schema-source";
 import { servicesOf } from "../lib/stack";
 import * as m from "../paraglide/messages.js";
 
 /** How much each service of the pinned stack failing matters, grade by grade. */
-const services = servicesOf(vendored("lemonfiber-media-stack/stack.toml"));
+const services = servicesOf(stack());
 
 const GRADES = [
   ["critical", m.grade_critical(), m.grade_critical_meaning()],

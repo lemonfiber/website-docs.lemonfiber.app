@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { countViolations, type Page, type Sources } from "./counts.ts";
 import { contract } from "./schema-source.ts";
+import { joinedStack, STACK_CHECKOUT, STACK_ROOT } from "./stack.ts";
 import { GLOSSARY, INVENTORIES } from "./inventories.ts";
 import {
   consolePlaces,
@@ -33,7 +34,9 @@ const read = (path: string): string => readFileSync(path, "utf8");
 
 const theTree = (): { sources: Sources; pages: Page[] } => ({
   sources: {
-    stack: read("vendor/lemonfiber-media-stack/stack.toml"),
+    stack: joinedStack(read(`${STACK_CHECKOUT}/${STACK_ROOT}`), (entry) =>
+      read(`${STACK_CHECKOUT}/${entry}`),
+    ),
     contract: JSON.stringify(contract()),
     commands: read("vendor/lemonfiber/reference/commands.md"),
     quality: read("vendor/lemonfiber/reference/commands/quality.md"),
