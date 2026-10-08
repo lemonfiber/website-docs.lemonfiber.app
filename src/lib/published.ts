@@ -13,8 +13,8 @@ import { TOPIC_NAMES, TOPICS, topicOfTree, type Topic } from "./topics.ts";
 /** One page of the collection, as much of it as the index reads. */
 export interface Page {
   readonly id: string;
-  readonly filePath?: string | undefined;
-  readonly body?: string | undefined;
+  readonly filePath?: string;
+  readonly body?: string;
   readonly data: {
     readonly title: string;
     readonly description?: string | undefined;

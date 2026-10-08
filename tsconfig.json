@@ -4,6 +4,10 @@
     "lib": ["ES2024", "DOM", "DOM.Iterable"],
     "types": ["vitest/globals"],
 
+    // Also set by the preset. Stated here because SonarQube Cloud reads this file
+    // without node_modules, so it cannot see the preset, and it judges an
+    // optional field typed `| undefined` by whether this is on.
+    "exactOptionalPropertyTypes": true,
     "noPropertyAccessFromIndexSignature": true,
     "useUnknownInCatchVariables": true,
 
