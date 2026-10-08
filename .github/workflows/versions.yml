@@ -9,15 +9,13 @@
 #
 # A release settles at the end of its day, in UTC: until then a commit can still
 # join the ones on or before it. The schedule runs after midnight for that
-# reason, and `release-finalize` in the specification can ask for a run.
+# reason, and is what cuts a release: on its own day there is nothing to cut.
 name: versions
 
 on:
   schedule:
     - cron: "30 3 * * *"
   workflow_dispatch:
-  repository_dispatch:
-    types: [cut-version]
 
 permissions:
   contents: read
