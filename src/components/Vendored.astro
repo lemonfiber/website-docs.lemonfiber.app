@@ -1,6 +1,7 @@
 ---
 import { Code } from "@astrojs/starlight/components";
 
+import { serviceBlock } from "../lib/compose";
 import { vendored } from "../lib/schema-source";
 import * as m from "../paraglide/messages.js";
 
@@ -11,13 +12,20 @@ interface Props {
   readonly path: string;
   /** What Expressive Code highlights it as. */
   readonly lang: string;
+  /** In a Compose file, the one service to show rather than the whole file. */
+  readonly service?: string;
 }
 
-/** One file of a pinned tree, shown whole, as the revision this site pins has it. */
-const { repo, path, lang } = Astro.props;
+/** One file of a pinned tree, or one service out of a Compose file, as the revision this site pins has it. */
+const { repo, path, lang, service } = Astro.props;
 const text = vendored(`${repo}/${path}`);
 if (text === "")
   throw new Error(`vendor/${repo}/${path} is not in the checkout`);
+const shown = service === undefined ? text : serviceBlock(text, service);
+if (shown === null)
+  throw new Error(
+    `vendor/${repo}/${path} declares no service ${service ?? ""}`,
+  );
 ---
 
-<Code code={text} lang={lang} title={m.vendored_from({ path, repo })} />
+<Code code={shown} lang={lang} title={m.vendored_from({ path, repo })} />

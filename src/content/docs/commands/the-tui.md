@@ -30,7 +30,7 @@ version you can scroll back through and filter.
 
 ## The dashboard
 
-A header line, seven panels, and a footer reminding you of the keys.
+A header line, nine panels, and a footer reminding you of the keys.
 
 The header is the health summary and whether the screen is current. Those are
 two different questions — how the stack is doing, and whether what you are
@@ -40,15 +40,17 @@ separately.
 The panels are read in the order they matter: what is wrong first, then what is
 happening, then what it is running on.
 
-| Panel     | What it carries                                                |
-| --------- | -------------------------------------------------------------- |
-| VPN       | The tunnel, and whether traffic is actually leaving through it |
-| Transfers | What is downloading now, with progress, speed and an estimate  |
-| Queues    | What each library manager has waiting                          |
-| Storage   | Free space, and what that comes to in time                     |
-| Services  | What is up                                                     |
-| Stuck     | Downloads that have stopped making progress                    |
-| Alerts    | What the checks have raised                                    |
+| Panel          | What it carries                                                                               |
+| -------------- | --------------------------------------------------------------------------------------------- |
+| VPN            | The tunnel, and whether traffic is actually leaving through it                                |
+| Transfers      | What is downloading now, with progress, speed and an estimate                                 |
+| Queues         | What each library manager has waiting                                                         |
+| Storage        | Free space, and what that comes to in time                                                    |
+| Services       | What is up                                                                                    |
+| Stuck          | Downloads that have stopped making progress                                                   |
+| Alerts         | What the checks have raised                                                                   |
+| Front door     | The one address to send somebody who lives here                                               |
+| Waiting on you | What the household asked for that needs you: waiting for a decision, or failed after approval |
 
 From 96 columns wide the panels sit in two columns; below that they stack into
 one. Every panel gets a place either way — dropping one would leave you looking
@@ -59,11 +61,26 @@ finished, so a stack that takes three seconds to answer refreshes every three
 rather than queueing up gathers it will never catch up on. A gather in flight
 never holds up a keypress: a quit typed during a slow refresh is acted on at once.
 
-| Key                  | What it does                                              |
-| -------------------- | --------------------------------------------------------- |
-| `q`, `Esc`, `Ctrl-C` | Leave                                                     |
-| `r`                  | Gather again now rather than waiting for the next tick    |
-| `?`                  | Show what the words on this screen mean, or put them away |
+| Key                  | What it does                                                          |
+| -------------------- | --------------------------------------------------------------------- |
+| `q`, `Esc`, `Ctrl-C` | Leave                                                                 |
+| `r`                  | Gather again now rather than waiting for the next tick                |
+| `?`                  | Show what the words on this screen mean, or put them away             |
+| `u`, `d`, `s`, `t`   | Start, stop, switch to or restart forms you pick                      |
+| `p`                  | Fetch newer images for forms you pick                                 |
+| `a`                  | Ask the stack something: the list of everything it can be asked       |
+| `m`                  | Tell the stack to do something else: the list of every other errand   |
+| `k`                  | Start a walkthrough or a guard on the data location, and watch it     |
+| `c`                  | Choose a quality preset, or put one into force                        |
+| `f`                  | Put right what the doctor found, or answer a warning you have weighed |
+| `w`                  | Hand over to the web interface                                        |
+
+Nothing happens on one keypress. A key opens the list of what the action can be
+given; taking one puts the question, saying what is about to happen; only an
+explicit yes goes ahead. Every action reaches the same command a browser or the
+command line reaches, so the screen can do nothing another surface cannot. A long
+action reports through the panels it interrupted, and leaving the screen does not
+abandon a run it started: the run stays until the action has finished.
 
 `Ctrl-C` is handled explicitly because a terminal in raw mode no longer turns it
 into a signal, and an operator who cannot leave with it is trapped.
@@ -114,14 +131,14 @@ its value. A narrow terminal carries less at a time and never overlaps. A
 terminal that will not go into raw mode is told so plainly instead of being given
 a blank screen.
 
-## What is specified and not yet built
+## What is specified and not built
 
-The [TUI specification](https://lemonfiber.app/spec/30-repos/lemonfiber-tui/) describes more screens
-than exist today: a doctor screen with fixes offered inline, a form switcher
-showing the closure preview before it acts, a household screen with invitations
-and terminal QR codes, and the setup wizard as one step per screen with a
-progress rail. Those are specified and not yet built. The dashboard and the log
-viewer are what runs now.
+The [TUI specification](https://lemonfiber.app/spec/30-repos/lemonfiber-tui/)
+describes screens of their own beyond the dashboard and the log viewer: a doctor
+screen, a form switcher showing the closure preview, a household screen with
+invitations and terminal QR codes, and the setup wizard as one step per screen.
+The dashboard reaches the doctor's repairs, the forms and the questions through
+the lists above rather than through screens of their own.
 
 ## Where to go next
 

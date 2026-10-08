@@ -23,6 +23,7 @@ import {
 import {
   commandsIn,
   commandViolations,
+  flagTableViolations,
   REFERENCE,
 } from "../src/lib/commands.ts";
 import { checkViolations, REGISTER } from "../src/lib/checks.ts";
@@ -37,6 +38,7 @@ import {
 import { GLOSSARY, INVENTORIES } from "../src/lib/inventories.ts";
 import { toolchainViolations, WORKSPACE } from "../src/lib/toolchain.ts";
 import { joinedStack, STACK_CHECKOUT, STACK_ROOT } from "../src/lib/stack.ts";
+import { DASHBOARD, panelViolations } from "../src/lib/terminal.ts";
 import { topicViolations } from "../src/lib/topics.ts";
 
 async function checks(tree: Tree): Promise<Violation[]> {
@@ -68,6 +70,15 @@ async function checks(tree: Tree): Promise<Violation[]> {
       })),
   );
 
+  // Every command the core declares, read out of the reference it generates.
+  const commands = commandsIn(
+    await Promise.all(
+      (await tree.files(REFERENCE))
+        .filter((path) => path.endsWith(".md"))
+        .map((path) => text(path)),
+    ),
+  );
+
   return [
     ...(spec.length === 0 ? [empty("vendor/spec")] : []),
     ...codeViolations(
@@ -78,16 +89,9 @@ async function checks(tree: Tree): Promise<Violation[]> {
     ...formulaViolations(formulae, prose),
     ...toolchainViolations(await text(WORKSPACE), prose),
     ...checkViolations(await text(REGISTER), prose),
-    ...commandViolations(
-      commandsIn(
-        await Promise.all(
-          (await tree.files(REFERENCE))
-            .filter((path) => path.endsWith(".md"))
-            .map((path) => text(path)),
-        ),
-      ),
-      prose,
-    ),
+    ...panelViolations(await text(DASHBOARD), prose),
+    ...commandViolations(commands, prose),
+    ...flagTableViolations(commands, prose),
     ...countViolations(
       INVENTORIES,
       {

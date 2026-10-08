@@ -1,16 +1,19 @@
 ---
 title: Adding a service
 topic: use
-description: Three data edits and no code — a compose fragment, a manifest entry, and the forms that should carry it.
+description: Three data edits and no code — a compose fragment, a service file in the manifest, and the forms that should carry it.
 sidebar:
   order: 2
 ---
+
+import Vendored from "../../../components/Vendored.astro";
 
 Adding a service to the stack requires no lemonfiber change and no lemonfiber
 release. It is three data edits, and then the checks.
 
 1. A service block in the compose fragment for its profile.
-2. A `[[service]]` entry in `stack.toml`.
+2. A `services/<id>.toml` file holding its `[[service]]` entry, named in the
+   `include` list of `stack.toml`.
 3. Its profile added to whichever forms should carry it.
 
 Then `just ci` in the stack directory. If you are working on your own stack
@@ -29,21 +32,14 @@ own. `compose/` holds one fragment per profile — `tv.yml`, `media.yml`,
 `torrent.yml` and the rest — and `compose/_common.yml` holds the shared defaults
 that fragments reach through `extends:`.
 
-A service block looks like this, which is the real Sonarr entry:
+This is the Sonarr block, as the stack this site pins has it:
 
-```yaml
-services:
-  sonarr:
-    extends:
-      file: compose/_common.yml
-      service: rootless
-    image: lscr.io/linuxserver/sonarr:4.0.15
-    profiles: [tv]
-    ports: ["127.0.0.1:8989:8989"]
-    volumes:
-      - ${DATA_ROOT:-./data}:/data
-      - ./config/sonarr:/config
-```
+<Vendored
+  repo="lemonfiber-media-stack"
+  path="compose/tv.yml"
+  lang="yaml"
+  service="sonarr"
+/>
 
 Three things in it are not decoration. `profiles:` is what makes the service part
 of a profile, and it must match the profile you declare in the manifest. The
@@ -63,33 +59,39 @@ out later. What that looks like from the operator's side is
 
 ## The manifest entry
 
-The `[[service]]` block is where lemonfiber learns what the service is. Every
-required field is listed in [the stack manifest contract](https://lemonfiber.app/spec/20-architecture/contracts/stack-manifest/#service);
+The `[[service]]` entry is where lemonfiber learns what the service is. Each one
+lives in a file of its own under `services/`, and the root's `include` list
+decides which of them the stack holds, in that order. Every required field is
+listed in [the stack manifest contract](https://lemonfiber.app/spec/20-architecture/contracts/stack-manifest/#service);
 the ones people forget are `describes` and `without_it`, which are what let a
 failure be judged rather than merely reported, and `last_release`, which is the
 latest release upstream has published rather than the one you pinned.
 
-`id` must match the Compose service name exactly, `profile` must be exactly one
-declared profile, and `tag` must be explicit — a floating tag fails validation,
-because nothing in this stack should change because time passed.
+`id` must match the Compose service name exactly, and `profile` must be exactly
+one declared profile. `image` carries neither a tag nor a digest: `tag` holds an
+explicit tag, because a floating one fails validation and nothing in this stack
+should change because time passed, and `digest` holds the multi-architecture
+index the tag named, which is what Compose runs.
+
+This is Sonarr's file:
+
+<Vendored
+  repo="lemonfiber-media-stack"
+  path="services/sonarr.toml"
+  lang="toml"
+/>
 
 ## What the checks enforce
 
-Each of these has a specification requirement behind it, and each is itself
-proven to fail when broken.
-
-| Check                                      | What it holds to                                                                                                                       |
-| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Manifest and compose parity                | Every service in one is in the other                                                                                                   |
-| One `${DATA_ROOT}:/data` mount per service | Imports hardlink                                                                                                                       |
-| Bindings match the manifest tier           | Administrative on loopback, household on the LAN                                                                                       |
-| No `depends_on` across a profile           | Any subset of the stack still boots                                                                                                    |
-| Killswitch routing                         | Nothing shares the VPN container's profile without its network namespace, so no client here is one lemonfiber has to report as leaking |
-| Pinned, non-floating tags                  | Nothing changes because time passed                                                                                                    |
-| Capabilities match the manifest            | Only the VPN container holds an elevated network capability                                                                            |
-| An OSI licence per service                 | Verified against a vendored SPDX list                                                                                                  |
-| Every form resolves                        | And drags in nothing outside its profiles                                                                                              |
-| Both architectures per pin                 | `linux/amd64` and `linux/arm64`, read from each registry                                                                               |
+`just ci` runs every check that needs no network: the manifest against the
+contract, the manifest and the compose files held in parity, every form
+resolving to services from its own profiles only, and the rules a change to the
+manifest must carry. CI adds the networked ones — each pin read from its
+registry, the upstream licence asked of its forge where a pin moves, and every
+profile that needs no VPN subscription started for real. Every check has a specification
+requirement behind it, and each is itself proven to fail when broken.
+[The stack's maintaining guide](https://github.com/lemonfiber/lemonfiber-media-stack/blob/main/docs/maintaining.md#what-ci-enforces)
+lists them all.
 
 The parity checks read the model `docker compose config` resolves rather than the
 YAML, so they check what Docker will actually run rather than what the file
@@ -100,12 +102,14 @@ appears to say.
 Your own stack is yours. For the bundled one, a service enters only if it is open
 source under an OSI-approved licence, publishes native `linux/arm64` and
 `linux/amd64` images, is actively maintained, does something no included service
-already does, and works without a paid tier.
+already does, and works without a paid tier. An image lemonfiber builds from its
+own code carries lemonfiber's own licence, `Hippocratic-3.0`, instead.
 
 Maintenance status is established from a project's commit and release history,
-never from its own description of itself. A fork advertising itself as an
-actively maintained successor, with no releases and no published image, is a dead
-fork — and a dead fork is worse than a slow-moving project that works.
+never from its own description of itself. `just candidate <url>` reads that
+history and answers `admit`, `watch` or `reject`. A fork advertising itself as
+an actively maintained successor, with no releases and no published image, is a
+dead fork — and a dead fork is worse than a slow-moving project that works.
 
 Stating the criteria is what makes "why is X not included?" answerable, and makes
 an addition a judgement against a standard rather than a matter of taste.

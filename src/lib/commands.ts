@@ -334,3 +334,66 @@ export function commandViolations(
     }
   return found;
 }
+
+/** The page that says where each recurring flag appears. */
+export const FLAGS_PAGE = "src/content/docs/commands/global-flags.md";
+
+/** A row naming a flag and, as code, the commands it appears on. */
+const FLAG_ROW = /^\|\s*`(--[a-z][a-z0-9-]*)[^`]*`\s*\|([^|]*)\|/gm;
+
+/** A command written as code in a cell. */
+const COMMAND_CELL = /`([a-z][a-z0-9 -]*)`/g;
+
+/**
+ * The flags-page table of flags that recur without being inherited, against
+ * every command that takes each one, in both directions. A row whose second
+ * cell names no command as code is the global table's, and is left alone.
+ */
+export function flagTableViolations(
+  commands: ReadonlyMap<string, Command>,
+  pages: readonly Page[],
+): Violation[] {
+  const page = pages.find((one) => one.path === FLAGS_PAGE);
+  if (page === undefined)
+    return [
+      at(
+        FLAGS_PAGE,
+        null,
+        "the page saying where each flag appears is not here",
+      ),
+    ];
+  const said = new Map<string, Set<string>>();
+  for (const row of page.text.matchAll(FLAG_ROW)) {
+    const named = [...captured(row, 2).matchAll(COMMAND_CELL)].map((cell) =>
+      captured(cell, 1),
+    );
+    if (named.length === 0) continue;
+    const flag = captured(row, 1);
+    said.set(flag, new Set([...(said.get(flag) ?? []), ...named]));
+  }
+  const found: Violation[] = [];
+  for (const [flag, onPage] of said) {
+    const taking = [...commands.values()]
+      .filter((command) => command.path !== "" && command.flags.has(flag))
+      .map((command) => command.path);
+    const missing = taking.filter((path) => !onPage.has(path));
+    const invented = [...onPage].filter((path) => !taking.includes(path));
+    if (missing.length > 0)
+      found.push(
+        at(
+          FLAGS_PAGE,
+          null,
+          `\`${flag}\` is also taken by ${missing.join(", ")}`,
+        ),
+      );
+    if (invented.length > 0)
+      found.push(
+        at(
+          FLAGS_PAGE,
+          null,
+          `\`${flag}\` is not taken by ${invented.join(", ")}`,
+        ),
+      );
+  }
+  return found;
+}

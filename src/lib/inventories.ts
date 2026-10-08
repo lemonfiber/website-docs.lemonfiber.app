@@ -243,6 +243,17 @@ export const INVENTORIES: readonly Inventory[] = [
     },
   },
   {
+    what: "states a seed reports a value in",
+    source: CONTRACT,
+    members: (sources) =>
+      variantsAt(sources.contract, "kinds", "seed", "$defs", "SeedState"),
+    claims: [],
+    listing: {
+      page: `${DOCS}advanced/adopt-and-reset.md`,
+      members: (text) => columnUnder(text, "State"),
+    },
+  },
+  {
     what: "stages a stuck item can stop at",
     source: CONTRACT,
     members: (sources) =>

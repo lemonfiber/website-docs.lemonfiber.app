@@ -35,18 +35,26 @@ Comparison is three-way, like a merge.
 Two values can only say _different_. Three can say which of the two changed,
 which is the whole difference between preserving an edit and reverting one.
 
-| What was found                                                                   | What seed does about it                                                 |
-| -------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| Present — already what lemonfiber would write                                    | Nothing, which is what makes a second run change nothing                |
-| Absent                                                                           | Writes it                                                               |
-| Drifted — differs from the baseline while lemonfiber's intent is unchanged       | Preserves your value and reports the drift                              |
-| Stale — still lemonfiber's own baseline value, but its intent has moved on       | Reports that it can be brought up to date; nobody's edit is at stake    |
-| Conflicted — both the value and lemonfiber's intent moved away from the baseline | Presents the conflict and leaves the value alone                        |
-| Adopted — a value you set that lemonfiber has taken as the accepted state        | Keeps it, changing nothing                                              |
-| Unmanaged — a value lemonfiber never wrote and has no baseline for               | Adopts what is there as the baseline rather than overwriting on a guess |
-| Unavailable — the service is not answering                                       | Skips it, so a later run completes the rest                             |
+A seed reports each value it looked at in one of these states.
 
-That last-but-one row is why a first run against a stack you already had does not
+| State           | What seed did about it                                                                               |
+| --------------- | ---------------------------------------------------------------------------------------------------- |
+| `wired`         | It was absent, or not what lemonfiber would have it be: written, and read back                       |
+| `already-wired` | Already what lemonfiber would write. Nothing, which is what makes a second run change nothing        |
+| `drifted`       | You changed it while lemonfiber's intent stayed put. Your value is preserved, and the drift reported |
+| `stale`         | Still lemonfiber's own value, but its intent has moved on. Reported; nobody's edit is at stake       |
+| `conflicted`    | Both the value and lemonfiber's intent moved away from the baseline. Presented, and left alone       |
+| `adopted`       | A value of yours taken as the accepted state. Kept, changing nothing                                 |
+| `unmanaged`     | A value lemonfiber never wrote and has no record for. Taken as the baseline, not overwritten         |
+| `observed`      | An area you declared unmanaged. Nothing read from the service, nothing written to it                 |
+| `unmatched`     | Something fills what a service asks for, and nothing lemonfiber does connects the two                |
+| `would-wire`    | What a rehearsal would have written. Nothing was                                                     |
+| `would-adopt`   | What a rehearsal would have taken on as yours. Nothing was                                           |
+| `skipped`       | Something it needs was not answering. A later run completes it                                       |
+| `failed`        | Attempted, and the service rejected it, in its own words                                             |
+| `refused`       | Refused by lemonfiber's own policy, for a reason a re-run will not resolve                           |
+
+The `unmanaged` row is why a first run against a stack you already had does not
 report mass drift: there was never an expectation to drift from.
 
 Drift itself is information, not a failure. It escalates to a warning only when
@@ -92,13 +100,23 @@ writes out. Local modifications are detected by content rather than by timestamp
 and are never silently overwritten on an upgrade: you are shown a diff and you
 choose. Nothing is auto-merged.
 
-## What is specified and not exposed today
+## Declaring an area unmanaged
 
-The specification also provides for declaring a service, or a specific
-configuration area, unmanaged — after which lemonfiber observes it but never
-writes to it, and stops reporting drift for it. No subcommand exposes that today;
-the `unmanaged` state above is the different case of a value with no baseline
-yet. The requirement is
+To keep a part of the stack by hand for good, write it down in the
+`LEMONFIBER_UNMANAGED` setting: pairs of `area=reason`, comma-separated.
+
+```sh
+$ lemonfiber config set LEMONFIBER_UNMANAGED "config/recyclarr=my own profiles live in here,sonarr=I tune this one by hand"
+```
+
+A name covers the thing it spells and anything beneath it after a slash:
+`sonarr` covers the service, and `config` covers `config/recyclarr/recyclarr.yml`.
+A stack file beneath a declared name is never written, a declared service is not
+seeded and reports as `observed`, and a declared setting is refused by
+`config set`, with your reason. A repair you confirm with `doctor --fix` is not
+stopped by it: that is a decision you have just taken, one at a time and by name.
+The reason has only to be there; an entry with no `=` declares nothing. The
+requirement is
 [F1 customisation](https://lemonfiber.app/spec/10-functional/features/f-extensibility/f1-customisation/).
 
 ## Where to go next

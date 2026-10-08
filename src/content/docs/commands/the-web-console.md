@@ -69,14 +69,12 @@ they are.
 
 ## What it can ask for
 
-Six actions, and every one of them is a command you could have typed:
-
-`up`, `down`, `restart`, `pull`, `seed`, `doctor`.
-
+Every action the console offers is one of the web API's actions: the same table
+the terminal dashboard reaches, and each one a command you could have typed.
 They are asked for through the same entry point the command line uses, so the
 console cannot do anything the terminal cannot, and cannot do it differently.
 That is not a limitation it works around — it is the reason both surfaces can be
-trusted to describe one stack.
+trusted to describe one stack. The web API contract's [writing section](https://lemonfiber.app/spec/20-architecture/contracts/web-api/#writing) lists them.
 
 An action that only reads and writes lemonfiber's own files comes back with its
 outcome. One that reaches the container engine runs for minutes, so it is
@@ -84,9 +82,7 @@ answered straight away with the name of the work, and the work carries on
 somewhere the connection cannot reach. A tab closed mid-repair takes nothing with
 it.
 
-## What it does not do yet
+## Who it is for
 
-There is no settings screen, no household view, and no per-person limits — the
-words exist in the console's own vocabulary and the screens do not. This console
-is the operator's; what somebody who merely lives here is handed is one address,
-which `lemonfiber front-door` names.
+This console is the operator's. What somebody who merely lives here is handed is
+one address, which `lemonfiber front-door` names.
