@@ -6,6 +6,7 @@ import {
   codeViolations,
   familySizes,
   familyViolations,
+  mentionViolations,
 } from "./codes.ts";
 import type { Page } from "./counts.ts";
 
@@ -293,5 +294,38 @@ describe("familyViolations", () => {
     );
     expect(rest).toEqual([]);
     expect(found?.message).toContain("no sentence says how many codes");
+  });
+});
+
+describe("mentionViolations", () => {
+  const artefact = "- `VPN-1`\n- `LIFE-1`\n";
+  const page = (text: string): Page => ({
+    path: "src/content/docs/a.md",
+    text,
+  });
+
+  it("passes every code a page names that lemonfiber raises", () => {
+    expect(
+      mentionViolations(artefact, [page("A `LIFE-1` means… and `VPN-1` too.")]),
+    ).toEqual([]);
+  });
+
+  it("names a code lemonfiber does not raise, where it stands", () => {
+    expect(
+      mentionViolations(artefact, [page("Fine `VPN-1`.\n\nGone: `WIRING-9`.")]),
+    ).toEqual([
+      {
+        where: "src/content/docs/a.md",
+        line: 3,
+        message:
+          "names `WIRING-9`, which vendor/lemonfiber/reference/error-codes.md does not list",
+      },
+    ]);
+  });
+
+  it("refuses an empty reference rather than passing on it", () => {
+    expect(mentionViolations("", [page("`VPN-1`")])).toEqual([
+      expect.objectContaining({ line: null }),
+    ]);
   });
 });

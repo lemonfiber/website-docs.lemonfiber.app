@@ -243,6 +243,17 @@ export const INVENTORIES: readonly Inventory[] = [
     },
   },
   {
+    what: "stages a stuck item can stop at",
+    source: CONTRACT,
+    members: (sources) =>
+      variantsAt(sources.contract, "kinds", "trace", "$defs", "Stage"),
+    claims: [],
+    listing: {
+      page: `${DOCS}fixing/stuck-downloads.md`,
+      members: (text) => columnUnder(text, "Stage"),
+    },
+  },
+  {
     what: "payload kinds",
     source: CONTRACT,
     members: (sources) => keysAt(sources.contract, "kinds"),

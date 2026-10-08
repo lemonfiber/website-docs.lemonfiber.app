@@ -58,9 +58,9 @@ That is [`STORAGE-5`](/fixing/codes/storage/). The usual cause is a drive that c
 
 ## One mount point, not two
 
-Every container gets **one** data mount, with subdirectories beneath it. Splitting downloads and media into separate mounts is the anti-pattern this rule exists to prevent: separate mounts are separate filesystems, so nothing can ever link between them, and every import copies for ever.
+Every service that touches the library gets **one** data mount, with subdirectories beneath it. Splitting downloads and media into separate mounts is the anti-pattern this rule exists to prevent: separate mounts are separate filesystems, so nothing can ever link between them, and every import copies for ever.
 
-This is refused before a stack ships rather than left to be found in production: the media-stack repository's validator fails any service with more than one mount beneath the data root, naming the service and every such mount.
+The stack lemonfiber ships is held to this before it ships: the media-stack repository's validator fails any service with more than one mount beneath the data root, naming the service and every such mount. A stack directory of your own is yours to lay out, so there it is reported rather than refused. The storage check reads the stack's Compose files and warns with [`STORAGE-7`](/fixing/codes/storage/) under `storage.single-mount`, naming each service that sees more than one mount. If you have weighed the cost, `lemonfiber doctor --accept storage.single-mount` settles it once.
 
 The reasoning is recorded in [ADR-0006, a single data mount](https://lemonfiber.app/spec/00-overview/decisions/0006-single-data-mount/). The mount itself is declared in the stack's Compose files, as `${DATA_ROOT}:/data` on every service that touches the library; see [running without lemonfiber](/advanced/without-lemonfiber/).
 
