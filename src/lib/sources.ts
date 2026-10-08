@@ -13,7 +13,7 @@
 import { matches } from "./counts.ts";
 // Extension named: `scripts/guards.ts` loads this module in node directly,
 // which resolves no extension of its own.
-import { captured } from "./mirror.ts";
+import { captured } from "@lemonfiber/website-kit/mirror";
 
 /** The `id` of every `[[table]]` the stack manifest declares. */
 export const ids = (stack: string, table: string): string[] =>

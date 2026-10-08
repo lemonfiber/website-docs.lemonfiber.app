@@ -19,7 +19,7 @@
  * the artefact rather than on a copy of it.
  */
 
-import { captured } from "./mirror.ts";
+import { captured } from "@lemonfiber/website-kit/mirror";
 import { enumAt } from "./sources.ts";
 
 /** Where the pill's labels are declared, by repository-relative path. */

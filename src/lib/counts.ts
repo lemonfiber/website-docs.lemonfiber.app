@@ -9,10 +9,10 @@
  * Pure functions over text. Reading the tree is `scripts/guards.ts`.
  */
 
-import type { Violation } from "./guards";
+import type { Violation } from "@lemonfiber/website-kit/guards";
 // Extension named: `scripts/guards.ts` loads this module in node directly,
 // which resolves no extension of its own.
-import { captured } from "./mirror.ts";
+import { captured } from "@lemonfiber/website-kit/mirror";
 
 /** A page of this site's own prose, by repository-relative path. */
 export interface Page {

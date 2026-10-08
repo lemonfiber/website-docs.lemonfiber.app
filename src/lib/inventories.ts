@@ -12,7 +12,7 @@
 
 import { FAMILIES, INDEX, isFamilyPage } from "./codes.ts";
 import { matches, type Inventory, type Page, type Sources } from "./counts.ts";
-import { captured } from "./mirror.ts";
+import { captured } from "@lemonfiber/website-kit/mirror";
 import {
   consolePlaces,
   consumes,

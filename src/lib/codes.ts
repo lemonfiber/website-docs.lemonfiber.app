@@ -12,10 +12,10 @@
  */
 
 import { asNumber, inWords, matches, SAID, type Page } from "./counts.ts";
-import type { Violation } from "./guards";
+import type { Violation } from "@lemonfiber/website-kit/guards";
 // Extension named: `scripts/guards.ts` loads this module in node directly,
 // which resolves no extension of its own.
-import { captured } from "./mirror.ts";
+import { captured } from "@lemonfiber/website-kit/mirror";
 
 /** A family and a number — `VPN-1`. Never anything else. */
 const CODE = /^[A-Z][A-Z0-9]*-\d+$/;

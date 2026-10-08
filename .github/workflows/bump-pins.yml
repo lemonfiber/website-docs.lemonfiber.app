@@ -22,9 +22,9 @@ name: bump-pins
 on:
   workflow_dispatch:
   schedule:
-    # Every three hours. `WINDOW_HOURS` in `src/lib/pins.ts` gives a commit a
-    # day before a pin not having taken it refuses pull requests, which leaves
-    # this eight runs to carry it.
+    # Every three hours. `WINDOW_HOURS` in the kit's `src/pins.ts` gives a
+    # commit a day before a pin not having taken it refuses pull requests, which
+    # leaves this eight runs to carry it.
     - cron: "17 */3 * * *"
 
 permissions:

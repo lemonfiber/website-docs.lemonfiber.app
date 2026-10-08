@@ -9,11 +9,10 @@
 #
 # `sources` is the gate (Q-R68, Q-R70). It names every commit a pin has not
 # taken that touched a file a page here renders or a guard reads, and refuses
-# once one of them has waited longer than `WINDOW_HOURS` (`src/lib/pins.ts`)
-# on its branch — on every pull request, so the catch-up stands in front of the
-# next change, and on the schedule, so a stall is said where nobody has a pull
-# request open. A pull
-# request that moves a pin is judged on the modules it moves, since refusing it
+# once one of them has waited longer than `WINDOW_HOURS` (the kit's
+# `src/pins.ts`) on its branch — on every pull request, so the catch-up stands
+# in front of the next change, and on the schedule, so a stall is said where
+# nobody has a pull request open. A pull request that moves a pin is judged on the modules it moves, since refusing it
 # for a pin it does not touch would hold back the cure. A page that renders a
 # pinned file can go false without anything here changing, and a guard holding
 # a page to a source stays green while the pin sits before the commit that moved
@@ -269,10 +268,14 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version-file: .nvmrc
+          cache: npm
 
-      # No install step. The check imports the declarations themselves and
-      # nothing from `node_modules`, so the node this repository declares is
-      # the whole of what it needs.
+      # The check is the kit's, taken by commit, so it is installed exactly
+      # as the lockfile says. Nothing here holds a secret for an install to
+      # reach.
+      - name: Install exactly what the lockfile says
+        run: npm ci --ignore-scripts
+
       - name: Which pins have gone behind on a source this site renders
         id: report
         env:

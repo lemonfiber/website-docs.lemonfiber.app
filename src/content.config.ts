@@ -5,8 +5,8 @@ import { z } from "astro/zod";
 import { fileURLToPath } from "node:url";
 
 import manifest from "../mirrors.json";
-import type { Mirror } from "./lib/mirror";
-import { mirrorLoader } from "./lib/mirror-loader";
+import type { Mirror } from "@lemonfiber/website-kit/mirror";
+import { mirrorLoader } from "@lemonfiber/website-kit/mirror-loader";
 
 const mirrors = manifest.mirrors as readonly Mirror[];
 const root = fileURLToPath(new URL("..", import.meta.url)).replace(/\/$/, "");
