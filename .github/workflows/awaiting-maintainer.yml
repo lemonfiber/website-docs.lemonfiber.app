@@ -4,14 +4,17 @@
 # The list below is also the wait list. The flag only goes up once every check
 # `main` requires has passed, and the reusable reads this same list back out of
 # this file to know what it must see finish first — so a workflow missing from it
-# is a workflow the gate never waits for and never re-evaluates on. `main`
-# requires fifteen checks here and they come from three workflows:
+# is a workflow the gate never waits for and never re-evaluates on. The checks
+# `main` requires come from these workflows:
 #
-#   ci     spec-check / spec-check, dco / dco, commitlint / commitlint,
-#          hygiene / {actionlint, invite, links, markdown, pins, shared-files,
-#          typos}, security / {gitleaks, osv-scanner}
-#   gate   gate
-#   sonar  gate / gate
+#   ci      spec-check / spec-check, dco / dco, commitlint / commitlint,
+#           attribution / attribution, workflow-pins / workflow-pins,
+#           hygiene / {actionlint, invite, links, markdown, pins, shared-files,
+#           typos}, security / {gitleaks, osv-scanner}
+#   gate    gate
+#   sonar   gate / gate
+#   codeql  analyze (actions), analyze (javascript-typescript), alerts / alerts
+#   stable  stable
 #
 # `SonarCloud Code Analysis` is required too and is posted by the SonarCloud app
 # rather than by a workflow, so it cannot be waited for by name; `sonar`'s
@@ -27,14 +30,10 @@
 name: awaiting-maintainer
 on:
   workflow_run:
-    # `codeql` is here because of what its `alerts` job does rather than because a
-    # required context comes from it. That job refuses a branch an open alert
-    # stands against; a gating workflow left out of this list can be the last one
-    # to finish, with nothing afterwards to notice the pull request became
-    # mergeable — the flag never goes up and nothing says why. Naming it costs one
-    # more evaluation and means the list is already right on the day it is
-    # required.
-    workflows: [ci, gate, sonar, codeql]
+    # A gating workflow left out of this list can be the last one to finish, with
+    # nothing afterwards to notice the pull request became mergeable — the flag
+    # never goes up and nothing says why.
+    workflows: [ci, gate, sonar, codeql, stable]
     types: [completed]
   pull_request_review:
     types: [submitted]
