@@ -66,13 +66,9 @@ The remedies differ, so the categories are worth telling apart.
 
 ## Working out which one you have
 
-Run the queue category, which is where these findings come from:
-
-```sh
-$ lemonfiber doctor --only queue
-```
-
-Then follow the trace, and read across from where it stopped.
+Start from `lemonfiber stuck`, follow the trace of the item you care about, and
+read across from where it stopped. The doctor declares a `queue` category, and no
+bundled check reports in it, so the stuck list is where these show.
 
 ### Stopped at `monitored` or `searching`
 
@@ -112,13 +108,21 @@ The file is in the library on disk and the media server has not picked it up. Th
 
 ## What lemonfiber will fix for you
 
-Where a stall has one unambiguous action — retrying an import, cleaning up an orphan — it is offered rather than applied silently.
+Two of the causes above have a repair with one unambiguous action, and
+`lemonfiber doctor --fix` offers each rather than applying it silently:
+
+- moving the download client onto the port the VPN forwarded, for [`VPN-7`](/fixing/codes/vpn/);
+- putting a download client back on the category lemonfiber files under, for
+  [`WIRING-1`](/fixing/codes/wiring/), where lemonfiber wrote that value and the
+  client still holds it.
 
 ```sh
 $ lemonfiber doctor --fix
 ```
 
-Each repair says what it would do and what else changes if it does, and waits to be told. See [run the doctor](/fixing/run-the-doctor/).
+Each repair says what it would do and what else changes if it does, and waits to
+be told. The rest of the causes on this page are yours to act on. See
+[run the doctor](/fixing/run-the-doctor/).
 
 ## Thresholds
 

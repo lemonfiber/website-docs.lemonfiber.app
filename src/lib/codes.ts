@@ -265,3 +265,39 @@ export function familyViolations(
 
   return found;
 }
+
+/** A code written as code anywhere in prose: `` `VPN-1` ``. */
+const MENTIONED = /`([A-Z][A-Z0-9]*-\d+)`/g;
+
+/**
+ * Every code a page names that lemonfiber cannot raise.
+ *
+ * The family pages are held to the reference above; this holds every other
+ * sentence that sends a reader to a code — "a `LIFE-1` means…" — so a code
+ * renumbered or retired upstream is not left named as advice.
+ */
+export function mentionViolations(
+  artefact: string,
+  pages: readonly Page[],
+): Violation[] {
+  const raised = new Set(codesInArtefact(artefact));
+  if (raised.size === 0)
+    return [
+      at(
+        ARTEFACT,
+        "no error codes found — the reference is missing or unreadable",
+      ),
+    ];
+  const found: Violation[] = [];
+  for (const page of pages)
+    for (const match of page.text.matchAll(MENTIONED)) {
+      const code = captured(match, 1);
+      if (raised.has(code)) continue;
+      found.push({
+        where: page.path,
+        line: page.text.slice(0, match.index).split("\n").length,
+        message: `names \`${code}\`, which ${ARTEFACT} does not list`,
+      });
+    }
+  return found;
+}

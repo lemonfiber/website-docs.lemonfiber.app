@@ -33,17 +33,22 @@ If the address-echo service cannot be reached from either container, the result 
 
 Where two sources disagree, the disagreement is reported rather than resolved by picking one.
 
-## The states it reports
+## The checks it reports
 
-| State                | Meaning                                                                                      |
-| -------------------- | -------------------------------------------------------------------------------------------- |
-| `verified`           | Tunnel up, egress matches, and where the provider supports it, a port is granted and matches |
-| `verified-no-pf`     | Tunnel up and egress matches; the provider offers no port forwarding. Not degraded.          |
-| `degraded`           | The provider supports port forwarding, and none was granted or the port does not match       |
-| `killswitch-holding` | Tunnel down, download client has no connectivity. Safe.                                      |
-| `leaking`            | The client's egress does not match the tunnel. Critical.                                     |
-| `unverified`         | Could not be checked                                                                         |
-| `not-configured`     | No VPN configured; torrents are disabled, or running without one has been accepted           |
+Each of these comes back with a verdict of its own — `pass`, `warn`, `fail`,
+`unverified` or `skipped` — and with a [`VPN` code](/fixing/codes/vpn/) where
+something is wrong.
+
+| Check                     | What it establishes                                                                            |
+| ------------------------- | ---------------------------------------------------------------------------------------------- |
+| `vpn.tunnel`              | The tunnel container is up                                                                     |
+| `vpn.egress-match`        | The download client's public address is the tunnel's, and it reaches nothing the tunnel cannot |
+| `vpn.egress-sources`      | The address services asked agree with each other                                               |
+| `vpn.killswitch`          | With the tunnel dropped on purpose, the client reaches nothing. Only with `--disruptive`       |
+| `vpn.tunnel-restored`     | The tunnel came back after that test. Reported only where it did not                           |
+| `vpn.port-forward`        | The provider granted a forwarded port                                                          |
+| `vpn.port-forward-client` | The download client listens on that port                                                       |
+| `vpn.unprotected`         | Torrent traffic runs through a VPN at all                                                      |
 
 ## Port forwarding, and why yours may not have it
 
@@ -56,7 +61,7 @@ Port forwarding is treated as a capability, not as a list of provider names. Eve
 
 Everything else has none at all. NordVPN discontinued it; Mullvad withdrew it in 2023.
 
-On a provider without it, the port checks report `not-applicable` and are **never** reported as a failure. Nothing is broken, and you cannot fix a feature your provider does not sell. What you lose is real, though, and it is stated once at setup: without a forwarded port, peers cannot open connections to you, so throughput and seeding are both reduced.
+Where port forwarding is not enabled, `vpn.port-forward` comes back `skipped` and is **never** reported as a failure. Nothing is broken, and you cannot fix a feature your provider does not sell. Where it is enabled and no port arrives, a provider lemonfiber knows to forward ports gets a warning; one it knows nothing about is left `unverified` rather than blamed, because the cause cannot be named without guessing. What you lose is real, though, and it is stated once at setup: without a forwarded port, peers cannot open connections to you, so throughput and seeding are both reduced.
 
 ### Where the provider does have it
 
@@ -71,16 +76,11 @@ The fourth is the one that bites. **A forwarded port does not survive a reconnec
 
 If you see [`VPN-7`](/fixing/codes/vpn/), the port and the client have parted company. Running `lemonfiber up` moves the client onto the forwarded port.
 
-### The traps that look like a broken installation
+### The trap that looks like a broken installation
 
-Each port-forwarding provider has one failure mode that reads as a broken stack and is actually a credential problem, and none of them explains it at the point of failure.
+With ProtonVPN, port forwarding has to be enabled **when the WireGuard configuration is generated**, and the server has to support P2P. The tunnel still connects without either; only the port never arrives, and it cannot be fixed at runtime. It needs new credentials.
 
-| Provider  | The trap                                                                                                                                                                         |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ProtonVPN | Port forwarding has to be enabled **when the WireGuard configuration is generated**, and the server has to support P2P. It cannot be fixed at runtime; it needs new credentials. |
-| NordVPN   | The credentials are the **service credentials** from the account dashboard, not the account email and password. The obvious values are rejected with no explanation.             |
-
-Where the tunnel is up and no port was granted on a provider that offers them, that provider's trap is named as the first candidate cause — which is what [`VPN-4`](/fixing/codes/vpn/) does.
+Where the tunnel is up and no port was granted, [`VPN-4`](/fixing/codes/vpn/) names that trap first on ProtonVPN. On the other providers that forward ports it says the same in general terms: forwarding usually has to be enabled at the point the credentials are generated, not afterwards.
 
 ## Testing the killswitch
 

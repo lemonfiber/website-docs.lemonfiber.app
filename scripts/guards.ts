@@ -16,6 +16,7 @@ import {
   ARTEFACT,
   codeViolations,
   familyViolations,
+  mentionViolations,
   INDEX,
   isFamilyPage,
 } from "../src/lib/codes.ts";
@@ -24,6 +25,7 @@ import {
   commandViolations,
   REFERENCE,
 } from "../src/lib/commands.ts";
+import { checkViolations, REGISTER } from "../src/lib/checks.ts";
 import { assembledContract, CONTRACT_DIRECTORY } from "../src/lib/contract.ts";
 import { countViolations, type Page } from "../src/lib/counts.ts";
 import { readText } from "../src/lib/checkout.ts";
@@ -75,6 +77,7 @@ async function checks(tree: Tree): Promise<Violation[]> {
     ),
     ...formulaViolations(formulae, prose),
     ...toolchainViolations(await text(WORKSPACE), prose),
+    ...checkViolations(await text(REGISTER), prose),
     ...commandViolations(
       commandsIn(
         await Promise.all(
@@ -114,6 +117,7 @@ async function checks(tree: Tree): Promise<Violation[]> {
       prose,
     ),
     ...familyViolations(errorCodes, prose),
+    ...mentionViolations(errorCodes, prose),
     ...topicViolations(tree.pages),
   ];
 }
