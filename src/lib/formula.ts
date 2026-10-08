@@ -12,10 +12,10 @@
  */
 
 import { matches, type Page } from "./counts.ts";
-import type { Violation } from "./guards";
+import type { Violation } from "@lemonfiber/website-kit/guards";
 // Extension named: `scripts/guards.ts` loads this module in node directly,
 // which resolves no extension of its own.
-import { captured } from "./mirror.ts";
+import { captured } from "@lemonfiber/website-kit/mirror";
 
 /** Where the tap keeps the formulae `brew` reads. */
 export const FORMULAE = "vendor/homebrew-tap/Formula";

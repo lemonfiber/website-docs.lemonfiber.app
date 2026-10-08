@@ -10,7 +10,7 @@
  */
 
 import { matches } from "./counts.ts";
-import { captured } from "./mirror.ts";
+import { captured } from "@lemonfiber/website-kit/mirror";
 
 /** A cell as a reader reads it: whatever marked it up, taken off. */
 const bare = (cell: string): string => cell.replaceAll("`", "");

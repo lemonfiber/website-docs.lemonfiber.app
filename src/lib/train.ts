@@ -10,7 +10,7 @@
  * `project-source.ts`; joining the train to what is built is `project.ts`.
  */
 import { plain } from "./markdown";
-import { captured } from "./mirror";
+import { captured } from "@lemonfiber/website-kit/mirror";
 
 /** The scale of the specification, counted by its own generator. */
 export interface Counts {

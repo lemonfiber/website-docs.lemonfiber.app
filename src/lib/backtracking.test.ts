@@ -6,9 +6,13 @@
  */
 import { describe, expect, it } from "vitest";
 
-import { chromeProse } from "./guards.ts";
+import { chromeProse } from "@lemonfiber/website-kit/guards";
 import { rendered } from "./maturity.ts";
-import { rewriteLinks, type Mirror, type Revision } from "./mirror.ts";
+import {
+  rewriteLinks,
+  type Mirror,
+  type Revision,
+} from "@lemonfiber/website-kit/mirror";
 
 const BUDGET_MS = 500;
 const LENGTH = 30_000;

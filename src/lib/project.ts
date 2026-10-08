@@ -9,8 +9,8 @@
  * `train.ts` holds the parsing. This file reads the tree through
  * `project-source.ts` and joins the two into the shapes a page asks for.
  */
-import { parseRevision, type Revision } from "./mirror";
-import { gitLog } from "./mirror-source";
+import { parseRevision, type Revision } from "@lemonfiber/website-kit/mirror";
+import { gitLog } from "@lemonfiber/website-kit/mirror-source";
 import { readText } from "./project-source";
 import {
   manifestName,

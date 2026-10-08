@@ -9,16 +9,6 @@ module.exports = {
       to: { circular: true },
     },
     {
-      name: "rules-know-nothing-of-the-filesystem",
-      severity: "error",
-      comment:
-        "src/lib/guards.ts and src/lib/links.ts state the rules; scripts/ reads " +
-        "the tree and applies them. A dependency the other way makes the rules " +
-        "untestable.",
-      from: { path: "^src/lib/(guards|links)\\.ts$" },
-      to: { path: "^(scripts|node_modules/(node:)?fs)" },
-    },
-    {
       name: "content-is-not-imported",
       severity: "error",
       comment:

@@ -104,8 +104,10 @@ tested.
 
 ## The guards
 
-`scripts/guards.ts` reads the tree; `src/lib/guards.ts` states the rules and is
-what the tests exercise. They enforce:
+The rules every lemonfiber site keeps are
+[`lemonfiber/website-kit`](https://github.com/lemonfiber/website-kit)'s, stated
+and tested there; `scripts/guards.ts` runs them over this tree and adds this
+site's own, from `src/lib/`. Together they enforce:
 
 - No external origin outside a comment. Nothing is loaded from a third party.
 - No lint suppression, and no TypeScript escape hatch.
@@ -199,7 +201,10 @@ runs `npm run guard -- --fix` to rewrite the counts the pages state. A move the
 guards then hold is taken; a move that needs words written here is left at its
 pin and named, with what the guards said, so it holds back no other. What is
 taken goes to `pins/all` as one commit made through the API, and the pull
-request it opens merges itself once every required check passes.
+request it opens merges itself once every required check passes. A package
+taken by commit moves in the same pull request: one from a repository pinned
+under `vendor/` follows that pin, so `@lemonfiber/brand` and `vendor/brand` stay
+one revision, and `@lemonfiber/website-kit` follows its default branch.
 `node scripts/bump.ts` is the whole of that job.
 
 `.github/workflows/pins.yml` holds `pins-sources`, the gate. Has a pin gone
@@ -208,9 +213,8 @@ declarations themselves — every mirror in `mirrors.json`, every inventory's
 `source`, and the artefact each guard that is not one holds a page to — so a
 new one is watched from the day it is declared and nothing is written down
 twice. It names the commits rather than counting them, and refuses once one has
-waited longer than `WINDOW_HOURS` (`src/lib/pins.ts`) on its branch: on every
-pull request, and on
-a daily schedule that tells the maintainers' Discord. A pull request that moves
+waited longer than `WINDOW_HOURS` (the kit's `src/pins.ts`) on its branch: on
+every pull request, and on a daily schedule that tells the maintainers' Discord. A pull request that moves
 a pin is judged on the modules it moves. `node scripts/pins.ts` is the whole of
 that job, and runs here as it runs there.
 
@@ -239,9 +243,9 @@ different ways fails the build rather than publishing either shape.
 
 ## How a mirrored page is built
 
-`src/lib/mirror.ts` holds the rules as pure functions; `src/lib/mirror-source.ts`
-is the three calls that touch git and the filesystem; `src/lib/mirror-loader.ts`
-wires them into the content collection. For each page it:
+The kit's `mirror` module holds the rules as pure functions, `mirror-source` is
+the three calls that touch git and the filesystem, and `mirror-loader` wires
+them into the content collection, which `src/content.config.ts` declares. For each page it:
 
 - takes the title from frontmatter, else the first heading, else what
   `mirrors.json` declares — and fails the build if a page names itself nowhere;
@@ -266,7 +270,7 @@ pinned revision. That address is a claim about bytes already in the checkout, so
 it can be checked without a network.
 
 `scripts/links.ts` reads `dist/` after the build and applies the rules in
-`src/lib/links.ts` to every address that points into a repository this build
+the kit's `links` module to every address that points into a repository this build
 rendered from:
 
 - **The path exists.** `git ls-tree` at the pinned revision answers, so an
@@ -293,9 +297,10 @@ slow, rate-limited, and red for reasons the branch did not cause.
 
 ## What it consumes
 
-| Package             | Why                                               |
-| ------------------- | ------------------------------------------------- |
-| `@lemonfiber/brand` | Colour, type, spacing and radii, pinned by commit |
+| Package                   | Why                                                         |
+| ------------------------- | ----------------------------------------------------------- |
+| `@lemonfiber/brand`       | Colour, type, spacing and radii, pinned by commit           |
+| `@lemonfiber/website-kit` | The mirroring, guards and checks every site runs, by commit |
 
 `src/app.css` imports the brand tokens and re-aliases them into product-local
 names. Components use those names; they never reference a `--lf-*` token or a

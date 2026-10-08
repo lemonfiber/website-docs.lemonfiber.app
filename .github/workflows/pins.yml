@@ -9,11 +9,10 @@
 #
 # `sources` is the gate (Q-R68, Q-R70). It names every commit a pin has not
 # taken that touched a file a page here renders or a guard reads, and refuses
-# once one of them has waited longer than `WINDOW_HOURS` (`src/lib/pins.ts`)
-# on its branch — on every pull request, so the catch-up stands in front of the
-# next change, and on the schedule, so a stall is said where nobody has a pull
-# request open. A pull
-# request that moves a pin is judged on the modules it moves, since refusing it
+# once one of them has waited longer than `WINDOW_HOURS` (the kit's
+# `src/pins.ts`) on its branch — on every pull request, so the catch-up stands
+# in front of the next change, and on the schedule, so a stall is said where
+# nobody has a pull request open. A pull request that moves a pin is judged on the modules it moves, since refusing it
 # for a pin it does not touch would hold back the cure. A page that renders a
 # pinned file can go false without anything here changing, and a guard holding
 # a page to a source stays green while the pin sits before the commit that moved
