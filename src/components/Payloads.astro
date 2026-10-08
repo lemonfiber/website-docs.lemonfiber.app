@@ -1,5 +1,5 @@
 ---
-import { artefact } from "../lib/schema-source";
+import { contract } from "../lib/schema-source";
 import { payloads } from "../lib/schema";
 import * as m from "../paraglide/messages.js";
 import Definitions from "./Definitions.astro";
@@ -7,15 +7,15 @@ import Type from "./Type.astro";
 
 /**
  * Every payload kind the pinned binary serves, and every type they are built
- * from, read out of `contract/web-api.contract.json`.
+ * from, read out of the contract the core keeps as `contract/web-api/`.
  */
 const PREFIX = "type-";
-const read = payloads(artefact("web-api.contract.json"));
+const read = payloads(contract());
 
 // A type two kinds define differently has no single shape to publish.
 if (read.disagreeing.length > 0)
   throw new Error(
-    `web-api.contract.json defines these more than one way: ${read.disagreeing.join(", ")}`,
+    `contract/web-api/ defines these more than one way: ${read.disagreeing.join(", ")}`,
   );
 ---
 

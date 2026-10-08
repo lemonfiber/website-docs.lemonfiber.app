@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 
-import { artefact, vendored } from "./schema-source";
+import { contract, vendored } from "./schema-source";
 import {
   definitionOf,
   fieldsOf,
@@ -265,7 +265,7 @@ const named = (definitions: readonly Definition[]): string[] =>
 
 describe("the artefacts this site pins", () => {
   it("reads the web-API contract without a disagreement or a dangling name", () => {
-    const read = payloads(artefact("web-api.contract.json"));
+    const read = payloads(contract());
     const defined = new Set(read.definitions.map((one) => one.name));
     expect(read.disagreeing).toEqual([]);
     expect(read.kinds.length).toBeGreaterThan(0);

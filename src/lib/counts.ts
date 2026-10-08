@@ -24,7 +24,7 @@ export interface Page {
 export interface Sources {
   /** `vendor/lemonfiber-media-stack/stack.toml`. */
   readonly stack: string;
-  /** `vendor/lemonfiber/contract/web-api.contract.json`. */
+  /** The web API's contract, put back together from `vendor/lemonfiber/contract/web-api/`. */
   readonly contract: string;
   /** `vendor/lemonfiber/reference/commands.md`, the index of every command. */
   readonly commands: string;
