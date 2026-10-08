@@ -51,6 +51,19 @@ sections next to it. Moving between "how do I do this", "why is it broken",
 "what does the API return" and "what does the specification require" is the
 thing a reader does most, so it is the thing the navigation is built for.
 
+## What it publishes for a machine
+
+Three files are built beside the pages, from the same collection:
+
+| File               | What it holds                                                                                                                                                                      |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/provenance.json` | Every route, against the repository, path and revision it was rendered from (REPO-R83): a mirrored page's owner at its pin, an authored page this repository at the build's commit |
+| `/llms.txt`        | Every page by topic, with what its frontmatter says of it                                                                                                                          |
+| `/llms-full.txt`   | Every page in full                                                                                                                                                                 |
+
+The endpoints are `src/pages/`, the shapes are the kit's `provenance` and
+`llms`, and `src/lib/published.ts` orders the pages by topic.
+
 ## Running it
 
 ```sh
