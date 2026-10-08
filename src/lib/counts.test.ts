@@ -17,6 +17,7 @@ const nothing: Sources = {
   commands: "",
   quality: "",
   extensionPoints: "",
+  template: "",
   vocabulary: "",
   webApi: "",
   webRoute: "",

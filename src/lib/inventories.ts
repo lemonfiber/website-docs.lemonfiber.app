@@ -19,8 +19,10 @@ import {
   ids,
   keysAt,
   namesAt,
+  offered,
   presets,
   readEndpoints,
+  required,
   serviceNames,
   thirdParty,
   subcommands,
@@ -43,6 +45,30 @@ const ENVELOPE_PAGE = `${DOCS}api/the-envelope.md`;
 const KINDS_PAGE = `${DOCS}api/kinds.md`;
 const TUI_PAGE = `${DOCS}commands/the-tui.md`;
 const CONSOLE_PAGE = `${DOCS}commands/the-web-console.md`;
+const MANIFEST_PAGE = `${DOCS}plugins/the-manifest.mdx`;
+const TEMPLATE = "vendor/plugin-template/plugin.toml";
+
+/** The two sentences the manifest page holds the template to the build with. */
+const TEMPLATE_REQUIRES = "Its `[requires]` names";
+const BUILD_OFFERS = "The lemonfiber this site pins offers";
+const NOTHING_ELSE = "and nothing else";
+
+/**
+ * Every name written as code between two phrases of a page, read with its line
+ * breaks taken as spaces, since a sentence wraps where the line ends.
+ */
+export const namesBetween = (
+  text: string,
+  from: string,
+  to: string,
+): string[] => {
+  const flat = text.replace(/\s+/g, " ");
+  const start = flat.indexOf(from);
+  if (start === -1) return [];
+  const end = flat.indexOf(to, start + from.length);
+  if (end === -1) return [];
+  return matches(/`([^`]+)`/g, flat.slice(start + from.length, end));
+};
 
 /** One page's prose, or none when the page is not in the tree. */
 const prose = (pages: readonly Page[], path: string): string =>
@@ -296,6 +322,26 @@ export const INVENTORIES: readonly Inventory[] = [
     source: POINTS,
     members: (sources) => namesAt(sources.extensionPoints, "points"),
     claims: [{ says: "%N% extension points" }],
+  },
+  {
+    what: "capabilities the plugin template requires",
+    source: TEMPLATE,
+    members: (sources) => required(sources.template),
+    claims: [],
+    listing: {
+      page: MANIFEST_PAGE,
+      members: (text) => namesBetween(text, TEMPLATE_REQUIRES, BUILD_OFFERS),
+    },
+  },
+  {
+    what: "capabilities this build offers a plugin",
+    source: POINTS,
+    members: (sources) => offered(sources.extensionPoints),
+    claims: [],
+    listing: {
+      page: MANIFEST_PAGE,
+      members: (text) => namesBetween(text, BUILD_OFFERS, NOTHING_ELSE),
+    },
   },
   {
     what: "capabilities in the vocabulary",
