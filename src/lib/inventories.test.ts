@@ -8,6 +8,8 @@ import {
   consolePlaces,
   keysAt,
   namesAt,
+  offered,
+  required,
   thirdParty,
   variantsAt,
 } from "./sources.ts";
@@ -33,6 +35,7 @@ const theTree = (): { sources: Sources; pages: Page[] } => ({
     commands: read("vendor/lemonfiber/reference/commands.md"),
     quality: read("vendor/lemonfiber/reference/commands/quality.md"),
     extensionPoints: read("vendor/lemonfiber/contract/extension-points.json"),
+    template: read("vendor/plugin-template/plugin.toml"),
     vocabulary: read("vendor/lemonfiber/contract/capability-vocabulary.json"),
     webApi: read("vendor/spec/20-architecture/contracts/web-api.md"),
     webRoute: read("vendor/lemonfiber-web/src/lib/route.ts"),
@@ -48,6 +51,7 @@ const nothing: Sources = {
   commands: "",
   quality: "",
   extensionPoints: "",
+  template: "",
   vocabulary: "",
   webApi: "",
   webRoute: "",
@@ -334,5 +338,65 @@ describe("consolePlaces", () => {
 
   it("gives nothing for a file it cannot read", () => {
     expect(consolePlaces("")).toEqual([]);
+  });
+});
+
+describe("what the plugin template asks of this build", () => {
+  const PAGE = "src/content/docs/plugins/the-manifest.mdx";
+  const template = [
+    "[requires]",
+    'capabilities = ["service.add", "doctor.contribute", 3]',
+  ].join("\n");
+  const extensionPoints = JSON.stringify({
+    points: [
+      { name: "doctor.check", requires: "doctor.contribute" },
+      { name: "doctor.remedy", requires: "doctor.contribute" },
+      { name: "other" },
+      null,
+    ],
+  });
+  const about = (text: string, sources: Partial<Sources> = {}): string[] =>
+    countViolations(
+      INVENTORIES,
+      { ...nothing, template, extensionPoints, ...sources },
+      [{ path: PAGE, text }],
+    )
+      .filter((one) => one.where === PAGE)
+      .map((one) => one.message);
+
+  const SAYS =
+    "Its `[requires]` names `service.add` and\n`doctor.contribute`. The lemonfiber this site pins offers\n`doctor.contribute` and nothing else.";
+
+  it("says nothing where the page names what the template requires and what the build offers", () => {
+    expect(about(SAYS)).toEqual([]);
+  });
+
+  it("names a capability the template requires that the page has dropped", () => {
+    expect(about(SAYS.replace("`service.add` and\n", ""))).toEqual([
+      expect.stringContaining("has these and the page does not: service.add"),
+    ]);
+  });
+
+  it("names a capability the build now offers that the page does not say", () => {
+    const more = JSON.stringify({
+      points: [
+        { name: "doctor.check", requires: "doctor.contribute" },
+        { name: "service.add", requires: "service.add" },
+      ],
+    });
+    expect(about(SAYS, { extensionPoints: more })).toEqual([
+      expect.stringContaining("has these and the page does not: service.add"),
+    ]);
+  });
+
+  it("finds nothing where either sentence has been reworded", () => {
+    expect(about("The template asks for things.")).toHaveLength(2);
+    expect(about("Its `[requires]` names `x` and stops.")).toHaveLength(2);
+  });
+
+  it("reads nothing out of a manifest that is not one", () => {
+    expect(required("= not toml")).toEqual([]);
+    expect(required('requires = "x"')).toEqual([]);
+    expect(offered("{}")).toEqual([]);
   });
 });

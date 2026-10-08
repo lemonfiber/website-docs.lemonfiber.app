@@ -10,6 +10,8 @@
  * Pure functions over text.
  */
 
+import { parse } from "smol-toml";
+
 import { matches } from "./counts.ts";
 // Extension named: `scripts/guards.ts` loads this module in node directly,
 // which resolves no extension of its own.
@@ -192,3 +194,33 @@ export const consolePlaces = (route: string): string[] => {
     /export const everyPlace: readonly Place\[\] = \[([^\]]*)\]/.exec(route);
   return said === null ? [] : matches(/"([a-z-]+)"/g, captured(said, 1));
 };
+
+/**
+ * The capability every extension point asks a plugin to declare, each named
+ * once: what this build offers a plugin's `[requires]`.
+ */
+export function offered(points: string): string[] {
+  const here = nodeAt(points, ["points"]);
+  if (!Array.isArray(here)) return [];
+  const found = new Set<string>();
+  for (const entry of here) {
+    const requires = (entry as { requires?: unknown } | null)?.requires;
+    if (typeof requires === "string") found.add(requires);
+  }
+  return [...found];
+}
+
+/** The capabilities a plugin manifest's `[requires]` names. */
+export function required(manifest: string): string[] {
+  let read: unknown;
+  try {
+    read = parse(manifest);
+  } catch {
+    return [];
+  }
+  const listed = (read as { requires?: { capabilities?: unknown } }).requires
+    ?.capabilities;
+  return Array.isArray(listed)
+    ? listed.filter((one): one is string => typeof one === "string")
+    : [];
+}

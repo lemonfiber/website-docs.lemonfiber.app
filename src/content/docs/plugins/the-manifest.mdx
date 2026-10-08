@@ -55,8 +55,7 @@ revision this site pins. Its own comments explain each block; the repository is
 <Vendored repo="plugin-template" path="plugin.toml" lang="toml" />
 
 Read it for its shape rather than as something to install unchanged. Its
-`[requires]` names `service.add` and `service.health.http` beside
-`doctor.contribute`, and the lemonfiber this site pins offers only the last of
-those, so this build refuses the template as it stands. The disagreement is
-between the template and the binary, and is being taken up in those
-repositories rather than smoothed over here.
+`[requires]` names `service.add`, `service.health.http` and `doctor.contribute`.
+The lemonfiber this site pins offers `doctor.contribute` and nothing else, so
+this build refuses the template as it stands. The disagreement is between the
+template and the binary, and the fix belongs in one of those repositories.

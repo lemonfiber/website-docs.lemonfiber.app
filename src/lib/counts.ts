@@ -36,6 +36,8 @@ export interface Sources {
   readonly vocabulary: string;
   /** `vendor/spec/20-architecture/contracts/web-api.md`. */
   readonly webApi: string;
+  /** `vendor/plugin-template/plugin.toml`, the manifest every plugin starts from. */
+  readonly template: string;
   /** `vendor/lemonfiber-web/src/lib/route.ts`, the console's own list of screens. */
   readonly webRoute: string;
 }
