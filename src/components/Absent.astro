@@ -1,0 +1,24 @@
+---
+/**
+ * Where a part of a page stands in a release's build that does not carry the
+ * artefact it is read from: a pointer to the same page on `next`. `inline`
+ * fits it inside a sentence.
+ */
+import { onNext } from "../lib/release";
+import * as m from "../paraglide/messages.js";
+
+interface Props {
+  readonly inline?: boolean;
+}
+
+const { inline = false } = Astro.props;
+const href = onNext(Astro.url.pathname, import.meta.env.BASE_URL);
+---
+
+{inline ? (
+  <a href={href}>{m.absent_inline()}</a>
+) : (
+  <p class="absent">
+    {m.absent_block()} <a href={href}>{m.absent_next()}</a>
+  </p>
+)}

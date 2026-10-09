@@ -49,8 +49,9 @@ const trimmed = (path: string): string =>
 /**
  * Where a root-relative address lands. A page this build has is read under its
  * base; a page it lacks, in a versioned build, is read in the fallback version,
- * since an authored page can name one that was added after the release. `has`
- * says whether this build serves a route.
+ * since an authored page can name one that was added after the release; an
+ * address already in the fallback version stays there. `has` says whether this
+ * build serves a route.
  */
 export function place(
   address: string,
@@ -58,6 +59,11 @@ export function place(
   has: (route: string) => boolean,
 ): string {
   if (!address.startsWith("/") || address.startsWith("//")) return address;
+  if (
+    placing.fallback !== null &&
+    address.startsWith(`${trimmed(placing.fallback)}/`)
+  )
+    return address;
   const prefix = trimmed(placing.base);
   const route =
     prefix !== "" && address.startsWith(`${prefix}/`)

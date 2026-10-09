@@ -64,6 +64,13 @@ describe("place", () => {
     expect(place("/v0.16/start/#a", versioned, has)).toBe("/v0.16/start/#a");
   });
 
+  it("leaves an address already in the fallback version where it is", () => {
+    expect(place("/next/start/", versioned, has)).toBe("/next/start/");
+    expect(place("/next/fixing/", { base: "/", fallback: "/next/" }, has)).toBe(
+      "/next/fixing/",
+    );
+  });
+
   it("sends a reader to the fallback for a page this build lacks", () => {
     expect(place("/api/new/", versioned, has)).toBe("/next/api/new/");
     expect(place("/v0.16/api/new/?q#h", versioned, has)).toBe(

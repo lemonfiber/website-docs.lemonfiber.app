@@ -4,31 +4,39 @@ import { contract } from "../lib/schema-source";
 import { payloads } from "../lib/schema";
 import * as m from "../paraglide/messages.js";
 import Prose from "./Prose.astro";
+import Region from "./Region.astro";
+import { present } from "../lib/release";
+import Absent from "./Absent.astro";
 
 /** Every payload kind the pinned contract describes, each with what its `data` says it is. */
 const kinds = kindSummaries(payloads(contract()));
-if (kinds.length === 0)
-  throw new Error("contract/web-api/ describes no payload kind");
-import Region from "./Region.astro";
+const shown = present(
+  kinds.length > 0 ? kinds : null,
+  "contract/web-api/ describes no payload kind",
+);
 ---
 
-<Region label={m.table_kinds()}>
-  <table>
-    <thead>
-      <tr>
-        <th>{m.ref_kind()}</th>
-        <th>{m.kinds_summary()}</th>
-      </tr>
-    </thead>
-    <tbody>
-      {kinds.map((kind) => (
+{shown === null ? (
+  <Absent />
+) : (
+  <Region label={m.table_kinds()}>
+    <table>
+      <thead>
         <tr>
-          <td>
-            <code>{kind.name}</code>
-          </td>
-          <td>{kind.summary !== "" && <Prose text={kind.summary} />}</td>
+          <th>{m.ref_kind()}</th>
+          <th>{m.kinds_summary()}</th>
         </tr>
-      ))}
-    </tbody>
-  </table>
-</Region>
+      </thead>
+      <tbody>
+        {kinds.map((kind) => (
+          <tr>
+            <td>
+              <code>{kind.name}</code>
+            </td>
+            <td>{kind.summary !== "" && <Prose text={kind.summary} />}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </Region>
+)}

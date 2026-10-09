@@ -1,7 +1,9 @@
 ---
 import { anchorOf, codesIn } from "../lib/registry";
+import { present } from "../lib/release";
 import { registry } from "../lib/schema-source";
 import * as m from "../paraglide/messages.js";
+import Absent from "./Absent.astro";
 import Region from "./Region.astro";
 import Runs from "./Runs.astro";
 
@@ -12,52 +14,59 @@ interface Props {
 
 /** Every code in one family, read from the registry the pinned core publishes. */
 const { family } = Astro.props;
-const read = registry();
-if (read === null)
-  throw new Error("contract/codes.json is missing or unreadable");
-const codes = codesIn(read, family);
-if (codes.length === 0)
-  throw new Error(`contract/codes.json declares no code in ${family}`);
+const read = present(
+  registry(),
+  "contract/codes.json is missing or unreadable",
+);
+const found = read === null ? [] : codesIn(read, family);
+const codes = present(
+  read === null || found.length > 0 ? found : null,
+  `contract/codes.json declares no code in ${family}`,
+);
 ---
 
-<Region label={m.codes_table({ family })}>
-  <table class="lf-cards codes">
-    <thead>
-      <tr>
-        <th>{m.codes_code()}</th>
-        <th>{m.codes_severity()}</th>
-        <th>{m.codes_exit()}</th>
-        <th>{m.codes_meaning()}</th>
-        <th>{m.codes_remedy()}</th>
-      </tr>
-    </thead>
-    <tbody>
-      {codes.map((code) => (
-        <tr id={anchorOf(code.code)}>
-          <th scope="row">
-            <a href={`#${anchorOf(code.code)}`}>
-              <code>{code.code}</code>
-            </a>
-          </th>
-          <td data-label={m.codes_severity()}>
-            <span class={`severity severity--${code.severity}`}>
-              {code.severity}
-            </span>
-          </td>
-          <td data-label={m.codes_exit()}>
-            <code>{code.exit}</code>
-          </td>
-          <td data-label={m.codes_meaning()}>
-            <Runs text={code.meaning} />
-          </td>
-          <td data-label={m.codes_remedy()}>
-            <Runs text={code.remedy} />
-          </td>
+{read === null || codes === null ? (
+  <Absent />
+) : (
+  <Region label={m.codes_table({ family })}>
+    <table class="lf-cards codes">
+      <thead>
+        <tr>
+          <th>{m.codes_code()}</th>
+          <th>{m.codes_severity()}</th>
+          <th>{m.codes_exit()}</th>
+          <th>{m.codes_meaning()}</th>
+          <th>{m.codes_remedy()}</th>
         </tr>
-      ))}
-    </tbody>
-  </table>
-</Region>
+      </thead>
+      <tbody>
+        {codes.map((code) => (
+          <tr id={anchorOf(code.code)}>
+            <th scope="row">
+              <a href={`#${anchorOf(code.code)}`}>
+                <code>{code.code}</code>
+              </a>
+            </th>
+            <td data-label={m.codes_severity()}>
+              <span class={`severity severity--${code.severity}`}>
+                {code.severity}
+              </span>
+            </td>
+            <td data-label={m.codes_exit()}>
+              <code>{code.exit}</code>
+            </td>
+            <td data-label={m.codes_meaning()}>
+              <Runs text={code.meaning} />
+            </td>
+            <td data-label={m.codes_remedy()}>
+              <Runs text={code.remedy} />
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </Region>
+)}
 
 <style>
   /* Severity reads by its word; the critical and warning words carry weight so

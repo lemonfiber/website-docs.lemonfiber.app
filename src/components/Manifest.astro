@@ -1,6 +1,8 @@
 ---
 import { artefact } from "../lib/schema-source";
 import { standalone } from "../lib/schema";
+import { present } from "../lib/release";
+import Absent from "./Absent.astro";
 import Definitions from "./Definitions.astro";
 
 interface Props {
@@ -12,13 +14,21 @@ interface Props {
 
 /** A manifest's every field, read out of the schemas the pinned core publishes. */
 const { schemas, prefix } = Astro.props;
-const read = standalone(schemas.map((name) => artefact(name)));
-if (read.definitions.length === 0)
+const parsed = schemas.map((name) => artefact(name));
+const read = present(
+  parsed.every((one) => one !== null) ? standalone(parsed) : null,
+  `${schemas.join(", ")}: not every schema is in the checkout`,
+);
+if (read?.definitions.length === 0)
   throw new Error(`${schemas.join(", ")}: no schema to read`);
-if (read.disagreeing.length > 0)
+if (read !== null && read.disagreeing.length > 0)
   throw new Error(
     `${schemas.join(", ")} define ${read.disagreeing.join(", ")} differently`,
   );
 ---
 
-<Definitions definitions={read.definitions} prefix={prefix} />
+{read === null ? (
+  <Absent />
+) : (
+  <Definitions definitions={read.definitions} prefix={prefix} />
+)}

@@ -2,40 +2,48 @@
 import { stack } from "../lib/schema-source";
 import { formsOf } from "../lib/stack";
 import * as m from "../paraglide/messages.js";
+import Region from "./Region.astro";
+import { present } from "../lib/release";
+import Absent from "./Absent.astro";
 
 /** Every form the pinned stack declares, with the profiles it is made of. */
 const forms = formsOf(stack());
-if (forms.length === 0)
-  throw new Error("the pinned stack declares no form to render");
-import Region from "./Region.astro";
+const shown = present(
+  forms.length > 0 ? forms : null,
+  "the pinned stack declares no form to render",
+);
 ---
 
-<Region label={m.table_forms()}>
-  <table>
-    <thead>
-      <tr>
-        <th>{m.stack_form()}</th>
-        <th>{m.stack_for()}</th>
-        <th>{m.stack_expands()}</th>
-      </tr>
-    </thead>
-    <tbody>
-      {forms.map((form) => (
+{shown === null ? (
+  <Absent />
+) : (
+  <Region label={m.table_forms()}>
+    <table>
+      <thead>
         <tr>
-          <td>
-            <code>{form.id}</code>
-          </td>
-          <td>{form.description}</td>
-          <td>
-            {form.profiles.map((profile, index) => (
-              <>
-                {index > 0 && ", "}
-                <code>{profile}</code>
-              </>
-            ))}
-          </td>
+          <th>{m.stack_form()}</th>
+          <th>{m.stack_for()}</th>
+          <th>{m.stack_expands()}</th>
         </tr>
-      ))}
-    </tbody>
-  </table>
-</Region>
+      </thead>
+      <tbody>
+        {forms.map((form) => (
+          <tr>
+            <td>
+              <code>{form.id}</code>
+            </td>
+            <td>{form.description}</td>
+            <td>
+              {form.profiles.map((profile, index) => (
+                <>
+                  {index > 0 && ", "}
+                  <code>{profile}</code>
+                </>
+              ))}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </Region>
+)}
