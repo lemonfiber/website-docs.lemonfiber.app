@@ -3,6 +3,8 @@ import { kindDefinitions } from "../lib/kinds";
 import { contract } from "../lib/schema-source";
 import { payloads } from "../lib/schema";
 import Definitions from "./Definitions.astro";
+import { present } from "../lib/release";
+import Absent from "./Absent.astro";
 
 interface Props {
   /** The payload kind whose `data` to set out. */
@@ -12,8 +14,14 @@ interface Props {
 /** One kind's `data`, field by field, and every type it is built from, read from the pinned contract. */
 const { kind } = Astro.props;
 const definitions = kindDefinitions(payloads(contract()), kind);
-if (definitions.length === 0)
-  throw new Error(`contract/web-api/ has no definition for the ${kind} kind`);
+const shown = present(
+  definitions.length > 0 ? definitions : null,
+  `contract/web-api/ has no definition for the ${kind} kind`,
+);
 ---
 
-<Definitions definitions={definitions} prefix={`${kind}-`} />
+{shown === null ? (
+  <Absent />
+) : (
+  <Definitions definitions={definitions} prefix={`${kind}-`} />
+)}

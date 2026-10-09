@@ -2,8 +2,10 @@
 import { Code } from "@astrojs/starlight/components";
 
 import { serviceBlock } from "../lib/compose";
+import { present } from "../lib/release";
 import { vendored } from "../lib/schema-source";
 import * as m from "../paraglide/messages.js";
+import Absent from "./Absent.astro";
 
 interface Props {
   /** The pinned tree, as it is named under `vendor/`. */
@@ -18,14 +20,19 @@ interface Props {
 
 /** One file of a pinned tree, or one service out of a Compose file, as the revision this site pins has it. */
 const { repo, path, lang, service } = Astro.props;
-const text = vendored(`${repo}/${path}`);
-if (text === "")
-  throw new Error(`vendor/${repo}/${path} is not in the checkout`);
-const shown = service === undefined ? text : serviceBlock(text, service);
-if (shown === null)
-  throw new Error(
-    `vendor/${repo}/${path} declares no service ${service ?? ""}`,
-  );
+const read = vendored(`${repo}/${path}`);
+const text = present(
+  read === "" ? null : read,
+  `vendor/${repo}/${path} is not in the checkout`,
+);
+const shown = present(
+  text === null || service === undefined ? text : serviceBlock(text, service),
+  `vendor/${repo}/${path} declares no service ${service ?? ""}`,
+);
 ---
 
-<Code code={shown} lang={lang} title={m.vendored_from({ path, repo })} />
+{shown === null ? (
+  <Absent />
+) : (
+  <Code code={shown} lang={lang} title={m.vendored_from({ path, repo })} />
+)}

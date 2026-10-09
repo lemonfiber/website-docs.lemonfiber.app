@@ -2,11 +2,16 @@
 import { stack } from "../lib/schema-source";
 import { servicesOf } from "../lib/stack";
 import * as m from "../paraglide/messages.js";
+import Region from "./Region.astro";
+import { present } from "../lib/release";
+import Absent from "./Absent.astro";
 
 /** Where each service of the pinned stack answers, and who can reach it there. */
 const services = servicesOf(stack());
-if (services.length === 0)
-  throw new Error("the pinned stack declares no service to render");
+const shown = present(
+  services.length > 0 ? services : null,
+  "the pinned stack declares no service to render",
+);
 
 const REACH: Readonly<Record<string, string>> = {
   loopback: m.listening_loopback(),
@@ -18,26 +23,29 @@ const reach = (port: number | null, bind: string | null): string =>
   port === null || bind === null
     ? m.listening_none()
     : (REACH[bind] ?? m.listening_none());
-import Region from "./Region.astro";
 ---
 
-<Region label={m.table_listening()}>
-  <table>
-    <thead>
-      <tr>
-        <th>{m.services_service()}</th>
-        <th>{m.listening_port()}</th>
-        <th>{m.listening_from()}</th>
-      </tr>
-    </thead>
-    <tbody>
-      {services.map((service) => (
+{shown === null ? (
+  <Absent />
+) : (
+  <Region label={m.table_listening()}>
+    <table>
+      <thead>
         <tr>
-          <td>{service.name}</td>
-          <td>{service.port !== null && <code>{service.port}</code>}</td>
-          <td>{reach(service.port, service.bind)}</td>
+          <th>{m.services_service()}</th>
+          <th>{m.listening_port()}</th>
+          <th>{m.listening_from()}</th>
         </tr>
-      ))}
-    </tbody>
-  </table>
-</Region>
+      </thead>
+      <tbody>
+        {services.map((service) => (
+          <tr>
+            <td>{service.name}</td>
+            <td>{service.port !== null && <code>{service.port}</code>}</td>
+            <td>{reach(service.port, service.bind)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </Region>
+)}

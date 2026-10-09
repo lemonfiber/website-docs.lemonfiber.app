@@ -2,33 +2,41 @@
 import { stack } from "../lib/schema-source";
 import { profilesOf } from "../lib/stack";
 import * as m from "../paraglide/messages.js";
+import Region from "./Region.astro";
+import { present } from "../lib/release";
+import Absent from "./Absent.astro";
 
 /** Every profile the pinned stack declares, with the services that carry it. */
 const profiles = profilesOf(stack());
-if (profiles.length === 0)
-  throw new Error("the pinned stack declares no profile to render");
-import Region from "./Region.astro";
+const shown = present(
+  profiles.length > 0 ? profiles : null,
+  "the pinned stack declares no profile to render",
+);
 ---
 
-<Region label={m.table_profiles()}>
-  <table>
-    <thead>
-      <tr>
-        <th>{m.stack_profile()}</th>
-        <th>{m.stack_covers()}</th>
-        <th>{m.stack_services()}</th>
-      </tr>
-    </thead>
-    <tbody>
-      {profiles.map((profile) => (
+{shown === null ? (
+  <Absent />
+) : (
+  <Region label={m.table_profiles()}>
+    <table>
+      <thead>
         <tr>
-          <td>
-            <code>{profile.id}</code>
-          </td>
-          <td>{profile.description}</td>
-          <td>{profile.services.join(", ")}</td>
+          <th>{m.stack_profile()}</th>
+          <th>{m.stack_covers()}</th>
+          <th>{m.stack_services()}</th>
         </tr>
-      ))}
-    </tbody>
-  </table>
-</Region>
+      </thead>
+      <tbody>
+        {profiles.map((profile) => (
+          <tr>
+            <td>
+              <code>{profile.id}</code>
+            </td>
+            <td>{profile.description}</td>
+            <td>{profile.services.join(", ")}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </Region>
+)}

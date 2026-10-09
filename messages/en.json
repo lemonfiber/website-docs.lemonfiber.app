@@ -98,5 +98,8 @@
   "codes_covers": "What it covers",
   "codes_count": "Codes",
   "codes_table": "{family} codes",
-  "list_and": "and"
+  "list_and": "and",
+  "absent_block": "The release this page is built for does not carry what this part is read from.",
+  "absent_next": "The next version's page has it.",
+  "absent_inline": "listed on the next version's page"
 }
