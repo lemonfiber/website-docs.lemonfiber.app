@@ -76,7 +76,11 @@ frozen build under `/v<minor>/`, keeps it as the release asset
 the newest release. `deploy.yml` builds `/` and `/next/`, puts each frozen build
 at its path, and writes `/versions.json`, which the version switcher in the header
 reads, so a version frozen before a newer one was released still offers it.
-`stable.yml` refuses a stable pin the rule does not give, and a set still
+It publishes that tree to Cloudflare, as the assets-only Worker `wrangler.jsonc`
+declares, and to GitHub Pages while the domain still points there. The headers
+the host sends with every page come from the `_headers` file the build writes
+at its root (`@lemonfiber/website-kit/headers`), and the Playwright suite holds
+the build to them. `stable.yml` refuses a stable pin the rule does not give, and a set still
 rendering an older release a day after a newer one settled.
 
 ## What it publishes for a machine
