@@ -61,7 +61,7 @@ export const isFamilyPage = (page: Page): boolean =>
 const TABLE = /<CodeTable\s+family="([A-Z][A-Z0-9]*)"\s*\/>/g;
 
 /** A page's title, as its frontmatter gives it. */
-const TITLE = /^title:\s*(.+)$/m;
+const TITLE = /^title:[ \t]*(\S.*)$/m;
 
 /** A row of a table written by hand, starting with a code. */
 const HAND_ROW = /^\|\s*`[A-Z][A-Z0-9]*-\d+`\s*\|/m;
@@ -77,13 +77,16 @@ function pageViolations(page: Page, title: string): Violation[] {
   const family = familyAt(page.path);
   const found: Violation[] = [];
   const tables = [...page.text.matchAll(TABLE)].map((one) => captured(one, 1));
-  if (tables.length !== 1 || tables[0] !== family)
+  if (tables.length !== 1 || tables[0] !== family) {
+    const renders =
+      tables.length === 0 ? "no code table" : `the tables of ${listed(tables)}`;
     found.push(
       at(
         page.path,
-        `renders ${tables.length === 0 ? "no code table" : `the tables of ${listed(tables)}`}, where it is \`${family}\`'s page: write <CodeTable family="${family}" /> once`,
+        `renders ${renders}, where it is \`${family}\`'s page: write <CodeTable family="${family}" /> once`,
       ),
     );
+  }
   const said = TITLE.exec(page.text);
   if (said === null || captured(said, 1).trim() !== title)
     found.push(at(page.path, `is titled otherwise than "${title}"`));
