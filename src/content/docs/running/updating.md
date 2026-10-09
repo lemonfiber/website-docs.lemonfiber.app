@@ -122,6 +122,28 @@ no state that migrates irreversibly.
 
 See [Install lemonfiber](/start/install/) for every install route.
 
+## A stack of your own
+
+lemonfiber reads a stack as a root and a file per service: `stack.toml` keeps
+the versions, the profiles and the forms, and lists in `include` one
+`services/<id>.toml` for each service, each holding that service's one
+`[[service]]` entry.
+
+```toml
+include = [
+  "services/sonarr.toml",
+  "services/radarr.toml",
+]
+```
+
+A stack directory you run with `--stack-dir` that keeps its `[[service]]`
+entries in `stack.toml` itself is refused as
+[`STACK-10`](/fixing/codes/stack/#stack-10), and nothing in it is started. To
+move it, put each `[[service]]` entry in a file of its own under `services/`,
+named after the service's `id`, and list every file in `include`. Every fault in
+the layout is reported in one pass, each naming its file. The stack lemonfiber
+ships is already laid out this way, so a stack you never copied needs nothing.
+
 ## Your own edits survive
 
 If you have hand-edited the materialised stack files or changed a setting

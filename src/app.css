@@ -1,91 +1,14 @@
 /**
  * The documentation surface's visual language.
  *
- * Colour, radii and spacing come from `@lemonfiber/brand`. This file renames
- * brand's tokens into what this site calls them and points Starlight's own
- * scale at those names. It defines no colour of its own in either theme:
- * brand owns the values, so a change there reaches this site and a gap there
- * stays visible rather than being masked by a local literal.
+ * Brand owns the values and the kit owns the theme every Starlight site shares:
+ * the names brand's tokens go by here, the faces, type, focus, tables and
+ * navigation. This file holds only what is this site's own.
  *
  * Brand's dark theme is `[data-lf-theme="ink"]`. Starlight's is
  * `[data-theme="dark"]`. The two are bridged in `astro.config.ts`, which
  * mirrors Starlight's attribute onto brand's.
  */
 @import "@lemonfiber/brand/tokens.css";
-
-:root {
-  --ink: var(--lf-color-ink);
-  --paper: var(--lf-color-paper);
-  --pith: var(--lf-color-pith);
-  --canvas: var(--lf-color-canvas);
-  --line: var(--lf-color-line);
-  --line-soft: var(--lf-color-line-soft);
-  --muted: var(--lf-color-text-muted);
-  --faint: var(--lf-color-text-faint);
-  --lemon: var(--lf-color-lemon);
-  --lemon-bright: var(--lf-color-lemon-bright);
-  --fiber: var(--lf-color-fiber);
-  --fiber-deep: var(--lf-color-fiber-deep);
-
-  /* Brand defines --lf-color-text only in the ink theme; on paper the readable
-     text colour is ink. */
-  --text: var(--lf-color-text, var(--lf-color-ink));
-
-  --brandface: var(--lf-font-display);
-  --sans: "Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: "DM Mono", ui-monospace, "SF Mono", Menlo, monospace;
-
-  --r-sm: var(--lf-radius-sm);
-  --r-md: var(--lf-radius-md);
-
-  --sp-1: var(--lf-space-1);
-  --sp-2: var(--lf-space-2);
-  --sp-3: var(--lf-space-3);
-  --sp-4: var(--lf-space-4);
-  --sp-5: var(--lf-space-5);
-  --sp-6: var(--lf-space-6);
-
-  --tracking-eyebrow: var(--lf-tracking-eyebrow);
-  --text-stamp: 12px;
-
-  /* Lemon is lemon in both themes, so what sits on it does not follow --text. */
-  --on-lemon: var(--lf-color-ink);
-
-  /* Starlight reads its own scale. Point it at the brand rather than restyling
-     each component. Both themes resolve through the same names, so brand's ink
-     block flips them without a second declaration here. */
-  --sl-font: var(--sans);
-  --sl-font-mono: var(--mono);
-
-  --sl-color-accent: var(--fiber-deep);
-  --sl-color-accent-low: var(--line-soft);
-  --sl-color-accent-high: var(--text);
-
-  --sl-color-white: var(--text);
-  --sl-color-gray-1: var(--text);
-  --sl-color-gray-2: var(--muted);
-  --sl-color-gray-3: var(--faint);
-  --sl-color-gray-4: var(--line);
-  --sl-color-gray-5: var(--line-soft);
-  --sl-color-gray-6: var(--pith);
-  --sl-color-gray-7: var(--canvas);
-  --sl-color-black: var(--paper);
-
-  --sl-color-bg: var(--paper);
-  --sl-color-bg-nav: var(--pith);
-  --sl-color-bg-sidebar: var(--pith);
-  --sl-color-bg-inline-code: var(--canvas);
-  --sl-color-text: var(--text);
-  --sl-color-text-accent: var(--fiber-deep);
-  --sl-color-hairline: var(--line);
-  --sl-color-hairline-light: var(--line-soft);
-}
-
-/* The freshness stamp a mirrored page carries. */
-.mirror-stamp {
-  margin-top: var(--sp-5);
-  padding-top: var(--sp-3);
-  border-top: 1px solid var(--line);
-  color: var(--muted);
-  font-size: var(--text-stamp);
-}
+@import "@lemonfiber/website-kit/styles/fonts.css";
+@import "@lemonfiber/website-kit/styles/starlight.css";

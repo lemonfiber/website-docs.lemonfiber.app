@@ -1,0 +1,26 @@
+---
+/**
+ * A table's region: it scrolls sideways when the table is wider than the page,
+ * takes focus so the keyboard can scroll it, and is named for a screen reader.
+ * The kit's stylesheet draws `.lf-table`, and its Markdown plugin wraps every
+ * Markdown table the same way.
+ */
+interface Props {
+  /** The region's name, where no heading on the page already names it. */
+  readonly label?: string;
+  /** The id of the heading that names it. */
+  readonly labelledby?: string;
+}
+
+const { label, labelledby } = Astro.props;
+---
+
+<div
+  class="lf-table"
+  role="region"
+  tabindex="0"
+  aria-label={labelledby === undefined ? label : undefined}
+  aria-labelledby={labelledby}
+>
+  <slot />
+</div>

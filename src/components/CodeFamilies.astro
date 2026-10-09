@@ -1,0 +1,39 @@
+---
+import { codesIn, familyAnchor } from "../lib/registry";
+import { linkOf } from "../lib/codes";
+import { registry } from "../lib/schema-source";
+import * as m from "../paraglide/messages.js";
+import Region from "./Region.astro";
+
+/** Every family the pinned core's registry declares, each linked to its page. */
+const read = registry();
+if (read === null || read.families.length === 0)
+  throw new Error("contract/codes.json declares no family");
+const capital = (text: string): string =>
+  text.charAt(0).toUpperCase() + text.slice(1);
+---
+
+<Region labelledby="the-families">
+  <table>
+    <thead>
+      <tr>
+        <th>{m.codes_family()}</th>
+        <th>{m.codes_covers()}</th>
+        <th>{m.codes_count()}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {read.families.map((family) => (
+        <tr id={familyAnchor(family)}>
+          <td>
+            <a href={linkOf(family.prefix)}>
+              <code>{family.prefix}</code>
+            </a>
+          </td>
+          <td>{capital(family.covers)}</td>
+          <td>{codesIn(read, family.prefix).length}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</Region>

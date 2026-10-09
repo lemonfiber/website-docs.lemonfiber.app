@@ -23,6 +23,7 @@ const nothing: Sources = {
   webRoute: "",
   workspace: "",
   glossary: "",
+  registry: "",
 };
 
 const page = (text: string, path = "src/content/docs/a-page.md"): Page => ({

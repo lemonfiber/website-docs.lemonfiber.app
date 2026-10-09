@@ -1,331 +1,205 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  codesInArtefact,
-  codesOnPage,
   codeViolations,
-  familySizes,
+  FAMILIES,
   familyViolations,
+  INDEX,
+  isFamilyPage,
+  linkOf,
   mentionViolations,
+  pageOf,
 } from "./codes.ts";
 import type { Page } from "./counts.ts";
+import { REGISTRY, type Code, type Registry } from "./registry.ts";
 
-/** The generated reference: a heading, a sentence, then one bullet per code. */
-const artefact = (...codes: string[]): string =>
-  [
-    "# `lemonfiber` — error codes",
-    "",
-    "Generated from the codes the crates declare.",
-    "",
-    ...codes.map((code) => `- \`${code}\``),
-    "",
-  ].join("\n");
-
-/** A code table on the page, as the page writes them. */
-const table = (...codes: string[]): string =>
-  [
-    "| Code | What it means | What to do |",
-    "| ---- | ------------- | ---------- |",
-    ...codes.map((code) => `| \`${code}\` | It happened. | Do the thing. |`),
-    "",
-  ].join("\n");
-
-describe("codesInArtefact", () => {
-  it("reads every bullet the reference lists", () => {
-    expect(codesInArtefact(artefact("ACK-1", "VPN-2", "STACK-10"))).toEqual([
-      "ACK-1",
-      "VPN-2",
-      "STACK-10",
-    ]);
-  });
-
-  it("reads nothing out of prose that lists none", () => {
-    expect(
-      codesInArtefact("# A heading\n\nSome prose about `VPN-1`.\n"),
-    ).toEqual([]);
-  });
-
-  it("reads nothing out of a bullet that carries more than a code", () => {
-    expect(codesInArtefact("- `VPN-1` and something else\n")).toEqual([]);
-  });
+const code = (id: string, family: string): Code => ({
+  code: id,
+  family,
+  name: "A",
+  severity: "error",
+  exit: 1,
+  status: 500,
+  summary: "s",
+  meaning: "m",
+  remedy: "r",
+  since: "0.1.0",
 });
 
-describe("codesOnPage", () => {
-  it("reads the first cell of every code row", () => {
-    expect(codesOnPage(table("SETUP-1", "CONFIG-2"))).toEqual([
-      "SETUP-1",
-      "CONFIG-2",
-    ]);
-  });
+const REG: Registry = {
+  families: [
+    { prefix: "VPN", covers: "traffic leaving the tunnel" },
+    { prefix: "LIFE", covers: "starting and stopping" },
+  ],
+  codes: [code("VPN-1", "VPN"), code("VPN-2", "VPN"), code("LIFE-1", "LIFE")],
+  retired: ["LIFE-9"],
+};
 
-  it("leaves the tables that are not code tables alone", () => {
-    const page = [
-      table("SETUP-1"),
-      "| Severity | What it means |",
-      "| -------- | ------------- |",
-      "| `advisory` | Worth knowing. |",
-      "| `actionable` | Do something. |",
-      "",
-      "| Exit code | Meaning |",
-      "| --------- | ------- |",
-      "| `0` | It worked. |",
-      "| `1` | It did not. |",
-      "",
-    ].join("\n");
-    expect(codesOnPage(page)).toEqual(["SETUP-1"]);
-  });
-
-  it("reads nothing out of a mention of a code in prose", () => {
-    expect(
-      codesOnPage("A code looks like `VPN-1`: a family, then a number.\n"),
-    ).toEqual([]);
-  });
+const familyPage = (prefix: string, title: string, body: string): Page => ({
+  path: pageOf(prefix),
+  text: `---\ntitle: ${title}\n---\n\nIntro.\n\n${body}\n`,
 });
 
-/** A family's page, kept where the families' pages are kept. */
-const family = (name: string, ...codes: string[]): Page => ({
-  path: `src/content/docs/fixing/codes/${name}.md`,
-  text: table(...codes),
-});
+const VPN_PAGE = familyPage(
+  "VPN",
+  "VPN — traffic leaving the tunnel",
+  '<CodeTable family="VPN" />',
+);
+const LIFE_PAGE = familyPage(
+  "LIFE",
+  "LIFE — starting and stopping",
+  '<CodeTable family="LIFE" />',
+);
+const GOOD = [VPN_PAGE, LIFE_PAGE];
 
-/** The index, linking each family named. */
-const index = (...families: string[]): string =>
-  families.map((name) => `- [\`${name}\`](/fixing/codes/${name}/)`).join("\n");
+const INDEX_TEXT = "Every family:\n\n<CodeFamilies />\n";
+
+describe("where the pages are", () => {
+  it("keeps a family's page and route by its prefix in lower case", () => {
+    expect(pageOf("VPN")).toBe(`${FAMILIES}/vpn.mdx`);
+    expect(linkOf("VPN")).toBe("/fixing/codes/vpn/");
+    expect(isFamilyPage({ path: `${FAMILIES}/vpn.md`, text: "" })).toBe(true);
+    expect(isFamilyPage({ path: `${FAMILIES}/vpn.txt`, text: "" })).toBe(false);
+    expect(isFamilyPage({ path: INDEX, text: "" })).toBe(false);
+  });
+});
 
 describe("codeViolations", () => {
-  it("finds nothing when the reference, the index and the pages agree", () => {
-    expect(
-      codeViolations(artefact("SETUP-1", "VPN-2"), index("setup", "vpn"), [
-        family("setup", "SETUP-1"),
-        family("vpn", "VPN-2"),
-      ]),
-    ).toEqual([]);
+  it("passes a page for every family, each rendering its own table under its title", () => {
+    expect(codeViolations(REG, INDEX_TEXT, GOOD)).toEqual([]);
   });
 
-  it("finds nothing when they agree in a different order", () => {
+  it("refuses a missing registry", () => {
+    expect(codeViolations(null, INDEX_TEXT, GOOD)).toEqual([
+      expect.objectContaining({ where: REGISTRY }),
+    ]);
+  });
+
+  it("names a family with no page, and a page for no family", () => {
+    const found = codeViolations(REG, INDEX_TEXT, [
+      VPN_PAGE,
+      familyPage("GONE", "GONE — nothing", '<CodeTable family="GONE" />'),
+    ]);
+    expect(found.map((one) => `${one.where} ${one.message}`)).toEqual([
+      `${pageOf("LIFE")} the \`LIFE\` family raises LIFE-1 and has no page`,
+      `${pageOf("GONE")} the registry declares no \`GONE\` family`,
+    ]);
+  });
+
+  it("names a page that renders no table, another family's, or two", () => {
+    const messages = (body: string): string[] =>
+      codeViolations(REG, INDEX_TEXT, [
+        familyPage("VPN", "VPN — traffic leaving the tunnel", body),
+        LIFE_PAGE,
+      ]).map((one) => one.message);
+    expect(messages("No table.")).toEqual([
+      'renders no code table, where it is `VPN`\'s page: write <CodeTable family="VPN" /> once',
+    ]);
+    expect(messages('<CodeTable family="LIFE" />')).toEqual([
+      'renders the tables of LIFE, where it is `VPN`\'s page: write <CodeTable family="VPN" /> once',
+    ]);
     expect(
-      codeViolations(
-        artefact("VPN-2", "VPN-1", "SETUP-1"),
-        index("vpn", "setup"),
-        [family("vpn", "VPN-1", "VPN-2"), family("setup", "SETUP-1")],
+      messages('<CodeTable family="VPN" />\n<CodeTable family="VPN" />'),
+    ).toHaveLength(1);
+  });
+
+  it("names a title that is not the family's, and a page with none", () => {
+    expect(
+      codeViolations(REG, INDEX_TEXT, [
+        familyPage("VPN", "VPN — the tunnel", '<CodeTable family="VPN" />'),
+        { path: pageOf("LIFE"), text: '<CodeTable family="LIFE" />' },
+      ]).map((one) => one.message),
+    ).toEqual([
+      'is titled otherwise than "VPN — traffic leaving the tunnel"',
+      'is titled otherwise than "LIFE — starting and stopping"',
+    ]);
+  });
+
+  it("names a row written by hand, where it stands", () => {
+    const found = codeViolations(REG, INDEX_TEXT, [
+      familyPage(
+        "VPN",
+        "VPN — traffic leaving the tunnel",
+        '<CodeTable family="VPN" />\n\n| `VPN-1` | by hand |',
       ),
-    ).toEqual([]);
-  });
-
-  it("names a code lemonfiber raises that its family's page does not document", () => {
-    const [found, ...rest] = codeViolations(
-      artefact("VPN-1", "VPN-2"),
-      index("vpn"),
-      [family("vpn", "VPN-1")],
-    );
-    expect(rest).toEqual([]);
-    expect(found?.where).toBe("src/content/docs/fixing/codes/vpn.md");
-    expect(found?.message).toContain("VPN-2");
-    expect(found?.message).toContain("does not");
-  });
-
-  it("names a code a page documents that lemonfiber cannot raise", () => {
-    const [found, ...rest] = codeViolations(artefact("VPN-1"), index("vpn"), [
-      family("vpn", "VPN-1", "VPN-9"),
+      LIFE_PAGE,
     ]);
-    expect(rest).toEqual([]);
-    expect(found?.where).toBe("src/content/docs/fixing/codes/vpn.md");
-    expect(found?.message).toContain("VPN-9");
-    expect(found?.message).toContain("cannot raise");
-  });
-
-  it("names a code documented on another family's page", () => {
-    const found = codeViolations(
-      artefact("SETUP-1", "VPN-2"),
-      index("setup", "vpn"),
-      [family("setup", "SETUP-1", "VPN-2"), family("vpn")],
-    );
-    expect(found.map((one) => [one.where, one.message])).toEqual([
-      [
-        "src/content/docs/fixing/codes/setup.md",
-        "the page documents these, which belong on another family's page: VPN-2",
-      ],
-      [
-        "src/content/docs/fixing/codes/vpn.md",
-        "lemonfiber raises these and the page does not: VPN-2",
-      ],
+    expect(found).toEqual([
+      {
+        where: pageOf("VPN"),
+        line: 9,
+        message: "writes a code's row by hand; the table is the registry's",
+      },
     ]);
   });
 
-  it("names a family lemonfiber raises that has no page", () => {
-    const [found, ...rest] = codeViolations(
-      artefact("SETUP-1", "VPN-2", "VPN-1"),
-      index("setup", "vpn"),
-      [family("setup", "SETUP-1")],
-    );
-    expect(rest).toEqual([]);
-    expect(found?.where).toBe("src/content/docs/fixing/codes/vpn.md");
-    expect(found?.message).toBe(
-      "lemonfiber raises VPN-1, VPN-2 and the `VPN` family has no page",
-    );
-  });
-
-  it("names a page for a family lemonfiber raises nothing in", () => {
-    const [found, ...rest] = codeViolations(
-      artefact("SETUP-1"),
-      index("setup"),
-      [family("setup", "SETUP-1"), family("ghost", "GHOST-9")],
-    );
-    expect(rest).toEqual([]);
-    expect(found?.where).toBe("src/content/docs/fixing/codes/ghost.md");
-    expect(found?.message).toContain("`GHOST`");
-  });
-
-  it("names every family whose page the index does not link", () => {
-    const [found, ...rest] = codeViolations(
-      artefact("SETUP-1", "VPN-2", "ACK-1"),
-      index("setup"),
-      [
-        family("setup", "SETUP-1"),
-        family("vpn", "VPN-2"),
-        family("ack", "ACK-1"),
-      ],
-    );
-    expect(rest).toEqual([]);
-    expect(found?.where).toBe("src/content/docs/fixing/every-error-by-code.md");
-    expect(found?.message).toContain("ACK, VPN");
-  });
-
-  it("reads only the families' pages, whatever else it is handed", () => {
-    expect(
-      codeViolations(artefact("VPN-1"), index("vpn"), [
-        family("vpn", "VPN-1"),
-        { path: "src/content/docs/fixing/a-page.md", text: table("GHOST-9") },
-        { path: "src/content/docs/fixing/codes/notes.txt", text: "" },
-      ]),
-    ).toEqual([]);
-  });
-
-  it("reads a family's page written as MDX", () => {
-    expect(
-      codeViolations(artefact("VPN-1"), index("vpn"), [
-        { path: "src/content/docs/fixing/codes/vpn.mdx", text: table("VPN-1") },
-      ]),
-    ).toEqual([]);
-  });
-
-  it("sorts the codes it names, so a report reads the same twice", () => {
-    const [found] = codeViolations(
-      artefact("VPN-2", "VPN-10", "VPN-1"),
-      index("vpn"),
-      [family("vpn")],
-    );
-    expect(found?.message).toContain("VPN-1, VPN-10, VPN-2");
-  });
-
-  it("refuses an empty reference rather than agreeing with it", () => {
-    const [found, ...rest] = codeViolations("", index("setup"), [
-      family("setup", "SETUP-1"),
-    ]);
-    expect(rest).toEqual([]);
-    expect(found?.where).toBe("vendor/lemonfiber/reference/error-codes.md");
-    expect(found?.message).toContain("no error codes found");
-    expect(found?.line).toBeNull();
-  });
-
-  it("refuses an empty reference even when there are no pages either", () => {
-    expect(codeViolations("", "", [])).toHaveLength(1);
-  });
-});
-
-/** A page that sends the reader to the code page for one family. */
-const sends = (text: string): Page[] => [
-  { path: "src/content/docs/fixing/a-page.md", text },
-];
-
-describe("familySizes", () => {
-  it("counts the codes in each family the reference declares", () => {
-    expect([
-      ...familySizes(artefact("VPN-1", "VPN-2", "STORAGE-1")).entries(),
-    ]).toEqual([
-      ["VPN", 2],
-      ["STORAGE", 1],
+  it("names an index that does not list the families", () => {
+    expect(codeViolations(REG, "No listing.", GOOD)).toEqual([
+      expect.objectContaining({ where: INDEX }),
     ]);
   });
 });
 
 describe("familyViolations", () => {
-  it("finds nothing when the sentence and the reference agree", () => {
-    expect(
-      familyViolations(
-        artefact("VPN-1", "VPN-2"),
-        sends("See the two `VPN` codes, side by side."),
-      ),
-    ).toEqual([]);
-  });
-
-  it("names the page, the line and both numbers when they disagree", () => {
-    const [found, ...rest] = familyViolations(
-      artefact("VPN-1", "VPN-2", "VPN-3"),
-      sends("A heading\n\nSee the two `VPN` codes, side by side.\n"),
-    );
-    expect(rest).toEqual([]);
-    expect(found?.where).toBe("src/content/docs/fixing/a-page.md");
-    expect(found?.line).toBe(3);
-    expect(found?.message).toContain("says two `VPN` codes");
-    expect(found?.message).toContain("three");
-  });
-
-  it("leaves a family the reference does not declare alone", () => {
-    expect(
-      familyViolations(
-        artefact("VPN-1", "VPN-2"),
-        sends("See the two `VPN` codes, and the four `HTTP` codes."),
-      ),
-    ).toEqual([]);
-  });
-
-  it("refuses a reference with no codes in it", () => {
-    const [found, ...rest] = familyViolations("", sends("the two `VPN` codes"));
-    expect(rest).toEqual([]);
-    expect(found?.where).toBe("vendor/lemonfiber/reference/error-codes.md");
-    expect(found?.message).toContain("no error codes found");
-  });
-
-  it("refuses a site where no sentence says how big a family is", () => {
-    const [found, ...rest] = familyViolations(
-      artefact("VPN-1"),
-      sends("The VPN checks are over here."),
-    );
-    expect(rest).toEqual([]);
-    expect(found?.message).toContain("no sentence says how many codes");
-  });
-});
-
-describe("mentionViolations", () => {
-  const artefact = "- `VPN-1`\n- `LIFE-1`\n";
   const page = (text: string): Page => ({
     path: "src/content/docs/a.md",
     text,
   });
 
-  it("passes every code a page names that lemonfiber raises", () => {
-    expect(
-      mentionViolations(artefact, [page("A `LIFE-1` means… and `VPN-1` too.")]),
-    ).toEqual([]);
+  it("passes a sentence counting a family as the registry does", () => {
+    expect(familyViolations(REG, [page("The two `VPN` codes.")])).toEqual([]);
   });
 
-  it("names a code lemonfiber does not raise, where it stands", () => {
+  it("names a wrong count where it stands, and skips a family the registry lacks", () => {
     expect(
-      mentionViolations(artefact, [page("Fine `VPN-1`.\n\nGone: `WIRING-9`.")]),
+      familyViolations(REG, [
+        page("Intro.\nThe three `VPN` codes, and the two `NOPE` codes."),
+      ]),
     ).toEqual([
       {
         where: "src/content/docs/a.md",
-        line: 3,
-        message:
-          "names `WIRING-9`, which vendor/lemonfiber/reference/error-codes.md does not list",
+        line: 2,
+        message: `says three \`VPN\` codes where ${REGISTRY} declares two`,
       },
     ]);
   });
 
-  it("refuses an empty reference rather than passing on it", () => {
-    expect(mentionViolations("", [page("`VPN-1`")])).toEqual([
-      expect.objectContaining({ line: null }),
+  it("refuses a missing registry, and a site that states no count", () => {
+    expect(familyViolations(null, [])).toEqual([
+      expect.objectContaining({ where: REGISTRY }),
+    ]);
+    expect(familyViolations(REG, [page("Nothing counted.")])).toEqual([
+      expect.objectContaining({ where: REGISTRY, line: null }),
+    ]);
+  });
+});
+
+describe("mentionViolations", () => {
+  const page = (text: string): Page => ({
+    path: "src/content/docs/a.md",
+    text,
+  });
+
+  it("passes a code the core raises, and names one it retired or never had", () => {
+    expect(
+      mentionViolations(REG, [page("A `VPN-1`.\nA `LIFE-9`.\nA `VPN-7`.")]),
+    ).toEqual([
+      {
+        where: "src/content/docs/a.md",
+        line: 2,
+        message: `names \`LIFE-9\`, which ${REGISTRY} lists as retired`,
+      },
+      {
+        where: "src/content/docs/a.md",
+        line: 3,
+        message: `names \`VPN-7\`, which ${REGISTRY} does not declare`,
+      },
+    ]);
+  });
+
+  it("refuses a missing registry", () => {
+    expect(mentionViolations(null, [])).toEqual([
+      expect.objectContaining({ where: REGISTRY }),
     ]);
   });
 });

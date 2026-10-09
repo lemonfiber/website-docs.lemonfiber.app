@@ -1,0 +1,98 @@
+---
+title: Every error by code
+topic: use
+description: Every family of error code lemonfiber raises, each with a page of what its codes mean and what to do about them, read from lemonfiber's registry of codes at the revision this site pins.
+sidebar:
+  order: 2
+---
+
+import CodeFamilies from "../../../components/CodeFamilies.astro";
+import CodeList from "../../../components/CodeList.astro";
+
+When lemonfiber refuses to do something, it says so in four parts: a **code**, a **summary** of what happened, what it **means** for you, and at least one **remedy** — something to do. The code is the stable part. It is one token, it is never recycled, and it is the thing to search for.
+
+A code looks like `VPN-1`: a family, then a number. The family says which part of the stack raised it. The number identifies the problem within that family. Each family has a page of its own, and the [families](#the-families) below link every one.
+
+There is no code on those pages that lemonfiber cannot raise, and no code it can raise that is missing from them — the tables are read from the revision of lemonfiber this site renders, which is named at the foot of [the API reference](/api/reference/). A code added to lemonfiber after that revision appears on its family's page when the revision moves.
+
+## How to read a row
+
+Each table gives the code, its severity, the exit a run leaves with when it raises it, what it means when you see it, and what the tool itself offers as the way forward. Where a message includes a name — a service, a path, a port — the tables describe the shape rather than quoting a template.
+
+Two things are worth knowing before you start:
+
+- **A problem always states what was and was not changed.** Most refusals happen before anything is written. Where something was written, the message says so.
+- **A problem with no known remedy escalates rather than guesses.** Two codes in this reference do that: they ask you for a [support bundle](/fixing/the-support-bundle/) rather than offer advice that might be wrong.
+
+## The families
+
+Each family's page sets out all of its codes in one table. Search this site for a code to land on its family's page directly.
+
+<CodeFamilies />
+
+## Severity
+
+Every problem carries one of four levels. There are four deliberately: more would not be applied consistently, and inconsistent severity is worse than coarse severity.
+
+| Severity   | Meaning                                            |
+| ---------- | -------------------------------------------------- |
+| `advisory` | Informational. Nothing is required.                |
+| `warning`  | Degraded or risky, and still working.              |
+| `error`    | Something is broken.                               |
+| `critical` | Consequences outside the machine, or data at risk. |
+
+Only five codes are raised as `critical`: <CodeList severity="critical" />.
+
+Severities are ordered, so a health summary can report the worst of what it found without a comparison table.
+
+## State
+
+Alongside severity, a problem says where it stands with respect to being fixed.
+
+| State        | Meaning                                                                         |
+| ------------ | ------------------------------------------------------------------------------- |
+| `actionable` | A remedy is available here, and you can act on it.                              |
+| `guided`     | You must act, somewhere else — in a service's own interface, or on the machine. |
+| `remediable` | lemonfiber can fix this itself. `lemonfiber doctor --fix` offers it.            |
+| `unknown`    | No known remedy. Escalation to a support bundle is offered instead.             |
+| `suppressed` | Acknowledged with `--accept`, and not led with again until it recurs.           |
+
+`unknown` is the honest answer rather than the absent one. Admitting ignorance costs you a support bundle; confident wrong guidance costs you an afternoon.
+
+## Exit codes
+
+A script needs to know whether to fix its own input, start Docker, or wait longer, and one code for all three tells it nothing. Every run leaves with one of these.
+
+| Exit code | Name          | Meaning                                                           |
+| --------- | ------------- | ----------------------------------------------------------------- |
+| `0`       | success       | The thing asked for was done, or the question asked was answered. |
+| `1`       | failure       | A general failure.                                                |
+| `2`       | usage         | A flag or argument you gave could not be understood.              |
+| `3`       | preflight     | Something outside lemonfiber has to be fixed before it can act.   |
+| `4`       | never settled | Something started, and a service never became usable.             |
+| `5`       | validation    | Something you wrote was refused.                                  |
+
+Codes map onto exits deliberately:
+
+- Exit `4`: <CodeList exit={4} />.
+- Exit `3`: <CodeList exit={3} />, because the engine is not lemonfiber's to fix.
+- Exit `5`: <CodeList exit={5} />, because each is about what you wrote.
+- Exit `1`: every other code.
+
+Each family's table gives every code's severity and exit beside what it means.
+
+Some commands decide their exit from their result rather than from a problem:
+
+- `lemonfiber doctor` exits `0` when the overall verdict is healthy or degraded, and `1` when it is broken or unknown. Reporting success when nothing could be verified is the falsehood the checks exist to avoid.
+- `lemonfiber seed` exits `5` when a conflict you wrote blocks it, and `1` when work was merely skipped or failed and may complete on a re-run.
+- `lemonfiber quality set`, `lemonfiber quality upgrade` and `lemonfiber reset` exit `5` when they are holding a change that needs your confirmation.
+- `lemonfiber doctor --fix` exits non-zero when anything was left unmended.
+- Queries — `trace`, `stuck`, `household`, `ps`, `version`, `forms`, `config` — always exit `0`. Asking is never a failure, whatever the answer.
+
+## Where these come from
+
+The codes on the family pages are read from lemonfiber's registry of codes, at the revision this site is pinned to. Every code is declared there once, beside the line saying what it means, and the code that raises it names it from there. A code nothing raises is not declared, and its number is never given to another — so a search that found an answer once finds the same answer later.
+
+lemonfiber publishes the whole registry as `contract/codes.json`, and every table on these pages is rendered from it. So the sentence at the top of this page holds by construction: a code added to lemonfiber appears on its family's page when this site's pin moves, and one it retires goes. This site's own gate refuses a family with no page, a page for a family the registry does not declare, and a sentence anywhere on the site that names a code nothing raises.
+
+For the model behind them — why a problem cannot be constructed without a remedy, how a typed failure becomes something you read, and why the core never formats — see [the error model architecture note](https://contribute.lemonfiber.app/architecture/error-model/). The requirement it is written against is [G4, the error and remedy model](https://lemonfiber.app/spec/10-functional/features/g-ux/g4-error-model/).

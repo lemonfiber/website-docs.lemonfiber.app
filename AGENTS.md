@@ -49,6 +49,7 @@ untaken — the cure is to take the pin and write what the guards name.
 | `src/lib/inventories.ts`  | every number this site states, and the tree it is counted from   |
 | `scripts/guards.ts`       | the kit's guards, plus this site's own rules from `src/lib/`     |
 | `src/lib/schema.ts`       | a contract artefact read as reference tables, never copied       |
+| `src/lib/registry.ts`     | the core's registry of codes, which the error-code pages render  |
 | `messages/`               | every word the chrome shows                                      |
 | `src/pages/`              | `provenance.json`, `llms.txt` and `llms-full.txt`                |
 | `pins/stable.toml`        | what the newest release recorded, rendered at `/`                |

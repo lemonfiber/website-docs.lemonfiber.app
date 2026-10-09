@@ -2,6 +2,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import { countViolations, type Page, type Sources } from "./counts.ts";
+import { REGISTRY } from "./registry.ts";
 import { contract } from "./schema-source.ts";
 import { joinedStack, STACK_CHECKOUT, STACK_ROOT } from "./stack.ts";
 import { GLOSSARY, INVENTORIES } from "./inventories.ts";
@@ -47,6 +48,7 @@ const theTree = (): { sources: Sources; pages: Page[] } => ({
     webRoute: read("vendor/lemonfiber-web/src/lib/route.ts"),
     workspace: read("vendor/lemonfiber/Cargo.toml"),
     glossary: read(GLOSSARY),
+    registry: read(REGISTRY),
   },
   pages: walk("src/content/docs", (path) => /\.(md|mdx)$/.test(path)).map(
     (path) => ({ path, text: read(path) }),
@@ -65,6 +67,7 @@ const nothing: Sources = {
   webRoute: "",
   workspace: "",
   glossary: "",
+  registry: "",
 };
 
 describe("the tree as it stands", () => {

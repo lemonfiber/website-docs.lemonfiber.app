@@ -204,14 +204,6 @@ export function definitionOf(name: string, node: Node): Definition {
   return { name, description, fields: [], variants: [], type: typeOf(node) };
 }
 
-/** Every definition under a node's `$defs`, by name. */
-export function definitionsIn(node: Node): Definition[] {
-  const defs = isNode(node["$defs"]) ? node["$defs"] : {};
-  return Object.entries(defs)
-    .filter((entry): entry is [string, Node] => isNode(entry[1]))
-    .map(([name, one]) => definitionOf(name, one));
-}
-
 /** A payload kind, and the definition its `data` is. */
 export interface Kind {
   readonly name: string;
@@ -287,18 +279,40 @@ export function payloads(contract: unknown): Payloads {
   return { kinds: described, definitions: merged.definitions, disagreeing };
 }
 
+/** Standalone schemas read as one reference, and the names they disagree on. */
+export interface Reference {
+  readonly definitions: readonly Definition[];
+  /** Names defined twice with different content. Empty in a sound artefact. */
+  readonly disagreeing: readonly string[];
+}
+
 /**
- * A standalone schema — the plugin manifest's — read as one reference.
+ * Standalone schemas — the plugin manifest's, or the stack's root and its
+ * service file — read as one reference.
  *
- * Its root is a definition like any other, named by its `title`, and listed
- * first because it is where a reader starts.
+ * Each root is a definition like any other, named by its `title`, and the
+ * roots come first, in the order given, because a reader starts there. The
+ * definitions they share are merged by name, as the web API's kinds are.
  */
-export function standalone(schema: unknown): Definition[] {
-  if (!isNode(schema)) return [];
-  const root = definitionOf(text(schema, "title"), schema);
-  const rest = definitionsIn(schema);
-  rest.sort(byName);
-  return [root, ...rest];
+export function standalone(schemas: readonly unknown[]): Reference {
+  const nodes = schemas.filter(isNode);
+  const merged: Merged = {
+    printed: new Map(),
+    definitions: [],
+    disagreeing: new Set(),
+  };
+  for (const schema of nodes)
+    merge(isNode(schema["$defs"]) ? schema["$defs"] : {}, merged);
+  merged.definitions.sort(byName);
+  const disagreeing = [...merged.disagreeing];
+  disagreeing.sort((a, b) => a.localeCompare(b));
+  return {
+    definitions: [
+      ...nodes.map((schema) => definitionOf(text(schema, "title"), schema)),
+      ...merged.definitions,
+    ],
+    disagreeing,
+  };
 }
 
 /** Parsed JSON, or nothing where the text is not JSON. */

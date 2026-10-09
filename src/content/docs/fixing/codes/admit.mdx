@@ -1,0 +1,15 @@
+---
+title: ADMIT — who the web interface lets in
+topic: use
+description: Every ADMIT code lemonfiber raises, what it means, and what to do about it.
+sidebar:
+  hidden: true
+---
+
+import CodeTable from "../../../../components/CodeTable.astro";
+
+Raised while setting the password `lemonfiber ui` asks for before it will answer anything but this machine, and by the web API it serves when it turns away who is asking, or where from. `ADMIT-4` to `ADMIT-7`, `ADMIT-11` and `ADMIT-12` answer `403`, a wrong password `401`, too many of them `429`, and a body that is not a password `400`. See [the web API](/api/).
+
+<CodeTable family="ADMIT" />
+
+What each severity and each exit means is on [every error by code](/fixing/every-error-by-code/), beside every other family.

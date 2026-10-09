@@ -13,7 +13,6 @@ import type { Violation } from "@lemonfiber/website-kit/guards";
 import { runGuards } from "@lemonfiber/website-kit/run/guards";
 
 import {
-  ARTEFACT,
   codeViolations,
   familyViolations,
   mentionViolations,
@@ -30,6 +29,7 @@ import { checkViolations, REGISTER } from "../src/lib/checks.ts";
 import { assembledContract, CONTRACT_DIRECTORY } from "../src/lib/contract.ts";
 import { countViolations, type Page } from "../src/lib/counts.ts";
 import { readText } from "../src/lib/checkout.ts";
+import { parseRegistry, REGISTRY } from "../src/lib/registry.ts";
 import {
   formulaViolations,
   FORMULAE,
@@ -51,9 +51,9 @@ async function checks(tree: Tree): Promise<Violation[]> {
     { path: "README.md", text: await text("README.md") },
   ];
 
-  // The error-code pages claim to list every code lemonfiber can raise and no
-  // others; the crate emits its own list, so the claim is checked.
-  const errorCodes = await text(ARTEFACT);
+  // The error-code pages are rendered from the registry the core publishes;
+  // the prose around them is held to it.
+  const codes = parseRegistry(readText(join(tree.root, REGISTRY)));
 
   // An unchecked-out submodule leaves this empty, and every rule reading the
   // spec would then pass on nothing.
@@ -81,11 +81,7 @@ async function checks(tree: Tree): Promise<Violation[]> {
 
   return [
     ...(spec.length === 0 ? [empty("vendor/spec")] : []),
-    ...codeViolations(
-      errorCodes,
-      await text(INDEX),
-      prose.filter(isFamilyPage),
-    ),
+    ...codeViolations(codes, await text(INDEX), prose.filter(isFamilyPage)),
     ...formulaViolations(formulae, prose),
     ...toolchainViolations(await text(WORKSPACE), prose),
     ...checkViolations(await text(REGISTER), prose),
@@ -117,11 +113,12 @@ async function checks(tree: Tree): Promise<Violation[]> {
         template: await text("vendor/plugin-template/plugin.toml"),
         workspace: await text(WORKSPACE),
         glossary: await text(GLOSSARY),
+        registry: await text(REGISTRY),
       },
       prose,
     ),
-    ...familyViolations(errorCodes, prose),
-    ...mentionViolations(errorCodes, prose),
+    ...familyViolations(codes, prose),
+    ...mentionViolations(codes, prose),
     ...topicViolations(tree.pages),
   ];
 }

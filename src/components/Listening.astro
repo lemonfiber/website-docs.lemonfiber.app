@@ -18,23 +18,26 @@ const reach = (port: number | null, bind: string | null): string =>
   port === null || bind === null
     ? m.listening_none()
     : (REACH[bind] ?? m.listening_none());
+import Region from "./Region.astro";
 ---
 
-<table>
-  <thead>
-    <tr>
-      <th>{m.services_service()}</th>
-      <th>{m.listening_port()}</th>
-      <th>{m.listening_from()}</th>
-    </tr>
-  </thead>
-  <tbody>
-    {services.map((service) => (
+<Region label={m.table_listening()}>
+  <table>
+    <thead>
       <tr>
-        <td>{service.name}</td>
-        <td>{service.port !== null && <code>{service.port}</code>}</td>
-        <td>{reach(service.port, service.bind)}</td>
+        <th>{m.services_service()}</th>
+        <th>{m.listening_port()}</th>
+        <th>{m.listening_from()}</th>
       </tr>
-    ))}
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      {services.map((service) => (
+        <tr>
+          <td>{service.name}</td>
+          <td>{service.port !== null && <code>{service.port}</code>}</td>
+          <td>{reach(service.port, service.bind)}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</Region>

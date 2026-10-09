@@ -34,10 +34,11 @@
   },
   "dependencies": {
     "@lemonfiber/brand": "github:lemonfiber/brand#46981e8a7cd1a8d1e9728bf30d53357d2679eb93",
-    "@lemonfiber/website-kit": "github:lemonfiber/website-kit#f951251d4724934b80ce198edc033ca22b11eb35"
+    "@lemonfiber/website-kit": "github:lemonfiber/website-kit#68785e093659bcc944969f5a9bcb9f1d50fb94a8"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@astrojs/markdown-satteri": "^0.4.3",
     "@astrojs/starlight": "^0.42.5",
     "@axe-core/playwright": "^4.13.0",
     "@eslint/js": "^10.0.1",

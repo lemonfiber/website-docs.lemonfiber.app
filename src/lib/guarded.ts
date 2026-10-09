@@ -8,12 +8,12 @@
  */
 import { TOKENS } from "@lemonfiber/website-kit/tokens";
 
-import { ARTEFACT } from "./codes.ts";
 import { FORMULAE } from "./formula.ts";
 import { INVENTORIES } from "./inventories.ts";
+import { REGISTRY } from "./registry.ts";
 
 /** The sources of the guards that are not inventories. */
-const ARTEFACTS: readonly string[] = [ARTEFACT, FORMULAE, TOKENS];
+const ARTEFACTS: readonly string[] = [REGISTRY, FORMULAE, TOKENS];
 
 export const GUARDED: readonly string[] = [
   ...new Set([...ARTEFACTS, ...INVENTORIES.map((one) => one.source)]),

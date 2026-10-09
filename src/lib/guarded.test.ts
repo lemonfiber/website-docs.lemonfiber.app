@@ -2,14 +2,14 @@ import { watched } from "@lemonfiber/website-kit/pins";
 import { TOKENS } from "@lemonfiber/website-kit/tokens";
 import { describe, expect, it } from "vitest";
 
-import { ARTEFACT } from "./codes.ts";
 import { FORMULAE } from "./formula.ts";
 import { GUARDED } from "./guarded.ts";
 import { INVENTORIES } from "./inventories.ts";
+import { REGISTRY } from "./registry.ts";
 
 describe("what a guard reads", () => {
-  it("takes every inventory's source and the error-code artefact", () => {
-    expect(GUARDED).toContain(ARTEFACT);
+  it("takes every inventory's source and the registry of codes", () => {
+    expect(GUARDED).toContain(REGISTRY);
     for (const inventory of INVENTORIES)
       expect(GUARDED).toContain(inventory.source);
   });
@@ -20,7 +20,7 @@ describe("what a guard reads", () => {
 
   it("holds what the guards that are not inventories read", () => {
     const sources = INVENTORIES.map((one) => one.source);
-    for (const artefact of [ARTEFACT, FORMULAE, TOKENS]) {
+    for (const artefact of [FORMULAE, TOKENS]) {
       expect(sources).not.toContain(artefact);
       expect(GUARDED).toContain(artefact);
     }
@@ -39,10 +39,10 @@ describe("what a guard reads", () => {
     },
   );
 
-  it("watches the artefact that made a page wrong while its guard stayed green", () => {
+  it("watches the registry the error-code pages are rendered from", () => {
     expect(watched(GUARDED, ["vendor/lemonfiber"])).toContainEqual({
       module: "vendor/lemonfiber",
-      path: "reference/error-codes.md",
+      path: "contract/codes.json",
     });
   });
 });

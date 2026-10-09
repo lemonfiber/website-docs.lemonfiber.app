@@ -3,8 +3,22 @@ import { artefact } from "../lib/schema-source";
 import { standalone } from "../lib/schema";
 import Definitions from "./Definitions.astro";
 
-/** The plugin manifest, read out of `contract/plugin-manifest.schema.json`. */
-const definitions = standalone(artefact("plugin-manifest.schema.json"));
+interface Props {
+  /** The schemas under the pinned core's `contract/`, each root in turn. */
+  readonly schemas: readonly string[];
+  /** What each definition's anchor starts with: `manifest-`. */
+  readonly prefix: string;
+}
+
+/** A manifest's every field, read out of the schemas the pinned core publishes. */
+const { schemas, prefix } = Astro.props;
+const read = standalone(schemas.map((name) => artefact(name)));
+if (read.definitions.length === 0)
+  throw new Error(`${schemas.join(", ")}: no schema to read`);
+if (read.disagreeing.length > 0)
+  throw new Error(
+    `${schemas.join(", ")} define ${read.disagreeing.join(", ")} differently`,
+  );
 ---
 
-<Definitions definitions={definitions} prefix="manifest-" />
+<Definitions definitions={read.definitions} prefix={prefix} />

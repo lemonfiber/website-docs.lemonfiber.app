@@ -1,0 +1,32 @@
+---
+import { codesWhere, type Severity } from "../lib/registry";
+import { registry } from "../lib/schema-source";
+import * as m from "../paraglide/messages.js";
+
+interface Props {
+  readonly severity?: Severity;
+  readonly exit?: number;
+}
+
+/** The codes of one severity, or with one exit, as a list in a sentence. */
+const { severity, exit } = Astro.props;
+const read = registry();
+if (read === null)
+  throw new Error("contract/codes.json is missing or unreadable");
+const codes = codesWhere(read, {
+  ...(severity === undefined ? {} : { severity }),
+  ...(exit === undefined ? {} : { exit }),
+}).map((one) => one.code);
+if (codes.length === 0)
+  throw new Error("contract/codes.json declares no code of that kind");
+const last = codes.at(-1);
+const rest = codes.slice(0, -1);
+---
+
+{rest.map((code, at) => (
+  <>
+    <code>{code}</code>
+    {at < rest.length - 1 ? ", " : ` ${m.list_and()} `}
+  </>
+))}
+<code>{last}</code>

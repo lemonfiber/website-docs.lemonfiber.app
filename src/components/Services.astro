@@ -7,27 +7,32 @@ import * as m from "../paraglide/messages.js";
 const services = servicesOf(stack());
 if (services.length === 0)
   throw new Error("the pinned stack declares no service to render");
+import Region from "./Region.astro";
 ---
 
-<table>
-  <thead>
-    <tr>
-      <th>{m.services_service()}</th>
-      <th>{m.services_does()}</th>
-      <th>{m.services_without()}</th>
-      <th>{m.services_smallest()}</th>
-    </tr>
-  </thead>
-  <tbody>
-    {services.map((service) => (
+<Region label={m.table_services()}>
+  <table>
+    <thead>
       <tr>
-        <td>{service.name}</td>
-        <td>{service.describes}</td>
-        <td>{service.withoutIt}</td>
-        <td>
-          {service.smallestForm !== null && <code>{service.smallestForm}</code>}
-        </td>
+        <th>{m.services_service()}</th>
+        <th>{m.services_does()}</th>
+        <th>{m.services_without()}</th>
+        <th>{m.services_smallest()}</th>
       </tr>
-    ))}
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      {services.map((service) => (
+        <tr>
+          <td>{service.name}</td>
+          <td>{service.describes}</td>
+          <td>{service.withoutIt}</td>
+          <td>
+            {service.smallestForm !== null && (
+              <code>{service.smallestForm}</code>
+            )}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</Region>

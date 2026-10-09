@@ -10,7 +10,8 @@
  * Those are named in the README, under what stays unchecked.
  */
 
-import { FAMILIES, INDEX, isFamilyPage } from "./codes.ts";
+import { INDEX } from "./codes.ts";
+import { parseRegistry, REGISTRY } from "./registry.ts";
 import { CONTRACT_DIRECTORY } from "./contract.ts";
 import { matches, type Inventory, type Page, type Sources } from "./counts.ts";
 import {
@@ -497,19 +498,25 @@ export const INVENTORIES: readonly Inventory[] = [
   },
   {
     what: "codes with no known remedy",
-    source: FAMILIES,
-    members: (_sources, pages) =>
-      pages
-        .filter(isFamilyPage)
-        .flatMap((page) =>
-          matches(
-            /^\| `([A-Z][A-Z0-9]*-\d+)` \|(?=.*Nothing is known to fix this)/gm,
-            page.text,
-          ),
-        ),
+    source: REGISTRY,
+    members: (sources) =>
+      (parseRegistry(sources.registry)?.codes ?? [])
+        .filter((code) =>
+          code.remedy.startsWith("Nothing is known to fix this"),
+        )
+        .map((code) => code.code),
     claims: [
       { says: "%N% codes in this reference do that" },
       { says: "%N% codes elsewhere on the site" },
     ],
+  },
+  {
+    what: "codes raised as critical",
+    source: REGISTRY,
+    members: (sources) =>
+      (parseRegistry(sources.registry)?.codes ?? [])
+        .filter((code) => code.severity === "critical")
+        .map((code) => code.code),
+    claims: [{ says: "%N% codes are raised as `critical`" }],
   },
 ];

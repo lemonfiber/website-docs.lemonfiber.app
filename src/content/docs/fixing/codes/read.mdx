@@ -1,0 +1,15 @@
+---
+title: READ — asking the web surface a question
+topic: use
+description: Every READ code lemonfiber raises, what it means, and what to do about it.
+sidebar:
+  hidden: true
+---
+
+import CodeTable from "../../../../components/CodeTable.astro";
+
+Raised by the read endpoints `lemonfiber ui` serves, about which read a request named and the query string it arrived with. A read that cannot be answered as it was asked is refused, because answering a different question in its place would read like the answer to this one. `READ-3` answers `404`, and every other one `400`. See [the envelope](/api/the-envelope/).
+
+<CodeTable family="READ" />
+
+What each severity and each exit means is on [every error by code](/fixing/every-error-by-code/), beside every other family.
