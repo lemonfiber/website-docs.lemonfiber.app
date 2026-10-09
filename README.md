@@ -233,7 +233,7 @@ renders there.
 
 ### Counts, against what is counted
 
-This site's pages state numbers about the trees under `vendor/`: the twenty-two
+This site's pages state numbers about the trees under `vendor/`: the twenty-three
 services and the seventy-three payload kinds among them. Each one is a
 transcription of something machine-readable, and goes false when a pin moves.
 
