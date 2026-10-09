@@ -1,0 +1,18 @@
+---
+title: UPDATE — moving the stack onto newer versions
+topic: use
+description: Every UPDATE code lemonfiber raises, what it means, and what to do about it.
+sidebar:
+  hidden: true
+---
+
+import CodeTable from "../../../../components/CodeTable.astro";
+
+Raised by `lemonfiber update stack`. A bare run changes nothing and says what each step would
+cost; `--confirm` takes the steps, behind a backup that is a precondition rather than an offer.
+Nothing here reaches a registry — what a service would move to ships inside the binary, so the
+only question asked of the machine is which version each service stands on now.
+
+<CodeTable family="UPDATE" />
+
+What each severity and each exit means is on [every error by code](/fixing/every-error-by-code/), beside every other family.

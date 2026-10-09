@@ -9,23 +9,26 @@ import Prose from "./Prose.astro";
 const kinds = kindSummaries(payloads(contract()));
 if (kinds.length === 0)
   throw new Error("contract/web-api/ describes no payload kind");
+import Region from "./Region.astro";
 ---
 
-<table>
-  <thead>
-    <tr>
-      <th>{m.ref_kind()}</th>
-      <th>{m.kinds_summary()}</th>
-    </tr>
-  </thead>
-  <tbody>
-    {kinds.map((kind) => (
+<Region label={m.table_kinds()}>
+  <table>
+    <thead>
       <tr>
-        <td>
-          <code>{kind.name}</code>
-        </td>
-        <td>{kind.summary !== "" && <Prose text={kind.summary} />}</td>
+        <th>{m.ref_kind()}</th>
+        <th>{m.kinds_summary()}</th>
       </tr>
-    ))}
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      {kinds.map((kind) => (
+        <tr>
+          <td>
+            <code>{kind.name}</code>
+          </td>
+          <td>{kind.summary !== "" && <Prose text={kind.summary} />}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</Region>

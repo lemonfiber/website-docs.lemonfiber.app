@@ -17,29 +17,32 @@ if (read.disagreeing.length > 0)
   throw new Error(
     `contract/web-api/ defines these more than one way: ${read.disagreeing.join(", ")}`,
   );
+import Region from "./Region.astro";
 ---
 
 <h2 id="every-kind">{m.ref_kinds_heading()}</h2>
-<table>
-  <thead>
-    <tr>
-      <th>{m.ref_kind()}</th>
-      <th>{m.ref_payload()}</th>
-    </tr>
-  </thead>
-  <tbody>
-    {read.kinds.map((kind) => (
-      <tr id={`kind-${kind.name}`}>
-        <td>
-          <code>{kind.name}</code>
-        </td>
-        <td>
-          <Type tokens={kind.data} prefix={PREFIX} />
-        </td>
+<Region labelledby="every-kind">
+  <table>
+    <thead>
+      <tr>
+        <th>{m.ref_kind()}</th>
+        <th>{m.ref_payload()}</th>
       </tr>
-    ))}
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      {read.kinds.map((kind) => (
+        <tr id={`kind-${kind.name}`}>
+          <td>
+            <code>{kind.name}</code>
+          </td>
+          <td>
+            <Type tokens={kind.data} prefix={PREFIX} />
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</Region>
 
 <h2 id="every-type">{m.ref_types_heading()}</h2>
 <Definitions definitions={read.definitions} prefix={PREFIX} />

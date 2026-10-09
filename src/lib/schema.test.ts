@@ -224,21 +224,49 @@ describe("payloads", () => {
 
 describe("standalone", () => {
   it("puts the root first, named by its title", () => {
-    const read = standalone({
-      title: "PluginManifest",
-      properties: { plugin: { $ref: "#/$defs/Plugin" } },
-      $defs: { Plugin: { type: "object" }, Bind: { oneOf: [] }, bad: 1 },
-    });
-    expect(read.map((one) => one.name)).toEqual([
+    const read = standalone([
+      {
+        title: "PluginManifest",
+        properties: { plugin: { $ref: "#/$defs/Plugin" } },
+        $defs: { Plugin: { type: "object" }, Bind: { oneOf: [] }, bad: 1 },
+      },
+    ]);
+    expect(read.definitions.map((one) => one.name)).toEqual([
       "PluginManifest",
       "Bind",
       "Plugin",
     ]);
+    expect(read.disagreeing).toEqual([]);
+  });
+
+  it("puts each root first, and merges what they share", () => {
+    const read = standalone([
+      { title: "Manifest", $defs: { Service: { type: "object" } } },
+      {
+        title: "ServiceFile",
+        $defs: { Service: { type: "object" }, Api: { type: "string" } },
+      },
+    ]);
+    expect(read.definitions.map((one) => one.name)).toEqual([
+      "Manifest",
+      "ServiceFile",
+      "Api",
+      "Service",
+    ]);
+  });
+
+  it("names a definition two schemas write differently", () => {
+    const read = standalone([
+      { title: "A", $defs: { Shared: { type: "object" }, B: {}, C: {} } },
+      { title: "B", $defs: { Shared: { type: "string" }, C: [], D: 1 } },
+      { title: "C", $defs: { C: { type: "null" }, B: { type: "null" } } },
+    ]);
+    expect(read.disagreeing).toEqual(["B", "C", "Shared"]);
   });
 
   it("reads nothing out of something that is not a schema", () => {
-    expect(standalone([])).toEqual([]);
-    expect(standalone({ title: "Bare" })).toHaveLength(1);
+    expect(standalone([[]]).definitions).toEqual([]);
+    expect(standalone([{ title: "Bare" }]).definitions).toHaveLength(1);
   });
 });
 
@@ -275,12 +303,30 @@ describe("the artefacts this site pins", () => {
   });
 
   it("reads the plugin manifest's schema, root first", () => {
-    const read = standalone(
+    const read = standalone([
       json("vendor/lemonfiber/contract/plugin-manifest.schema.json"),
-    );
-    const defined = new Set(read.map((one) => one.name));
-    expect(read[0]?.name).toBe("PluginManifest");
-    expect(named(read).filter((name) => !defined.has(name))).toEqual([]);
+    ]);
+    const defined = new Set(read.definitions.map((one) => one.name));
+    expect(read.definitions[0]?.name).toBe("PluginManifest");
+    expect(
+      named(read.definitions).filter((name) => !defined.has(name)),
+    ).toEqual([]);
+  });
+
+  it("reads the stack's root and service file as one, and they agree", () => {
+    const read = standalone([
+      json("vendor/lemonfiber/contract/stack-manifest.schema.json"),
+      json("vendor/lemonfiber/contract/stack-service.schema.json"),
+    ]);
+    const defined = new Set(read.definitions.map((one) => one.name));
+    expect(read.disagreeing).toEqual([]);
+    expect(read.definitions.slice(0, 2).map((one) => one.name)).toEqual([
+      "Manifest",
+      "StackServiceFile",
+    ]);
+    expect(
+      named(read.definitions).filter((name) => !defined.has(name)),
+    ).toEqual([]);
   });
 
   it("reads a pinned file as text, and nothing where the checkout lacks it", () => {

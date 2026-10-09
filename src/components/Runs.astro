@@ -1,0 +1,21 @@
+---
+import { runsOf } from "../lib/registry";
+
+interface Props {
+  /** One line of the registry's Markdown: words, code and links. */
+  readonly text: string;
+}
+
+const { text } = Astro.props;
+const origin = Astro.site?.origin ?? "";
+---
+
+{runsOf(text, origin).map((run) =>
+  run.kind === "code" ? (
+    <code>{run.text}</code>
+  ) : run.kind === "link" ? (
+    <a href={run.href}>{run.text}</a>
+  ) : (
+    run.text
+  ),
+)}

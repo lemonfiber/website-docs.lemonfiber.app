@@ -202,9 +202,15 @@ site's own, from `src/lib/`. Together they enforce:
   `vendor/lemonfiber/reference/`, which the core generates from its own
   declarations: the command has to exist, and it has to take every flag given
   to it.
-- **Every error code a page names, against the codes the binary raises.** A
-  code written as code anywhere — "a `LIFE-1` means…" — has to be one the
-  generated reference lists, not only those on the family pages.
+- **Every error code a page names, against the registry the core publishes.**
+  A code written as code anywhere — "a `LIFE-1` means…" — has to be one
+  `vendor/lemonfiber/contract/codes.json` declares, and one it lists as retired
+  is reported as retired.
+- **Every family of codes, against the same registry, both ways.** Each family
+  has a page under `fixing/codes/` and each page a family; the page is titled
+  with what the family covers and renders its table with
+  `<CodeTable family="…" />`, so no code's row is written by hand, and
+  `fixing/every-error-by-code` lists the families with `<CodeFamilies />`.
 - **Every doctor check a page names, against the core's register.** A check's
   identity written as code, or given to `--accept` or `--only`, has to be in
   `BUNDLED_CHECKS`, and the VPN page's table sets out every VPN check it lists.
@@ -241,8 +247,8 @@ documentation about them — the count of payload kinds in it had been left behi
 by the contract, and nothing here was looking.
 
 Where a page sets the members out in a table rather than only counting them, the
-table is compared against the source in both directions, as the error-code pages
-are. Three failures are reported, not one:
+table is compared against the source in both directions. Three failures are
+reported, not one:
 
 - a sentence whose number is not the number the source has;
 - a table with a member the source does not have, or without one it does;
@@ -250,10 +256,9 @@ are. Three failures are reported, not one:
   check matching nothing and reporting success, which is the unchecked number it
   replaced.
 
-Some numbers on this site are not derivable from anything vendored and are not
-checked: the five codes raised as `critical` and the code-to-exit-code mapping
-on `fixing/every-error-by-code`, because no artefact says which severity or
-which exit any one code carries. Those stay hand-held.
+The codes raised as `critical` and the codes behind each exit on
+`fixing/every-error-by-code` are rendered from the registry, as the family
+tables are, so no list of them is written down.
 
 ### When a source moves under its guard
 

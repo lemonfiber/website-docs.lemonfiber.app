@@ -1,8 +1,12 @@
 import starlight from "@astrojs/starlight";
+import { satteri } from "@astrojs/markdown-satteri";
 import { defineConfig } from "astro/config";
 import { paraglideVitePlugin } from "@inlang/paraglide-js";
 import starlightLinksValidator from "starlight-links-validator";
 import starlightSidebarTopics from "starlight-sidebar-topics";
+import { BRAND_LOGO } from "@lemonfiber/website-kit/brand";
+import { sitePolicy } from "@lemonfiber/website-kit/csp";
+import { scrollableTables } from "@lemonfiber/website-kit/tables";
 
 import retired from "./retired.json";
 import { baseIntegration } from "./src/lib/base";
@@ -22,6 +26,10 @@ export default defineConfig({
   // A page that moved keeps its address: the build writes a page at the old
   // one that sends a reader on.
   redirects: retired.redirects,
+  // A table wider than the page scrolls inside a region the keyboard can reach.
+  markdown: {
+    processor: satteri({ hastPlugins: [scrollableTables({ label: "Table" })] }),
+  },
   vite: {
     plugins: [
       paraglideVitePlugin({
@@ -33,6 +41,7 @@ export default defineConfig({
   integrations: [
     starlight({
       title: "lemonfiber",
+      logo: BRAND_LOGO,
       description:
         "Documentation for lemonfiber: install it, run it, fix it, and build on it.",
       defaultLocale: "en",
@@ -87,5 +96,7 @@ export default defineConfig({
       ],
     }),
     baseIntegration({ base, fallback: versioned ? "/next/" : null }),
+    // Last, so each page's policy hashes the inline blocks it ships with.
+    sitePolicy(),
   ],
 });

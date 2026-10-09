@@ -81,5 +81,22 @@
   "grade_enhancing": "Enhancing",
   "grade_enhancing_meaning": "Something works less well",
   "grade_optional": "Optional",
-  "grade_optional_meaning": "Convenience only"
+  "grade_optional_meaning": "Convenience only",
+  "table_envelope": "Envelope fields",
+  "table_kinds": "Payload kinds",
+  "table_grades": "Grades",
+  "table_listening": "Where each service listens",
+  "table_forms": "Forms",
+  "table_profiles": "Profiles",
+  "table_services": "Services",
+  "codes_code": "Code",
+  "codes_severity": "Severity",
+  "codes_exit": "Exit",
+  "codes_meaning": "What it means",
+  "codes_remedy": "What to do",
+  "codes_family": "Family",
+  "codes_covers": "What it covers",
+  "codes_count": "Codes",
+  "codes_table": "{family} codes",
+  "list_and": "and"
 }

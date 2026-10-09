@@ -44,6 +44,8 @@ export interface Sources {
   readonly template: string;
   /** `vendor/lemonfiber-web/src/lib/route.ts`, the console's own list of screens. */
   readonly webRoute: string;
+  /** `vendor/lemonfiber/contract/codes.json`, the registry of problem codes. */
+  readonly registry: string;
 }
 
 /** A shape the prose states a count in. `%N%` stands where the number goes. */

@@ -23,28 +23,31 @@ if (unknown.length > 0)
   throw new Error(
     `the pinned stack grades services in words this page has no meaning for: ${misgraded}`,
   );
+import Region from "./Region.astro";
 ---
 
-<table>
-  <thead>
-    <tr>
-      <th>{m.grades_grade()}</th>
-      <th>{m.grades_meaning()}</th>
-      <th>{m.grades_services()}</th>
-    </tr>
-  </thead>
-  <tbody>
-    {GRADES.map(([grade, name, meaning]) => (
+<Region label={m.table_grades()}>
+  <table>
+    <thead>
       <tr>
-        <td>{name}</td>
-        <td>{meaning}</td>
-        <td>
-          {services
-            .filter((service) => service.criticality === grade)
-            .map((service) => service.name)
-            .join(", ")}
-        </td>
+        <th>{m.grades_grade()}</th>
+        <th>{m.grades_meaning()}</th>
+        <th>{m.grades_services()}</th>
       </tr>
-    ))}
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      {GRADES.map(([grade, name, meaning]) => (
+        <tr>
+          <td>{name}</td>
+          <td>{meaning}</td>
+          <td>
+            {services
+              .filter((service) => service.criticality === grade)
+              .map((service) => service.name)
+              .join(", ")}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</Region>

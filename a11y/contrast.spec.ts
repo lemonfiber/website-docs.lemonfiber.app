@@ -1,11 +1,12 @@
 import AxeBuilder from "@axe-core/playwright";
+import { layoutViolations, probeLayout } from "@lemonfiber/website-kit/layout";
 import { expect, test } from "@playwright/test";
 
 /**
  * One route of every kind the site serves, in both themes: the landing page,
  * an authored page, a section landing page, mirrored pages from two different
  * repositories, the error-code index and the longest of the tables it leads to,
- * and the two reference pages rendered from a contract artefact.
+ * and the reference pages rendered from a contract artefact.
  */
 const routes = [
   "/",
@@ -19,6 +20,10 @@ const routes = [
   "/plugins/the-manifest/",
   "/api/typescript-sdk/",
   "/plugins/the-template/",
+  "/api/kinds/",
+  "/api/the-envelope/",
+  "/running/the-services/",
+  "/advanced/the-stack-manifest/",
 ];
 const themes = ["light", "dark"] as const;
 
@@ -47,8 +52,21 @@ for (const route of routes)
       );
 
       const results = await new AxeBuilder({ page })
-        .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+        .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
         .analyze();
 
       expect(results.violations).toEqual([]);
     });
+
+/** The narrowest screen the site is laid out for. */
+const PHONE = { width: 375, height: 800 };
+
+for (const route of routes)
+  test(`${route} fits a phone's width`, async ({ page }) => {
+    if (long.has(route)) test.slow();
+    await page.setViewportSize(PHONE);
+    await page.goto(route);
+    expect(layoutViolations(route, await page.evaluate(probeLayout))).toEqual(
+      [],
+    );
+  });

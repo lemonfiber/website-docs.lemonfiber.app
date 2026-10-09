@@ -8,6 +8,7 @@
 import { assembledContract, CONTRACT_DIRECTORY } from "./contract";
 import { readText } from "./checkout";
 import { parsedJson } from "./schema";
+import { parseRegistry, REGISTRY, type Registry } from "./registry";
 import { joinedStack, STACK_CHECKOUT, STACK_ROOT } from "./stack";
 
 const CONTRACT = "vendor/lemonfiber/contract";
@@ -30,3 +31,7 @@ export const inStack = (entry: string): string | null =>
 
 /** The pinned stack manifest, its root and every service file it includes, as one. */
 export const stack = (): string => joinedStack(inStack(STACK_ROOT), inStack);
+
+/** lemonfiber's registry of problem codes, from the pinned core. */
+export const registry = (): Registry | null =>
+  parseRegistry(readText(REGISTRY));

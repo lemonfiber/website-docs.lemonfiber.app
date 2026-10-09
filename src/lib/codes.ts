@@ -1,46 +1,22 @@
 /**
- * The error-code pages against the codes the binary can actually raise.
+ * The error-code pages against the registry the core publishes.
  *
- * Each family of codes has a page under `fixing/codes/`, and
- * `fixing/every-error-by-code` lists the families. The index states that there
- * is no code on those pages lemonfiber cannot raise, and no code lemonfiber can
- * raise that is missing from them. The crates emit their own list, so that
- * claim is checkable rather than maintained: this compares the two, in both
- * directions, and holds each code to its own family's page.
+ * Each family of codes has a page under `fixing/codes/`, whose table is
+ * rendered from `contract/codes.json` by `<CodeTable family="…" />`, and
+ * `fixing/every-error-by-code` lists the families with `<CodeFamilies />`. What
+ * a page writes by hand is its title and the paragraphs around the table. This
+ * holds those to the registry in both directions: a page for every family and a
+ * family for every page, each page's table naming its own family, each title
+ * the family's, and every code the prose names one the core can raise.
  *
- * Pure functions over text. Reading the tree is `scripts/guards.ts`.
+ * Pure functions over text and the parsed registry. Reading the tree is
+ * `scripts/guards.ts`.
  */
 
-import { asNumber, inWords, matches, SAID, type Page } from "./counts.ts";
+import { asNumber, inWords, SAID, type Page } from "./counts.ts";
+import { codesIn, familyTitle, REGISTRY, type Registry } from "./registry.ts";
 import type { Violation } from "@lemonfiber/website-kit/guards";
-// Extension named: `scripts/guards.ts` loads this module in node directly,
-// which resolves no extension of its own.
 import { captured } from "@lemonfiber/website-kit/mirror";
-
-/** A family and a number — `VPN-1`. Never anything else. */
-const CODE = /^[A-Z][A-Z0-9]*-\d+$/;
-
-/** One bullet of the generated artefact: `` - `VPN-1` ``. */
-const BULLET = /^- `([^`]+)`$/gm;
-
-/** The first cell of a table row on a page: `` | `VPN-1` | … ``. */
-const FIRST_CELL = /^\|\s*`([^`]+)`\s*\|/gm;
-
-/** Every code the generated reference lists. */
-export function codesInArtefact(text: string): string[] {
-  return matches(BULLET, text);
-}
-
-/**
- * Every code a page documents.
- *
- * The index carries tables that are not code tables — severities, states and
- * exit codes — whose first cell is a backticked word or digit. Only a family
- * and a number is a code, so only those are compared.
- */
-export function codesOnPage(text: string): string[] {
-  return matches(FIRST_CELL, text).filter((cell) => CODE.test(cell));
-}
 
 const at = (where: string, message: string): Violation => ({
   where,
@@ -48,28 +24,29 @@ const at = (where: string, message: string): Violation => ({
   message,
 });
 
+const lineOf = (text: string, index: number): number =>
+  text.slice(0, index).split("\n").length;
+
 const DOCS = "src/content/docs";
+
 /** The route the families' pages are served under. */
 const SERVED_AT = "fixing/codes";
 
 /** The page that lists every family. */
-export const INDEX = `${DOCS}/fixing/every-error-by-code.md`;
-/** Where the families' pages are kept, one file per family: `vpn.md`. */
-export const FAMILIES = `${DOCS}/${SERVED_AT}`;
-export const ARTEFACT = "vendor/lemonfiber/reference/error-codes.md";
+export const INDEX = `${DOCS}/fixing/every-error-by-code.mdx`;
 
-/** The family a code belongs to: `VPN` for `VPN-1`. */
-const familyOf = (code: string): string => code.slice(0, code.lastIndexOf("-"));
+/** Where the families' pages are kept, one file per family: `vpn.mdx`. */
+export const FAMILIES = `${DOCS}/${SERVED_AT}`;
 
 /** The file a family's page is kept in. */
-const pageOf = (family: string): string =>
-  `${FAMILIES}/${family.toLowerCase()}.md`;
+export const pageOf = (prefix: string): string =>
+  `${FAMILIES}/${prefix.toLowerCase()}.mdx`;
 
-/** The route a family's page is served at, as the index links it. */
-const linkOf = (family: string): string =>
-  `/${SERVED_AT}/${family.toLowerCase()}/`;
+/** The route a family's page is served at. */
+export const linkOf = (prefix: string): string =>
+  `/${SERVED_AT}/${prefix.toLowerCase()}/`;
 
-/** The family a page under `FAMILIES` is for: `VPN` for `codes/vpn.md`. */
+/** The family a page under `FAMILIES` is for: `VPN` for `codes/vpn.mdx`. */
 const familyAt = (path: string): string =>
   path
     .slice(FAMILIES.length + 1)
@@ -80,123 +57,86 @@ const familyAt = (path: string): string =>
 export const isFamilyPage = (page: Page): boolean =>
   page.path.startsWith(`${FAMILIES}/`) && /\.mdx?$/.test(page.path);
 
-const listed = (codes: readonly string[]): string =>
-  [...codes].sort((a, b) => a.localeCompare(b)).join(", ");
+/** The family a page's table is rendered for. */
+const TABLE = /<CodeTable\s+family="([A-Z][A-Z0-9]*)"\s*\/>/g;
 
-/**
- * What one family's page and the reference disagree about.
- *
- * A code is held to its own family's page: one documented on another family's
- * page is found by nobody who follows the index to the family it names.
- */
-function pageViolations(
-  page: Page,
-  raised: ReadonlySet<string>,
-  wanted: readonly string[],
-): Violation[] {
+/** A page's title, as its frontmatter gives it. */
+const TITLE = /^title:\s*(.+)$/m;
+
+/** A row of a table written by hand, starting with a code. */
+const HAND_ROW = /^\|\s*`[A-Z][A-Z0-9]*-\d+`\s*\|/m;
+
+/** What the index needs to list every family. */
+const LISTING = "<CodeFamilies />";
+
+const listed = (items: Iterable<string>): string =>
+  [...items].sort((a, b) => a.localeCompare(b)).join(", ");
+
+/** What one family's page gets wrong about its family. */
+function pageViolations(page: Page, title: string): Violation[] {
   const family = familyAt(page.path);
-  const documented = codesOnPage(page.text);
-  const onPage = new Set(documented);
   const found: Violation[] = [];
-
-  const undocumented = wanted.filter((code) => !onPage.has(code));
-  if (undocumented.length > 0)
+  const tables = [...page.text.matchAll(TABLE)].map((one) => captured(one, 1));
+  if (tables.length !== 1 || tables[0] !== family)
     found.push(
       at(
         page.path,
-        `lemonfiber raises these and the page does not: ${listed(undocumented)}`,
+        `renders ${tables.length === 0 ? "no code table" : `the tables of ${listed(tables)}`}, where it is \`${family}\`'s page: write <CodeTable family="${family}" /> once`,
       ),
     );
-
-  const elsewhere = documented.filter((code) => familyOf(code) !== family);
-  if (elsewhere.length > 0)
-    found.push(
-      at(
-        page.path,
-        `the page documents these, which belong on another family's page: ${listed(elsewhere)}`,
-      ),
-    );
-
-  const unraisable = documented.filter(
-    (code) => familyOf(code) === family && !raised.has(code),
-  );
-  if (unraisable.length > 0)
-    found.push(
-      at(
-        page.path,
-        `the page documents these and lemonfiber cannot raise them: ${listed(unraisable)}`,
-      ),
-    );
-
+  const said = TITLE.exec(page.text);
+  if (said === null || captured(said, 1).trim() !== title)
+    found.push(at(page.path, `is titled otherwise than "${title}"`));
+  const hand = HAND_ROW.exec(page.text);
+  if (hand !== null)
+    found.push({
+      where: page.path,
+      line: lineOf(page.text, hand.index),
+      message: "writes a code's row by hand; the table is the registry's",
+    });
   return found;
 }
 
 /**
- * What the reference, the index and the families' pages disagree about.
+ * What the registry, the index and the families' pages disagree about.
  *
- * An empty artefact is a violation rather than a clean run. Two empty sets
- * agree about everything, so a reference that failed to parse would report the
- * pages as perfect — which is the same unchecked claim this replaces, told by a
- * check instead of by a sentence.
- *
- * The families' pages are reached from the index and from nowhere in the
- * sidebar, so a family the index does not link is a page nobody browsing finds.
+ * A missing or unreadable registry is a violation rather than a clean run: two
+ * empty sets agree about everything.
  */
 export function codeViolations(
-  artefact: string,
+  registry: Registry | null,
   index: string,
   pages: readonly Page[],
 ): Violation[] {
-  const raised = codesInArtefact(artefact);
-  if (raised.length === 0)
-    return [
-      at(
-        ARTEFACT,
-        "no error codes found — the reference is missing or unreadable",
-      ),
-    ];
+  if (registry === null)
+    return [at(REGISTRY, "no registry of codes — it is missing or unreadable")];
 
-  const byFamily = new Map<string, string[]>();
-  for (const code of raised)
-    byFamily.set(familyOf(code), [
-      ...(byFamily.get(familyOf(code)) ?? []),
-      code,
-    ]);
-  const canRaise = new Set(raised);
   const paged = new Map(
     pages.filter(isFamilyPage).map((page) => [familyAt(page.path), page]),
   );
-
+  const declared = new Set(registry.families.map((one) => one.prefix));
   const found: Violation[] = [];
 
-  for (const [family, codes] of byFamily) {
-    const page = paged.get(family);
+  for (const family of registry.families) {
+    const page = paged.get(family.prefix);
     if (page === undefined)
       found.push(
         at(
-          pageOf(family),
-          `lemonfiber raises ${listed(codes)} and the \`${family}\` family has no page`,
+          pageOf(family.prefix),
+          `the \`${family.prefix}\` family raises ${listed(codesIn(registry, family.prefix).map((one) => one.code))} and has no page`,
         ),
       );
-    else found.push(...pageViolations(page, canRaise, codes));
+    else found.push(...pageViolations(page, familyTitle(family)));
   }
 
   for (const [family, page] of paged)
-    if (!byFamily.has(family))
+    if (!declared.has(family))
       found.push(
-        at(page.path, `lemonfiber raises no code in the \`${family}\` family`),
+        at(page.path, `the registry declares no \`${family}\` family`),
       );
 
-  const unlinked = [...byFamily.keys()].filter(
-    (family) => !index.includes(`](${linkOf(family)})`),
-  );
-  if (unlinked.length > 0)
-    found.push(
-      at(
-        INDEX,
-        `the index does not link these families' pages: ${listed(unlinked)}`,
-      ),
-    );
+  if (!index.includes(LISTING))
+    found.push(at(INDEX, `does not list the families with ${LISTING}`));
 
   return found;
 }
@@ -207,35 +147,17 @@ const FAMILY_SIZE = new RegExp(
   "gi",
 );
 
-/** How many codes each family the reference declares has. */
-export function familySizes(artefact: string): Map<string, number> {
-  const sizes = new Map<string, number>();
-  for (const family of matches(/^- `([A-Z][A-Z0-9]*)-\d+`$/gm, artefact))
-    sizes.set(family, (sizes.get(family) ?? 0) + 1);
-  return sizes;
-}
-
 /**
- * Every sentence naming a family beside how many codes it has.
- *
- * The pages that walk one family — the VPN checks, the storage checks, the
- * support bundle — each send the reader to the code page for "the eight `VPN`
- * codes". A code added to a family upstream reaches the code page through the
- * guard above and leaves those sentences behind, so the number is read out of
- * the reference rather than kept by hand.
+ * Every sentence naming a family beside how many codes it has, against the
+ * registry. A code added to a family upstream reaches its page through the
+ * table and would leave these sentences behind.
  */
 export function familyViolations(
-  artefact: string,
+  registry: Registry | null,
   pages: readonly Page[],
 ): Violation[] {
-  const sizes = familySizes(artefact);
-  if (sizes.size === 0)
-    return [
-      at(
-        ARTEFACT,
-        "no error codes found — the reference is missing or unreadable",
-      ),
-    ];
+  if (registry === null)
+    return [at(REGISTRY, "no registry of codes — it is missing or unreadable")];
 
   const found: Violation[] = [];
   let stated = 0;
@@ -244,21 +166,21 @@ export function familyViolations(
     for (const match of page.text.matchAll(FAMILY_SIZE)) {
       const said = captured(match, 1);
       const family = captured(match, 2);
-      const size = sizes.get(family);
-      if (size === undefined) continue;
+      if (!registry.families.some((one) => one.prefix === family)) continue;
+      const size = codesIn(registry, family).length;
       stated += 1;
       if (asNumber(said) === size) continue;
       found.push({
         where: page.path,
-        line: page.text.slice(0, match.index).split("\n").length,
-        message: `says ${said} \`${family}\` codes where ${ARTEFACT} declares ${inWords(size)}`,
+        line: lineOf(page.text, match.index),
+        message: `says ${said} \`${family}\` codes where ${REGISTRY} declares ${inWords(size)}`,
       });
     }
 
   if (stated === 0)
     found.push(
       at(
-        ARTEFACT,
+        REGISTRY,
         "no sentence says how many codes a family has — a rewording left this watching nothing",
       ),
     );
@@ -270,24 +192,17 @@ export function familyViolations(
 const MENTIONED = /`([A-Z][A-Z0-9]*-\d+)`/g;
 
 /**
- * Every code a page names that lemonfiber cannot raise.
- *
- * The family pages are held to the reference above; this holds every other
- * sentence that sends a reader to a code — "a `LIFE-1` means…" — so a code
- * renumbered or retired upstream is not left named as advice.
+ * Every code a page names that lemonfiber cannot raise, so a code renumbered
+ * or retired upstream is not left named as advice.
  */
 export function mentionViolations(
-  artefact: string,
+  registry: Registry | null,
   pages: readonly Page[],
 ): Violation[] {
-  const raised = new Set(codesInArtefact(artefact));
-  if (raised.size === 0)
-    return [
-      at(
-        ARTEFACT,
-        "no error codes found — the reference is missing or unreadable",
-      ),
-    ];
+  if (registry === null)
+    return [at(REGISTRY, "no registry of codes — it is missing or unreadable")];
+  const raised = new Set(registry.codes.map((one) => one.code));
+  const retired = new Set(registry.retired);
   const found: Violation[] = [];
   for (const page of pages)
     for (const match of page.text.matchAll(MENTIONED)) {
@@ -295,8 +210,10 @@ export function mentionViolations(
       if (raised.has(code)) continue;
       found.push({
         where: page.path,
-        line: page.text.slice(0, match.index).split("\n").length,
-        message: `names \`${code}\`, which ${ARTEFACT} does not list`,
+        line: lineOf(page.text, match.index),
+        message: retired.has(code)
+          ? `names \`${code}\`, which ${REGISTRY} lists as retired`
+          : `names \`${code}\`, which ${REGISTRY} does not declare`,
       });
     }
   return found;
