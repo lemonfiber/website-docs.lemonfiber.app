@@ -39,7 +39,7 @@ the wrong thing is worse than one that crashes.
 | Commitment                | What it means in practice                                                                                                                                                                                                                 |
 | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | No proprietary components | Every bundled service is self-hosted, and nothing has a paid tier. What leaves the machine on lemonfiber's own account is listed by `lemonfiber outbound`, and each request can be switched off.                                          |
-| Runs in slices            | Named [forms](/running/forms-and-slices/) start part of the stack. `search` is three containers; `full` is twenty-one. Same configuration, same data, no separate install.                                                                |
+| Runs in slices            | Named [forms](/running/forms-and-slices/) start part of the stack. `search` is three containers; `full` is twenty-two. Same configuration, same data, no separate install.                                                                |
 | Correct by construction   | Setup creates a hardlink and inspects it rather than assuming one works. [The doctor](/fixing/run-the-doctor/) compares public IP addresses to prove the VPN is isolating traffic. Administrative interfaces bind to loopback by default. |
 
 The third one is the difference that matters most day to day. Where a claim is

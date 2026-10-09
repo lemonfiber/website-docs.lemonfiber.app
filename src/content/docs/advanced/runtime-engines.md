@@ -18,7 +18,7 @@ images are Compose invocations, so what lemonfiber does to your stack is
 something you can run yourself, and `--dry-run` can print it.
 
 **Reads go through the engine's own API.** At about one poll a second across
-twenty-two services, spawning a process for every look would be wasteful and
+twenty-three services, spawning a process for every look would be wasteful and
 visibly jittery.
 
 | What is asked                                            | What it is for                                                                                                                                  |
