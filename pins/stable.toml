@@ -1,17 +1,18 @@
-# The revisions the stable documentation renders: what 0.16.0 recorded
+# The revisions the stable documentation renders: what 0.17.0 recorded
 # (REPO-R88). Written by `node scripts/stable.ts write`; `check` refuses any other.
-version = "0.16.0"
-# No commit on or before the release day: these pages are not in this version.
-absent = ["vendor/integration-home-assistant", "vendor/integration-mcp", "vendor/sdk-python"]
+version = "0.17.0"
 
 [pins]
-"vendor/brand" = "115fedb01412abbaf831fca60c31285b91092fb8"  # default branch on or before 2026-09-24
-"vendor/homebrew-tap" = "2aa5d1b696a4bcf390067467c41806aa4e54d274"  # default branch on or before 2026-09-24
-"vendor/lemonfiber" = "f2519ad9ccd4d7d4ac40eea3306289a6ee400e50"  # tag v0.16.0
-"vendor/lemonfiber-media-stack" = "72395ca4ed585fe692ed3bc650fa626af3b17e44"  # the manifest's pins
-"vendor/lemonfiber-plugins" = "bb875dfe29e1ea00b0681d6d01c590c2aecd53f8"  # default branch on or before 2026-09-24
-"vendor/lemonfiber-web" = "ed49b4224f91d4e53055910e27db5d1b697a2de3"  # the manifest's pins
-"vendor/plugin-template" = "1fe68267096b81befc9f2448e66cf83d0086e338"  # default branch on or before 2026-09-24
-"vendor/sdk-php" = "d1da2fe994b471194c89bdb44e09315843cbcd79"  # default branch on or before 2026-09-24
-"vendor/sdk-ts" = "4879a0487169055555899037c1c26ed16c3e1d5c"  # default branch on or before 2026-09-24
-"vendor/spec" = "06e57133a6e117e72a5c334aa65adb027064f54f"  # default branch on or before 2026-09-24
+"vendor/brand" = "46981e8a7cd1a8d1e9728bf30d53357d2679eb93"  # default branch on or before 2026-10-08
+"vendor/homebrew-tap" = "2f434a9c2d5fa0b7698dc0d83c07f15a86adf298"  # default branch on or before 2026-10-08
+"vendor/integration-home-assistant" = "671f893049da2d8bd2665e6c577bbc52dfe3de56"  # default branch on or before 2026-10-08
+"vendor/integration-mcp" = "12fe049e71a9c2c4ca4b8550ede0fd30df748b03"  # default branch on or before 2026-10-08
+"vendor/lemonfiber" = "3828a1485c9ab1e86878b8a26ec0f5d5954d1dd5"  # tag v0.17.0
+"vendor/lemonfiber-media-stack" = "091492c9c1e497fe4d0f022e5b2899a4946e9b3f"  # the manifest's pins
+"vendor/lemonfiber-plugins" = "de3d3db0c97c4739d13061614eb4d706e891642a"  # default branch on or before 2026-10-08
+"vendor/lemonfiber-web" = "830de5553a52ceea51dd8d76168aa11cef7373c3"  # the manifest's pins
+"vendor/plugin-template" = "25ddd1a45af05ba82f553a95881fd0ec4a99c7c6"  # default branch on or before 2026-10-08
+"vendor/sdk-php" = "29c5b01982cf479e64bf74233b7895e65f2bdabd"  # default branch on or before 2026-10-08
+"vendor/sdk-python" = "8fe1f69e53649572a35165de700c3de3c586d9a3"  # default branch on or before 2026-10-08
+"vendor/sdk-ts" = "27f3d71361c6f1bf3588525717726b4810737c15"  # default branch on or before 2026-10-08
+"vendor/spec" = "34c22a58d124073761a6d3cf36a4e8533ad697c7"  # default branch on or before 2026-10-08
