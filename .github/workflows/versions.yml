@@ -28,6 +28,11 @@ jobs:
   cut:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    outputs:
+      branch: ${{ steps.pinned.outputs.branch }}
+      head: ${{ steps.pinned.outputs.head }}
+      title: ${{ steps.pinned.outputs.title }}
+      body: ${{ steps.pinned.outputs.body }}
     permissions:
       # To create the releases the frozen builds are kept on, and to ask for a
       # deploy once one is.
@@ -118,12 +123,13 @@ jobs:
           owner: ${{ github.repository_owner }}
           repositories: website-docs.lemonfiber.app
           permission-contents: write
-          permission-pull-requests: write
 
       # Committed through the API as the app, which the forge signs, onto a
-      # branch rebuilt from `main` every run, and set to merge itself at that
-      # commit once every required check passes.
-      - name: Open the pull request that moves the stable set
+      # branch rebuilt from `main` every run. The next job opens its pull
+      # request and sets it to merge itself at that commit once every required
+      # check passes.
+      - name: Put the stable set on its branch
+        id: pinned
         if: steps.stable.outputs.moved == 'true'
         env:
           GH_TOKEN: ${{ steps.token.outputs.token }}
@@ -147,13 +153,33 @@ jobs:
           head=$(gh api -X PUT "repos/$repo/contents/pins/stable.toml" \
             -f branch="$BRANCH" -f message="$message" -f sha="$blob" \
             -f content="$(base64 -w0 pins/stable.toml)" --jq .commit.sha)
-          number=$(gh pr list --repo "$repo" --head "$BRANCH" --state open \
-            --json number --jq '.[0].number // empty')
-          if [ -z "$number" ]; then
-            url=$(gh pr create --repo "$repo" --base main --head "$BRANCH" \
-              --title "$title" \
-              --body "$(printf '%s\n\nSpec: REPO-R88\n' \
-                "The newest release whose pins have settled is $VERSION, so the stable documentation at \`/\` moves to what it recorded. Written by \`versions.yml\` with \`node scripts/stable.ts write\`.")")
-            number="${url##*/}"
-          fi
-          gh pr merge "$number" --repo "$repo" --auto --squash --match-head-commit "$head"
+          # Handed to the next job, which opens or edits the pull request. The
+          # delimiter is random, so no line of the body can end the value.
+          delimiter="body_$(openssl rand -hex 16)"
+          {
+            echo "branch=$BRANCH"
+            echo "head=$head"
+            echo "title=$title"
+            echo "body<<$delimiter"
+            printf '%s\n\nSpec: REPO-R88\n' \
+              "The newest release whose pins have settled is $VERSION, so the stable documentation at \`/\` moves to what it recorded. Written by \`versions.yml\` with \`node scripts/stable.ts write\`."
+            echo "$delimiter"
+          } >> "$GITHUB_OUTPUT"
+
+  # The pull request is opened, or the open one edited, only where it is this
+  # workflow's own: the release app opened it from this repository's branch and
+  # it is at the commit above (OPS-R87). It is armed to merge at that commit.
+  pull-request:
+    needs: cut
+    if: needs.cut.outputs.head != ''
+    permissions:
+      contents: read
+    uses: lemonfiber/spec/.github/workflows/rolling-pull-request.yml@be0b484aa5c2a7e2a6cee4b33866143634e6e1df # v1.0.70
+    with:
+      branch: ${{ needs.cut.outputs.branch }}
+      head: ${{ needs.cut.outputs.head }}
+      title: ${{ needs.cut.outputs.title }}
+      body: ${{ needs.cut.outputs.body }}
+      auto-merge: true
+    secrets:
+      RELEASE_APP_KEY: ${{ secrets.RELEASE_APP_KEY }}
