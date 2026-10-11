@@ -6,9 +6,9 @@
 # repository: `branch_protection_rule` and the schedule are events about this
 # repository, and a reusable workflow is not a place events arrive.
 #
-# `secrets: inherit` passes `SCORECARD_TOKEN`, which is an org secret with no
-# write scope. Scorecard publishes its result so somebody outside the org can
-# read it without being trusted with anything, which is the point of `Q-R59`.
+# It is handed `SCORECARD_TOKEN` alone, an org secret with no write scope.
+# Scorecard publishes its result so somebody outside the org can read it
+# without being trusted with anything, which is the point of `Q-R59`.
 name: scorecard
 
 on:
@@ -20,7 +20,7 @@ on:
   # checks Scorecard scores are settings and policies a commit rarely moves, so a
   # push to `main` is not a trigger (Q-R76).
   schedule:
-    - cron: "0 6 * * 1"
+    - cron: "38 6 * * 1"
 
 permissions:
   contents: read
@@ -35,5 +35,6 @@ jobs:
       contents: read
       # Reading the workflow list is how it judges the pipeline itself.
       actions: read
-    secrets: inherit
+    secrets:
+      SCORECARD_TOKEN: ${{ secrets.SCORECARD_TOKEN }}
     uses: lemonfiber/spec/.github/workflows/scorecard.yml@4562180c9f974bf03aa9be34610f83bb6eb06029 # v1.0.61
