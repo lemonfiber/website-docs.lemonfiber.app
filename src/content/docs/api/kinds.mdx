@@ -1,7 +1,7 @@
 ---
 title: Every payload kind
 topic: build
-description: The seventy-seven payload kinds the contract artefact describes, and every field the six most-used ones carry.
+description: The eighty payload kinds the contract artefact describes, and every field the six most-used ones carry.
 sidebar:
   order: 2
 ---
@@ -11,7 +11,7 @@ import KindTable from "../../../components/KindTable.astro";
 
 `kind` says which payload an [envelope](/api/the-envelope/) carries, so a
 consumer can branch before parsing `data`. The contract artefact describes
-seventy-seven of them, and each entry is the whole envelope with that kind's
+eighty of them, and each entry is the whole envelope with that kind's
 payload in place rather than the payload alone — a generator wants the shape it
 will actually parse.
 
@@ -27,7 +27,7 @@ string: one line the container engine wrote, emitted as it was written, because 
 pull that takes ten minutes has to say something before it ends.
 
 Six of them are set out field by field below — the ones a client meets first, and
-the ones whose payloads are small enough to read as a table. The other seventy-one
+the ones whose payloads are small enough to read as a table. The other seventy-four
 are in the artefact in full, and every SDK generates a type for each kind in
 their own copy of it, so nothing here is the only place their shapes are written
 down. Every table below is rendered from that artefact at the revision this site
@@ -94,10 +94,10 @@ one.
 
 <KindFields kind="word" />
 
-## The other seventy-one
+## The other seventy-four
 
 Every kind in the table above is in the contract artefact with its full schema,
-including the seventy-one not expanded here. Their payloads are larger — a
+including the seventy-four not expanded here. Their payloads are larger — a
 `dashboard` carries twelve panels, each with its own shape; a `lifecycle` report
 carries thirteen fields — and transcribing them into this page would create a second
 place their shapes are written down, which is the one thing the artefact exists to
