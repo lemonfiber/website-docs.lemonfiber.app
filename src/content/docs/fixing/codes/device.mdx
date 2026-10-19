@@ -1,0 +1,15 @@
+---
+title: DEVICE — the keys a phone proves the operator with
+topic: use
+description: Every DEVICE code lemonfiber raises, what it means, and what to do about it.
+sidebar:
+  hidden: true
+---
+
+import CodeTable from "../../../../components/CodeTable.astro";
+
+Raised where the companion app registers a phone's hardware key, asks for a challenge, or mints a key with that key's signature in place of the operator password. A device key lives in the phone's secure hardware and proves the operator for one mint at a time; registering one needs the platform's attestation that it does, from an app this stack trusts. See [the commands](/commands/).
+
+<CodeTable family="DEVICE" />
+
+What each severity and each exit means is on [every error by code](/fixing/every-error-by-code/), beside every other family.

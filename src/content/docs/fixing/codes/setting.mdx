@@ -1,0 +1,15 @@
+---
+title: SETTING — the settings a service reads
+topic: use
+description: Every SETTING code lemonfiber raises, what it means, and what to do about it.
+sidebar:
+  hidden: true
+---
+
+import CodeTable from "../../../../components/CodeTable.astro";
+
+Raised by `lemonfiber settings`, and where a setting is read, set or cleared through the web API. A setting is a value a service reads, with a declared default and the operator's value where one is recorded; a secret is never written or read back this way. See [the commands](/commands/).
+
+<CodeTable family="SETTING" />
+
+What each severity and each exit means is on [every error by code](/fixing/every-error-by-code/), beside every other family.

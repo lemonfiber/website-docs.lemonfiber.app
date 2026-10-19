@@ -49,7 +49,7 @@ connection is plain text unless `--tls` asks for it encrypted, with a certificat
 lemonfiber made and keeps, and it says which as it starts. `--tls` needs `--port`,
 because it is for a paired phone, and a phone keeps the address it was given.
 
-Thirty-seven endpoints answer a question and close. Each one is a command a person
+Thirty-eight endpoints answer a question and close. Each one is a command a person
 could have typed, dispatched through the same entry point the command line uses,
 so the two surfaces cannot say different things about the same stack.
 
@@ -88,6 +88,7 @@ so the two surfaces cannot say different things about the same stack.
 | `GET /api/news`          | What is new: releases, the household's requests and the problems the checks found, each newest first                                                                 |
 | `GET /api/plugins`       | Which plugins are installed, as `lemonfiber plugin installed` answers                                                                                                |
 | `GET /api/wiring`        | What the stack wires to what, and how each link was settled                                                                                                          |
+| `GET /api/settings`      | Every setting the stack's services read, as `lemonfiber settings --json` answers; only the operator is answered, and a secret's value never                          |
 | `GET /api/playing`       | What the media server is playing now, each session naming the member watching and what they are watching; a member is answered with their own sessions only          |
 | `GET /api/watching`      | What one member was part-way through and how far, most recent first. `?member=` is required; `?most=` defaults to 24 and is refused, not trimmed, above 500          |
 | `GET /api/askable`       | A member's search for titles the house does not hold yet, under their own limits; `?term=` is required, `?after=` turns the page and `?member=` names whose          |

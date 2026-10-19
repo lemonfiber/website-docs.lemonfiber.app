@@ -98,18 +98,21 @@ binary at the revision this site pins, which that page names at its foot.
 
 ## Settings and quality
 
-| Command           | What it does                                                            | Reach for it when                                                                                                   |
-| ----------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `config`          | Reads or changes one setting, through the three subcommands below       | You are reaching for one of the three below                                                                         |
-| `config get`      | Reads one setting                                                       | You want one value                                                                                                  |
-| `config set`      | Changes one setting                                                     | You want to change one value without opening a file                                                                 |
-| `config show`     | Shows every setting, with credentials withheld                          | You want the whole picture and it is safe to look at                                                                |
-| `alerts`          | Chooses how much lemonfiber tells you about, in plain language          | You are being told too much, or too little, and want to say which                                                   |
-| `quality`         | Chooses how good your media should look, in plain language              | You are reaching for one of the four below                                                                          |
-| `quality show`    | Shows the quality choice in force, and what each preset means and costs | You are deciding, and the cost is the thing you are deciding on                                                     |
-| `quality set`     | Chooses a preset, for everything or for one media type                  | You want different quality, from now on                                                                             |
-| `quality reapply` | Re-asserts the recorded preset over a hand-edited Recyclarr config      | You edited the config, changed your mind, and want the preset to win                                                |
-| `quality upgrade` | Re-downloads what is already here at the higher quality                 | You want the back catalogue brought up as well. Large and bandwidth-expensive, so it does nothing until `--confirm` |
+| Command           | What it does                                                                                                       | Reach for it when                                                                                                   |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| `config`          | Reads or changes one setting, through the three subcommands below                                                  | You are reaching for one of the three below                                                                         |
+| `config get`      | Reads one setting                                                                                                  | You want one value                                                                                                  |
+| `config set`      | Changes one setting                                                                                                | You want to change one value without opening a file                                                                 |
+| `config show`     | Shows every setting, with credentials withheld                                                                     | You want the whole picture and it is safe to look at                                                                |
+| `settings`        | Lists every setting and secret the stack's services read: whose each is, what reads it, its default and your value | You want to know what a plugin or service can be told, and what it is told now. A secret's value is never printed   |
+| `settings set`    | Records your value for one setting, regenerating every entry that reads it                                         | A service should read something other than its declared default                                                     |
+| `settings clear`  | Takes your value away, so the declared default is written again                                                    | You want a setting back where its manifest put it                                                                   |
+| `alerts`          | Chooses how much lemonfiber tells you about, in plain language                                                     | You are being told too much, or too little, and want to say which                                                   |
+| `quality`         | Chooses how good your media should look, in plain language                                                         | You are reaching for one of the four below                                                                          |
+| `quality show`    | Shows the quality choice in force, and what each preset means and costs                                            | You are deciding, and the cost is the thing you are deciding on                                                     |
+| `quality set`     | Chooses a preset, for everything or for one media type                                                             | You want different quality, from now on                                                                             |
+| `quality reapply` | Re-asserts the recorded preset over a hand-edited Recyclarr config                                                 | You edited the config, changed your mind, and want the preset to win                                                |
+| `quality upgrade` | Re-downloads what is already here at the higher quality                                                            | You want the back catalogue brought up as well. Large and bandwidth-expensive, so it does nothing until `--confirm` |
 
 ## Checking and repairing
 
