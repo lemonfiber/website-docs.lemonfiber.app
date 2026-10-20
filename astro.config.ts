@@ -6,6 +6,7 @@ import starlightLinksValidator from "starlight-links-validator";
 import starlightSidebarTopics from "starlight-sidebar-topics";
 import { BRAND_LOGO } from "@lemonfiber/website-kit/brand";
 import { sitePolicy } from "@lemonfiber/website-kit/csp";
+import { searchNamedByItsLabel } from "@lemonfiber/website-kit/search";
 import { scrollableTables } from "@lemonfiber/website-kit/tables";
 
 import retired from "./retired.json";
@@ -97,6 +98,7 @@ export default defineConfig({
     }),
     baseIntegration({ base, fallback: versioned ? "/next/" : null }),
     // Last, so each page's policy hashes the inline blocks it ships with.
+    searchNamedByItsLabel(),
     sitePolicy(),
   ],
 });
