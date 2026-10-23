@@ -1,7 +1,6 @@
 ---
 import { Code } from "@astrojs/starlight/components";
 
-import { serviceBlock } from "../lib/compose";
 import { present } from "../lib/release";
 import { vendored } from "../lib/schema-source";
 import * as m from "../paraglide/messages.js";
@@ -14,20 +13,14 @@ interface Props {
   readonly path: string;
   /** What Expressive Code highlights it as. */
   readonly lang: string;
-  /** In a Compose file, the one service to show rather than the whole file. */
-  readonly service?: string;
 }
 
-/** One file of a pinned tree, or one service out of a Compose file, as the revision this site pins has it. */
-const { repo, path, lang, service } = Astro.props;
+/** One file of a pinned tree, as the revision this site pins has it. */
+const { repo, path, lang } = Astro.props;
 const read = vendored(`${repo}/${path}`);
-const text = present(
+const shown = present(
   read === "" ? null : read,
   `vendor/${repo}/${path} is not in the checkout`,
-);
-const shown = present(
-  text === null || service === undefined ? text : serviceBlock(text, service),
-  `vendor/${repo}/${path} declares no service ${service ?? ""}`,
 );
 ---
 

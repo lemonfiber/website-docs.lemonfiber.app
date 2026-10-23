@@ -1,7 +1,7 @@
 ---
 title: Adding a service
 topic: use
-description: Three data edits and no code — a compose fragment, a service file in the manifest, and the forms that should carry it.
+description: Two data edits and no code — a service file in the manifest, and the forms that should carry it.
 sidebar:
   order: 2
 ---
@@ -9,12 +9,11 @@ sidebar:
 import Vendored from "../../../components/Vendored.astro";
 
 Adding a service to the stack requires no lemonfiber change and no lemonfiber
-release. It is three data edits, and then the checks.
+release. It is two data edits, and then the checks.
 
-1. A service block in the compose fragment for its profile.
-2. A `services/<id>.toml` file holding its `[[service]]` entry, named in the
+1. A `services/<id>.toml` file holding its `[[service]]` entry, named in the
    `include` list of `stack.toml`.
-3. Its profile added to whichever forms should carry it.
+2. Its profile added to whichever forms should carry it.
 
 Then `just ci` in the stack directory. If you are working on your own stack
 rather than the bundled one, point lemonfiber at it with
@@ -25,36 +24,22 @@ bundled stack without keeping a stack of your own, install it as a
 [plugin](/plugins/) instead: lemonfiber writes its container and wiring from a
 manifest, and takes it out again as one operation.
 
-## Where the compose block goes
+## Where its Compose entry comes from
 
-`compose.yml` stitches the fragments together and declares no services of its
-own. `compose/` holds one fragment per profile — `tv.yml`, `media.yml`,
-`torrent.yml` and the rest — and `compose/_common.yml` holds the shared defaults
-that fragments reach through `extends:`.
-
-This is the Sonarr block, as the stack this site pins has it:
-
-<Vendored
-  repo="lemonfiber-media-stack"
-  path="compose/tv.yml"
-  lang="yaml"
-  service="sonarr"
-/>
-
-Three things in it are not decoration. `profiles:` is what makes the service part
-of a profile, and it must match the profile you declare in the manifest. The
-published port is bound to `127.0.0.1` for an administrative service, and to the
-LAN bind only for a service the household is meant to reach. And the data mount
-is the one rule below.
+Nobody writes one. lemonfiber generates the stack's whole Compose project from the
+declarations of every service, the stack's and every installed plugin's: there is
+no fragment, no shared template and no overlay to edit. The image, the profile, the
+published port and its bind, the health check and the mounts all come from the
+service file below.
 
 ## The one rule
 
-**Every service that touches the library gets exactly one `${DATA_ROOT}:/data`
-mount.** Downloads and media live as subdirectories beneath it, on one
-filesystem, so an import hardlinks instead of copying. Splitting them into
-separate mounts silently turns every import into a copy — it still works, and it
-costs the size of every file twice. CI rejects it rather than letting you find
-out later. What that looks like from the operator's side is
+**Every service that touches the library has exactly one data mount, at `/data`.**
+Downloads and media live as subdirectories beneath it, on one filesystem, so an
+import hardlinks instead of copying. A service says it takes data with
+`takes_data = true`, and lemonfiber writes that one mount from the operator's
+`DATA_ROOT` setting, the same for every service; there is no second mount to
+declare. What that looks like from the operator's side is
 [hardlinks and one mount point](/fixing/hardlinks-and-one-mount-point/).
 
 ## The manifest entry
@@ -67,7 +52,7 @@ the ones people forget are `describes` and `without_it`, which are what let a
 failure be judged rather than merely reported, and `last_release`, which is the
 latest release upstream has published rather than the one you pinned.
 
-`id` must match the Compose service name exactly, and `profile` must be exactly
+`id` is the name the generated Compose entry takes, and `profile` must be exactly
 one declared profile. `image` carries neither a tag nor a digest: `tag` holds an
 explicit tag, because a floating one fails validation and nothing in this stack
 should change because time passed, and `digest` holds the multi-architecture
@@ -84,18 +69,13 @@ This is Sonarr's file:
 ## What the checks enforce
 
 `just ci` runs every check that needs no network: the manifest against the
-contract, the manifest and the compose files held in parity, every form
-resolving to services from its own profiles only, and the rules a change to the
-manifest must carry. CI adds the networked ones — each pin read from its
+contract, every form resolving to services from its own profiles only, and the
+rules a change to the manifest must carry. CI adds the networked ones — each pin read from its
 registry, the upstream licence asked of its forge where a pin moves, and every
 profile that needs no VPN subscription started for real. Every check has a specification
 requirement behind it, and each is itself proven to fail when broken.
 [The stack's maintaining guide](https://github.com/lemonfiber/lemonfiber-media-stack/blob/main/docs/maintaining.md#what-ci-enforces)
 lists them all.
-
-The parity checks read the model `docker compose config` resolves rather than the
-YAML, so they check what Docker will actually run rather than what the file
-appears to say.
 
 ## Whether it belongs in the bundled stack
 
