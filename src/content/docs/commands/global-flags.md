@@ -97,16 +97,18 @@ falling back would answer it with the absence the flags were given to fill.
 Several flags recur across commands without being inherited, and they are worth
 knowing apart because their meaning is not identical everywhere.
 
-| Flag        | Where it appears                                                                                                                                                                                                 | What it means there                                                                  |
-| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `--yes`     | `doctor`, `down`, `setup`                                                                                                                                                                                        | Proceed without the prompt this command would otherwise raise                        |
-| `--confirm` | `companion certificate`, `config set`, `credentials`, `forget`, `migrate adopt`, `migrate beside`, `migrate import`, `quality set`, `quality upgrade`, `remove`, `reset`, `support`, `uninstall`, `update stack` | Say yes to the consequence this command has just named                               |
-| `--service` | `backup`, `down`, `up`, `update stack`                                                                                                                                                                           | Act on the named service rather than on everything the command would otherwise touch |
+| Flag        | Where it appears                                                                                                                                                                                                                                                                                      | What it means there                                                                  |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `--yes`     | `doctor`, `down`, `setup`                                                                                                                                                                                                                                                                             | Proceed without the prompt this command would otherwise raise                        |
+| `--confirm` | `companion certificate`, `config set`, `credentials`, `forget`, `migrate adopt`, `migrate beside`, `migrate import`, `quality set`, `quality upgrade`, `support`, `uninstall`, `update stack`                                                                                                         | Say yes to the consequence this command has just named                               |
+| `--offer`   | `credentials revoke`, `downloads`, `downloads pause`, `downloads resume`, `migrate replace`, `plugin install`, `plugin prove`, `plugin remove`, `plugin run`, `plugin update`, `remove`, `reset`, `restart`, `settings clear`, `settings set`, `space`, `stop-seeding`, `update stack`, `wiring fill` | Answer the offer a reading of this command printed, by the name it printed           |
+| `--service` | `backup`, `down`, `up`, `update stack`                                                                                                                                                                                                                                                                | Act on the named service rather than on everything the command would otherwise touch |
 
 A command that would throw work away or spend a lot of bandwidth states the cost
-first and does nothing until it is confirmed: `reset` names every edit it would
-revert, and `quality upgrade` states what re-downloading the back catalogue
-comes to. `support` splits the two halves apart — a bare run collects, redacts
+first and does nothing until it is answered: `reset` names every edit it would
+revert and prints a name for that offer, which `--offer` answers, and `quality
+upgrade` states what re-downloading the back catalogue comes to before
+`--confirm`. `support` splits the two halves apart — a bare run collects, redacts
 and tells you what the bundle would hold, `--write` produces it, and `--confirm`
 is only ever about the settings `--reveal` names, because a flag that publishes a
 credential is not one to honour because it turned up on a command line somebody

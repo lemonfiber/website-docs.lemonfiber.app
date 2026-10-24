@@ -81,8 +81,11 @@ take on.
 The opposite, and the escape hatch from "your edits win". It discards your
 hand-edits and restores lemonfiber's own state.
 
-Because it throws work away, it does nothing until you confirm it. Run it once to
-see what would be lost, then again with `--confirm` to carry it out.
+Because it throws work away, it does nothing until you answer it. Run it once to
+see what would be lost: it prints a name for that offer. Run it again with
+`--offer` and that name to carry it out. Where the stack has changed in between,
+it refuses with [`STACK-13`](/fixing/codes/stack/#stack-13), naming what moved,
+and nothing is reverted.
 
 | What it reverts                                | Detail                                                                           |
 | ---------------------------------------------- | -------------------------------------------------------------------------------- |
