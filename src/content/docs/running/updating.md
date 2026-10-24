@@ -154,13 +154,15 @@ than overwriting your work.
 ```sh
 $ lemonfiber doctor
 $ lemonfiber adopt
-$ lemonfiber reset --confirm
+$ lemonfiber reset
+$ lemonfiber reset --offer <NAME>
 ```
 
 `adopt` promotes your hand edits to lemonfiber's expected state, so they are kept
 across future seeds and restores. `reset` does the opposite — it discards them and
-restores lemonfiber's own files, naming exactly what will be lost and doing
-nothing until `--confirm`. Both are covered in [Adopt and
+restores lemonfiber's own files. Run bare, it names exactly what will be lost,
+does nothing, and prints a name for that offer; `--offer` and that name is the
+yes. Both are covered in [Adopt and
 reset](/advanced/adopt-and-reset/).
 
 [E1 Stack updates](https://lemonfiber.app/spec/10-functional/features/e-maintenance/e1-stack-updates/)
