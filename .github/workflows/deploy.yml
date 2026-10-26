@@ -39,7 +39,7 @@ jobs:
       contents: read
       pages: write
       id-token: write
-    uses: lemonfiber/spec/.github/workflows/site-deploy.yml@7e55a9fec4d241c758e560f98006a8abce38fb9b # v1.0.108
+    uses: lemonfiber/spec/.github/workflows/site-deploy.yml@5fc935f490ccbedf443fcb8e7d29ab554f13a0a4 # v1.0.111
     with:
       worker: website-docs
       compatibility-date: "2026-10-09"
