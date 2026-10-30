@@ -1,9 +1,10 @@
 // The host's configuration for this site: an assets-only Cloudflare Worker that
-// serves the build `deploy.yml` assembles, every version of it. Wrangler uploads
+// serves the tree `deploy.yml` assembles, every version of it. Wrangler uploads
 // `dist/` as it stands; the response headers come from the `_headers` file the
 // build writes at its root, so nothing about how a page is served is set on a
-// dashboard. No route is declared: the domain is pointed here separately, and
-// until then the site answers at its workers.dev address.
+// dashboard. The site's domain is a Custom Domain of the Worker: a deploy
+// creates its DNS record and certificate, so no other record may hold the name.
+// It also answers at its workers.dev address.
 {
   "name": "website-docs",
   "compatibility_date": "2026-10-09",
@@ -14,6 +15,7 @@
     // A path with no page gets the nearest 404.html: `/next/…` gets next's.
     "not_found_handling": "404-page",
   },
+  "routes": [{ "pattern": "docs.lemonfiber.app", "custom_domain": true }],
   "workers_dev": true,
   "preview_urls": false,
 }
