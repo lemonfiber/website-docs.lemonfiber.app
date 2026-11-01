@@ -40,6 +40,7 @@ A seed reports each value it looked at in one of these states.
 | State           | What seed did about it                                                                               |
 | --------------- | ---------------------------------------------------------------------------------------------------- |
 | `wired`         | It was absent, or not what lemonfiber would have it be: written, and read back                       |
+| `restarted`     | Written, and in force once the service it names started again, as the adapter that took it answered  |
 | `already-wired` | Already what lemonfiber would write. Nothing, which is what makes a second run change nothing        |
 | `drifted`       | You changed it while lemonfiber's intent stayed put. Your value is preserved, and the drift reported |
 | `stale`         | Still lemonfiber's own value, but its intent has moved on. Reported; nobody's edit is at stake       |

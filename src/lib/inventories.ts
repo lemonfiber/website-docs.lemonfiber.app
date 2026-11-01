@@ -506,8 +506,8 @@ export const INVENTORIES: readonly Inventory[] = [
         )
         .map((code) => code.code),
     claims: [
-      { says: "%N% codes in this reference do that" },
-      { says: "%N% codes elsewhere on the site" },
+      { says: "%N% codes? in this reference do(?:es)? that" },
+      { says: "%N% codes? elsewhere on the site" },
     ],
   },
   {
