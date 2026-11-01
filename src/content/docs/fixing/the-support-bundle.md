@@ -98,7 +98,7 @@ Two of those are worth a note.
 
 Two more are about asking for a bundle **back**. The web interface has no filesystem to write into and no path it could name, so a bundle asked for there is kept with lemonfiber's own files and then handed over by name. [`BUNDLE-7`](/fixing/codes/bundle/) means this run cannot say where those files are; [`BUNDLE-8`](/fixing/codes/bundle/) means the name is not one of the bundles kept here — a name carrying a path is refused rather than followed.
 
-Two codes elsewhere on the site point you here rather than offering advice: [`STACK-3`](/fixing/codes/stack/) and [`SEED-3`](/fixing/codes/seed/). Both mean lemonfiber does not recognise what happened and will not guess. Admitting that costs you a bundle; a confident wrong guess would cost you an afternoon.
+One code elsewhere on the site points you here rather than offering advice: [`SEED-3`](/fixing/codes/seed/). It means lemonfiber does not recognise what happened and will not guess. Admitting that costs you a bundle; a confident wrong guess would cost you an afternoon.
 
 ## Before you share it
 
