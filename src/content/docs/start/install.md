@@ -16,6 +16,15 @@ and tells the two failures apart: Docker not installed, and Docker installed but
 its daemon not running. The remedies are entirely different, so the messages are
 too.
 
+**On a Mac with OrbStack, turn its network bridge off.** lemonfiber gives every
+link between two services a network of its own, so a full stack runs on about
+eighty of them. While OrbStack's network bridge is on, it mirrors every
+container network into macOS, and with that many each container start can take
+tens of seconds. lemonfiber reaches every service through a published port,
+never through a container's address, so nothing in the stack needs the bridge.
+Run `orb config set network_bridge false`, then restart OrbStack. The doctor
+warns while the bridge is on ([`ENV-6`](/fixing/codes/env/)).
+
 **One mount point for downloads and media.** Both live under a single directory —
 the data root — which is bind-mounted into every container. They must share one
 filesystem, because that is what lets an import hardlink instead of copy. Setup
