@@ -37,23 +37,24 @@ which is the whole difference between preserving an edit and reverting one.
 
 A seed reports each value it looked at in one of these states.
 
-| State           | What seed did about it                                                                               |
-| --------------- | ---------------------------------------------------------------------------------------------------- |
-| `wired`         | It was absent, or not what lemonfiber would have it be: written, and read back                       |
-| `restarted`     | Written, and in force once the service it names started again, as the adapter that took it answered  |
-| `already-wired` | Already what lemonfiber would write. Nothing, which is what makes a second run change nothing        |
-| `drifted`       | You changed it while lemonfiber's intent stayed put. Your value is preserved, and the drift reported |
-| `stale`         | Still lemonfiber's own value, but its intent has moved on. Reported; nobody's edit is at stake       |
-| `conflicted`    | Both the value and lemonfiber's intent moved away from the baseline. Presented, and left alone       |
-| `adopted`       | A value of yours taken as the accepted state. Kept, changing nothing                                 |
-| `unmanaged`     | A value lemonfiber never wrote and has no record for. Taken as the baseline, not overwritten         |
-| `observed`      | An area you declared unmanaged. Nothing read from the service, nothing written to it                 |
-| `unmatched`     | Something fills what a service asks for, and nothing lemonfiber does connects the two                |
-| `would-wire`    | What a rehearsal would have written. Nothing was                                                     |
-| `would-adopt`   | What a rehearsal would have taken on as yours. Nothing was                                           |
-| `skipped`       | Something it needs was not answering. A later run completes it                                       |
-| `failed`        | Attempted, and the service rejected it, in its own words                                             |
-| `refused`       | Refused by lemonfiber's own policy, for a reason a re-run will not resolve                           |
+| State           | What seed did about it                                                                                                           |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `wired`         | It was absent, or not what lemonfiber would have it be: written, and read back                                                   |
+| `restarted`     | Written, and in force once the service it names started again, as the adapter that took it answered                              |
+| `already-wired` | Already what lemonfiber would write. Nothing, which is what makes a second run change nothing                                    |
+| `drifted`       | You changed it while lemonfiber's intent stayed put. Your value is preserved, and the drift reported                             |
+| `stale`         | Still lemonfiber's own value, but its intent has moved on. Reported; nobody's edit is at stake                                   |
+| `conflicted`    | Both the value and lemonfiber's intent moved away from the baseline. Presented, and left alone                                   |
+| `adopted`       | A value of yours taken as the accepted state. Kept, changing nothing                                                             |
+| `kept`          | Your hand edit to the configuration a quality preset is held through. Left in place; only `quality reapply` puts the preset back |
+| `unmanaged`     | A value lemonfiber never wrote and has no record for. Taken as the baseline, not overwritten                                     |
+| `observed`      | An area you declared unmanaged. Nothing read from the service, nothing written to it                                             |
+| `unmatched`     | Something fills what a service asks for, and nothing lemonfiber does connects the two                                            |
+| `would-wire`    | What a rehearsal would have written. Nothing was                                                                                 |
+| `would-adopt`   | What a rehearsal would have taken on as yours. Nothing was                                                                       |
+| `skipped`       | Something it needs was not answering. A later run completes it                                                                   |
+| `failed`        | Attempted, and the service rejected it, in its own words                                                                         |
+| `refused`       | Refused by lemonfiber's own policy, for a reason a re-run will not resolve                                                       |
 
 The `unmanaged` row is why a first run against a stack you already had does not
 report mass drift: there was never an expectation to drift from.
