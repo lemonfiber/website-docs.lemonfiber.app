@@ -42,7 +42,7 @@
     "@astrojs/starlight": "^0.42.8",
     "@axe-core/playwright": "^4.14.0",
     "@eslint/js": "^10.0.1",
-    "@inlang/paraglide-js": "^2.29.0",
+    "@inlang/paraglide-js": "^3.2.0",
     "@inlang/plugin-message-format": "^4.6.0",
     "@playwright/test": "^1.64.1",
     "@vitest/coverage-v8": "^5.0.5",
