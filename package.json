@@ -34,19 +34,19 @@
   },
   "dependencies": {
     "@lemonfiber/brand": "github:lemonfiber/brand#d3b33a696a00c955e05a3a0e12a4298a2bd6cd9c",
-    "@lemonfiber/website-kit": "github:lemonfiber/website-kit#44d45a2efab0ceff2da8e595bef2fbc688738e6d"
+    "@lemonfiber/website-kit": "github:lemonfiber/website-kit#0e6b3e38c48b679ffab3efca5fedc12cbcae1df1"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
-    "@astrojs/markdown-satteri": "^0.4.6",
-    "@astrojs/starlight": "^0.42.8",
+    "@astrojs/markdown-satteri": "^0.4.7",
+    "@astrojs/starlight": "^0.42.9",
     "@axe-core/playwright": "^4.14.0",
     "@eslint/js": "^10.0.1",
-    "@inlang/paraglide-js": "^2.29.0",
+    "@inlang/paraglide-js": "^3.2.0",
     "@inlang/plugin-message-format": "^4.6.0",
-    "@playwright/test": "^1.64.1",
+    "@playwright/test": "^1.65.0",
     "@vitest/coverage-v8": "^5.0.5",
-    "astro": "^7.4.5",
+    "astro": "^7.4.7",
     "dependency-cruiser": "^18.7.2",
     "eslint": "^10.14.0",
     "eslint-plugin-astro": "^3.2.1",
