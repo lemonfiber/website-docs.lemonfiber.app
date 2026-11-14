@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@lemonfiber/brand": "github:lemonfiber/brand#bf744887777e6da21f4c8a641dd553c8b32099e4",
-    "@lemonfiber/website-kit": "github:lemonfiber/website-kit#abaf7cac70901cb976fee79c29a9a55cc9243e3b"
+    "@lemonfiber/website-kit": "github:lemonfiber/website-kit#f40ca12649ea4da53d78c20b457d053acdedb5e4"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
