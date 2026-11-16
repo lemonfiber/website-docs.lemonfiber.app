@@ -54,11 +54,13 @@ is actually verified rather than assumed.
 
 ## Filing things
 
-| Word        | What it means                                                                                                                                                                                     |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Monitored   | Whether a service is still looking for something. Unmonitored means it will not go and find it even when it is missing, which is the usual reason nothing is happening.                           |
-| Root folder | Where a service files what it has finished with — the library it manages, rather than the folder downloads land in. Also called a library folder.                                                 |
-| Hardlink    | Lets one file appear in two places while taking up the space once, so importing is instant and costs no extra disk. Both names point at the same data, and deleting one leaves the other working. |
+| Word        | What it means                                                                                                                                                                                                                                                     |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Monitored   | Whether a service is still looking for something. Unmonitored means it will not go and find it even when it is missing, which is the usual reason nothing is happening.                                                                                           |
+| Root folder | Where a service files what it has finished with — the library it manages, rather than the folder downloads land in. Also called a library folder.                                                                                                                 |
+| Hardlink    | Lets one file appear in two places while taking up the space once, so importing is instant and costs no extra disk. Both names point at the same data, and deleting one leaves the other working.                                                                 |
+| PUID        | The number of the user the stack's services run as, which decides who owns the files they write. You can set it in the stack's environment file; where it is not set, the services run as whoever owns the stack's directory, so the files they write stay yours. |
+| PGID        | The number of the group the stack's services run as, beside PUID. You can set it in the stack's environment file; where it is not set, the services run in the group of whoever owns the stack's directory.                                                       |
 
 Hardlinking is why the download folder and the library have to sit on one volume.
 Across two, the file has to be copied instead — slower, twice the room, and it
