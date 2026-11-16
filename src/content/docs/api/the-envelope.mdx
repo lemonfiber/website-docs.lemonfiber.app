@@ -49,7 +49,7 @@ connection is plain text unless `--tls` asks for it encrypted, with a certificat
 lemonfiber made and keeps, and it says which as it starts. `--tls` needs `--port`,
 because it is for a paired phone, and a phone keeps the address it was given.
 
-Forty-four endpoints answer a question and close. Each one is a command a person
+Forty-six endpoints answer a question and close. Each one is a command a person
 could have typed, dispatched through the same entry point the command line uses,
 so the two surfaces cannot say different things about the same stack.
 
@@ -93,10 +93,12 @@ so the two surfaces cannot say different things about the same stack.
 | `GET /api/watching`      | What one member was part-way through and how far, most recent first. `?member=` is required; `?most=` defaults to 24 and is refused, not trimmed, above 500          |
 | `GET /api/askable`       | A member's search for titles the house does not hold yet, under their own limits; `?term=` is required, `?after=` turns the page and `?member=` names whose          |
 | `GET /api/channels`      | The live TV channels a member may watch, each with the programme on it now, read as that member                                                                      |
+| `GET /api/guide`         | The same channels, each with its programmes from now across the hours the guide window holds and where the media server's guide ends, read as that member            |
 | `GET /api/boot`          | When this machine last started, the verification kept against that start, and whether the stack has come back since                                                  |
 | `GET /api/watcher`       | What the outside watcher sees, each monitor beside what it covers, and every service and entry point no active monitor covers                                        |
 | `GET /api/queue`         | What the download queue holds that is unhealthy, why, its strikes, and what the newest runs did; a pass is run at a terminal, not here                               |
 | `GET /api/stack`         | How the stack runs without lemonfiber, as `lemonfiber stack --json` answers; only the operator is answered                                                           |
+| `GET /api/settled`       | What setup settled — the data root, the ways of downloading and the user the services run as — and whether the stack is set up, part-way or not begun                |
 | `GET /api/notify`        | Where a message goes: every notification back-end, its newest delivery and its failures; only the operator is answered                                               |
 | `GET /api/bundle/{name}` | The support bundle itself, handed over rather than described                                                                                                         |
 
