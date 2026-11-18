@@ -2,5 +2,5 @@
 
 [[IgnoredVulns]]
 id = "GHSA-fc5q-39xc-vjpf"
-ignoreUntil = 2026-12-01T00:00:00Z
+ignoreUntil = 2027-01-01T00:00:00Z
 reason = "picomatch runs at build time only: the site's build tools match globs from this repository's own configuration with it, so no pattern it matches comes from outside, and the static site that is published holds none of it. No picomatch release fixes the advisory."
