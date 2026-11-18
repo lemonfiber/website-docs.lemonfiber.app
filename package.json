@@ -33,8 +33,8 @@
     "prepare": "git config core.hooksPath .githooks"
   },
   "dependencies": {
-    "@lemonfiber/brand": "github:lemonfiber/brand#1a784c9faeaa53227bca635c5d52e7368ff3881a",
-    "@lemonfiber/website-kit": "github:lemonfiber/website-kit#45f4ee533028964c63bc865abca4fb77fc927594"
+    "@lemonfiber/brand": "github:lemonfiber/brand#7c4751ed7316efc70edeec19f436663d4525afa0",
+    "@lemonfiber/website-kit": "github:lemonfiber/website-kit#a3ea3ef643747019ccae49ab37c08310c731b53d"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
