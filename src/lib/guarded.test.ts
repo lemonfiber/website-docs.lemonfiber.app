@@ -29,7 +29,7 @@ describe("what a guard reads", () => {
   it.each([
     ["the tap", "vendor/homebrew-tap", ["Formula"]],
     ["brand", "vendor/brand", ["tokens/tokens.css"]],
-    ["the web surface", "vendor/lemonfiber-web", ["src/lib/route.ts"]],
+    ["the web surface", "vendor/lemonfiber-web", ["src/lib/places.ts"]],
   ])(
     "reaches into %s, which held no guarded path before",
     (_, module, paths) => {

@@ -109,7 +109,7 @@ async function checks(tree: Tree): Promise<Violation[]> {
           "vendor/lemonfiber/contract/capability-vocabulary.json",
         ),
         webApi: await text("vendor/spec/20-architecture/contracts/web-api.md"),
-        webRoute: await text("vendor/lemonfiber-web/src/lib/route.ts"),
+        webPlaces: await text("vendor/lemonfiber-web/src/lib/places.ts"),
         template: await text("vendor/plugin-template/plugin.toml"),
         workspace: await text(WORKSPACE),
         glossary: await text(GLOSSARY),

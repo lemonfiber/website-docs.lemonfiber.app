@@ -42,8 +42,8 @@ export interface Sources {
   readonly workspace: string;
   /** `vendor/plugin-template/plugin.toml`, the manifest every plugin starts from. */
   readonly template: string;
-  /** `vendor/lemonfiber-web/src/lib/route.ts`, the console's own list of screens. */
-  readonly webRoute: string;
+  /** `vendor/lemonfiber-web/src/lib/places.ts`, the console's own list of screens. */
+  readonly webPlaces: string;
   /** `vendor/lemonfiber/contract/codes.json`, the registry of problem codes. */
   readonly registry: string;
 }
