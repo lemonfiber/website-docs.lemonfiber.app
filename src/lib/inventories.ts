@@ -41,7 +41,7 @@ const QUALITY = "vendor/lemonfiber/reference/commands/quality.md";
 const POINTS = "vendor/lemonfiber/contract/extension-points.json";
 const VOCABULARY = "vendor/lemonfiber/contract/capability-vocabulary.json";
 const WEB_API = "vendor/spec/20-architecture/contracts/web-api.md";
-const WEB_ROUTE = "vendor/lemonfiber-web/src/lib/route.ts";
+const WEB_PLACES = "vendor/lemonfiber-web/src/lib/places.ts";
 
 const DOCS = "src/content/docs/";
 const ENVELOPE_PAGE = `${DOCS}api/the-envelope.mdx`;
@@ -98,7 +98,10 @@ const prose = (pages: readonly Page[], path: string): string =>
 
 /** The endpoints a page sets out one per row, named the way the contract names them. */
 const endpointsListed = (text: string): string[] =>
-  matches(/^GET \/api\/([a-z]+)/gm, columnUnder(text, "Endpoint").join("\n"));
+  matches(
+    /^GET \/api\/([a-z][a-z-]*)/gm,
+    columnUnder(text, "Endpoint").join("\n"),
+  );
 
 /** The payload kinds `api/kinds.mdx` sets out field by field, as its headings. */
 const expandedKinds = (sources: Sources, pages: readonly Page[]): string[] => {
@@ -476,8 +479,8 @@ export const INVENTORIES: readonly Inventory[] = [
   },
   {
     what: "screens the console has",
-    source: WEB_ROUTE,
-    members: (sources) => consolePlaces(sources.webRoute),
+    source: WEB_PLACES,
+    members: (sources) => consolePlaces(sources.webPlaces),
     claims: [{ says: "The %N% screens" }],
     listing: {
       page: CONSOLE_PAGE,

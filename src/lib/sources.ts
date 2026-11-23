@@ -224,13 +224,13 @@ export function namesAt(json: string, ...path: readonly string[]): string[] {
  * once: a read with a heading of its own under the section names it again there.
  */
 export const readEndpoints = (webApi: string): string[] => [
-  ...new Set(matches(/GET \/api\/([a-z]+)/g, section(webApi, "Reading"))),
+  ...new Set(matches(/GET \/api\/([a-z][a-z-]*)/g, section(webApi, "Reading"))),
 ];
 
 /**
  * Every screen the console has, read from the list it draws its own menu from.
  *
- * `everyPlace` in the console's `route.ts` is the one list a screen, a story and
+ * `everyPlace` in the console's `places.ts` is the one list a screen, a story and
  * a test all walk, so it is what a page about the console must agree with. A
  * screen added there and not here leaves a page describing a console that has
  * moved on.

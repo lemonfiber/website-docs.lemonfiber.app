@@ -20,7 +20,7 @@ const nothing: Sources = {
   template: "",
   vocabulary: "",
   webApi: "",
-  webRoute: "",
+  webPlaces: "",
   workspace: "",
   glossary: "",
   registry: "",
