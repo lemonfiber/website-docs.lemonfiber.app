@@ -32,7 +32,7 @@
     "/develop/repos/companion/": "https://contribute.lemonfiber.app/repos/companion/",
     "/develop/repos/homebrew-tap/": "https://contribute.lemonfiber.app/repos/homebrew-tap/",
     "/develop/repos/lemonfiber/": "https://contribute.lemonfiber.app/repos/lemonfiber/",
-    "/develop/repos/media-stack/": "https://contribute.lemonfiber.app/repos/media-stack/",
+    "/develop/repos/media-stack/": "https://lemonfiber.app/spec/30-repos/lemonfiber-plugins/",
     "/develop/repos/sdk-php/": "https://contribute.lemonfiber.app/repos/sdk-php/",
     "/develop/repos/sdk-python/": "https://contribute.lemonfiber.app/repos/sdk-python/",
     "/develop/repos/sdk-ts/": "https://contribute.lemonfiber.app/repos/sdk-ts/",
