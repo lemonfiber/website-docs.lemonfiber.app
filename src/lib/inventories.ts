@@ -13,6 +13,7 @@
 import { INDEX } from "./codes.ts";
 import { parseRegistry, REGISTRY } from "./registry.ts";
 import { CONTRACT_DIRECTORY } from "./contract.ts";
+import { BUNDLE_CHECKOUT, BUNDLE_ROOT } from "./stack.ts";
 import { matches, type Inventory, type Page, type Sources } from "./counts.ts";
 import {
   consolePlaces,
@@ -33,7 +34,7 @@ import {
 } from "./sources.ts";
 import { columnUnder, firstColumnUnder } from "./tables.ts";
 
-const STACK = "vendor/lemonfiber-media-stack/stack.toml";
+const STACK = `${BUNDLE_CHECKOUT}/${BUNDLE_ROOT}`;
 const CONTRACT = CONTRACT_DIRECTORY;
 const COMMANDS = "vendor/lemonfiber/reference/commands.md";
 // The index links one page per command; a command's own arguments are on its page.

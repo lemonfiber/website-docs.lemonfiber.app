@@ -2,6 +2,9 @@
 import { stack } from "../lib/schema-source";
 import { servicesOf } from "../lib/stack";
 import * as m from "../paraglide/messages.js";
+import { present } from "../lib/release";
+import Absent from "./Absent.astro";
+import Region from "./Region.astro";
 
 /** How much each service of the pinned stack failing matters, grade by grade. */
 const services = servicesOf(stack());
@@ -23,31 +26,38 @@ if (unknown.length > 0)
   throw new Error(
     `the pinned stack grades services in words this page has no meaning for: ${misgraded}`,
   );
-import Region from "./Region.astro";
+const shown = present(
+  services.length > 0 ? services : null,
+  "the pinned stack declares no service to grade",
+);
 ---
 
-<Region label={m.table_grades()}>
-  <table>
-    <thead>
-      <tr>
-        <th>{m.grades_grade()}</th>
-        <th>{m.grades_meaning()}</th>
-        <th>{m.grades_services()}</th>
-      </tr>
-    </thead>
-    <tbody>
-      {GRADES.map(([grade, name, meaning]) => (
+{shown === null ? (
+  <Absent />
+) : (
+  <Region label={m.table_grades()}>
+    <table>
+      <thead>
         <tr>
-          <td>{name}</td>
-          <td>{meaning}</td>
-          <td>
-            {services
-              .filter((service) => service.criticality === grade)
-              .map((service) => service.name)
-              .join(", ")}
-          </td>
+          <th>{m.grades_grade()}</th>
+          <th>{m.grades_meaning()}</th>
+          <th>{m.grades_services()}</th>
         </tr>
-      ))}
-    </tbody>
-  </table>
-</Region>
+      </thead>
+      <tbody>
+        {GRADES.map(([grade, name, meaning]) => (
+          <tr>
+            <td>{name}</td>
+            <td>{meaning}</td>
+            <td>
+              {services
+                .filter((service) => service.criticality === grade)
+                .map((service) => service.name)
+                .join(", ")}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </Region>
+)}

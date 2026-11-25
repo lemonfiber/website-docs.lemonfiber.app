@@ -8,7 +8,6 @@ version = "0.17.0"
 "vendor/integration-home-assistant" = "671f893049da2d8bd2665e6c577bbc52dfe3de56"  # default branch on or before 2026-10-08
 "vendor/integration-mcp" = "12fe049e71a9c2c4ca4b8550ede0fd30df748b03"  # default branch on or before 2026-10-08
 "vendor/lemonfiber" = "3828a1485c9ab1e86878b8a26ec0f5d5954d1dd5"  # tag v0.17.0
-"vendor/lemonfiber-media-stack" = "091492c9c1e497fe4d0f022e5b2899a4946e9b3f"  # the manifest's pins
 "vendor/lemonfiber-plugins" = "de3d3db0c97c4739d13061614eb4d706e891642a"  # default branch on or before 2026-10-08
 "vendor/lemonfiber-web" = "830de5553a52ceea51dd8d76168aa11cef7373c3"  # the manifest's pins
 "vendor/plugin-template" = "25ddd1a45af05ba82f553a95881fd0ec4a99c7c6"  # default branch on or before 2026-10-08

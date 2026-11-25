@@ -1,7 +1,7 @@
 ---
 title: Running without lemonfiber
 topic: use
-description: The stack is a standalone Compose project. Clone it, set the variables, run it with plain Docker — no binary anywhere.
+description: The stack is a Compose project lemonfiber writes. Run it with plain Docker — no binary anywhere.
 sidebar:
   order: 4
 ---
@@ -9,59 +9,28 @@ sidebar:
 This is the load-bearing guarantee, and everything else about customisation is
 convenience next to it: **the stack runs with no lemonfiber binary anywhere.**
 
-`lemonfiber-media-stack` is a real Compose project, not a set of files a tool
-generates. Clone it, set a few variables, and run `docker compose` yourself. That
-is what makes adopting lemonfiber a reversible decision — and it is why the
-suspicion an experienced operator brings to a tool that wraps a system in an
-opaque layer is answered here rather than argued with.
+The project lemonfiber writes is a real Compose project. It names itself, writes
+every value it runs with into itself, and keeps beside it a `.env` naming the
+profiles of the last start and the files to merge. Run `docker compose up` in its
+directory and the stack lemonfiber last started comes up, with no lemonfiber
+binary running. That is what makes adopting lemonfiber a reversible decision —
+and it is why the suspicion an experienced operator brings to a tool that wraps a
+system in an opaque layer is answered here rather than argued with.
 
 ## Running it
 
 ```console
-cp .env.example .env      # set DATA_ROOT, and VPN credentials if using torrents
-docker compose --profile search --profile usenet --profile torrent \
-               --profile tv --profile subs up -d
+$ lemonfiber stack
 ```
 
-That five-profile set **is** the `tv` form. Forms are named profile sets and
-nothing more, so anything lemonfiber can start you can start by naming the
-profiles yourself.
+[`lemonfiber stack`](/commands/reference/stack/) says which stack this machine runs, the stack
+lemonfiber ships or your own, where its Compose project and `.env` are, the exact
+`docker compose` words that start it with no lemonfiber running, and anything
+those words alone do not start.
 
-The repository's own tasks read the sets out of `stack.toml`, so they cannot
-drift from what lemonfiber would start:
-
-```console
-just forms-list           # search, dl, hunt, tv, movies, music, books, …
-just up tv
-just down tv
-```
-
-Docker Compose **v2.20 or newer** is required, because `compose.yml` uses
-`include:`.
-
-## What is in the repository
-
-| File                  | What it is                                                                                                        |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `stack.toml`          | The manifest lemonfiber consumes — profiles, forms, the wiring, and the `include` list naming each service's file |
-| `services/`           | One file per service, each holding its `[[service]]` entry                                                        |
-| `compose.yml`         | Stitches the fragments together; declares no services of its own                                                  |
-| `compose/`            | One fragment per profile — `tv.yml`, `media.yml`, `torrent.yml`, and the rest                                     |
-| `compose/_common.yml` | Shared service defaults, reached through `extends:`                                                               |
-| `.env.example`        | Every variable, documented                                                                                        |
-| `stacks/`             | An overlay for NAS and copy mode                                                                                  |
-| `config/`             | Seeded templates for Recyclarr, Homepage, Caddy and SABnzbd                                                       |
-| `scripts/`            | The checks CI runs, all runnable locally through `just`                                                           |
-
-The shortest working `.env` is `DATA_ROOT` plus, if you want torrents, a
-WireGuard key. Everything with a sensible default already has it.
-
-Two variables are worth reading before you change them. `DATA_ROOT` is the single
-data root, and downloads and media both live beneath it on one filesystem so that
-imports hardlink instead of copying. `LAN_BIND` decides where the household
-services publish; the administrative services are always on `127.0.0.1` and that
-is not configurable, because they hold full control of the stack and most ship
-with weak or disabled default authentication.
+Forms are named profile sets and nothing more, so anything lemonfiber can start
+you can start by naming the profiles yourself: the `tv` form is
+`--profile search --profile usenet --profile torrent --profile tv --profile subs`.
 
 ## The escape hatches from the other side
 
@@ -97,9 +66,7 @@ do, and it is worth being clear about which those are.
 
 ## Where to go next
 
-[Adding a service](/advanced/adding-a-service/) is the same repository from the
+[Adding a service](/advanced/adding-a-service/) is a stack of your own from the
 editing side, and [the stack manifest](/advanced/the-stack-manifest/) is the file
-that keeps the two halves in step.
-[The media-stack repository](https://contribute.lemonfiber.app/repos/media-stack/) is its own page, and the
-requirement behind this one is
+lemonfiber writes the project from. The requirement behind this page is
 [F1 customisation](https://lemonfiber.app/spec/10-functional/features/f-extensibility/f1-customisation/).

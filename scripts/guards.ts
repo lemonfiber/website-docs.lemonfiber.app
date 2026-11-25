@@ -37,7 +37,11 @@ import {
 } from "../src/lib/formula.ts";
 import { GLOSSARY, INVENTORIES } from "../src/lib/inventories.ts";
 import { toolchainViolations, WORKSPACE } from "../src/lib/toolchain.ts";
-import { joinedStack, STACK_CHECKOUT, STACK_ROOT } from "../src/lib/stack.ts";
+import {
+  BUNDLE_CHECKOUT,
+  BUNDLE_ROOT,
+  bundledStack,
+} from "../src/lib/stack.ts";
 import { DASHBOARD, panelViolations } from "../src/lib/terminal.ts";
 import { topicViolations } from "../src/lib/topics.ts";
 
@@ -91,9 +95,9 @@ async function checks(tree: Tree): Promise<Violation[]> {
     ...countViolations(
       INVENTORIES,
       {
-        stack: joinedStack(
-          await text(`${STACK_CHECKOUT}/${STACK_ROOT}`),
-          (entry) => readText(join(tree.root, STACK_CHECKOUT, entry)),
+        stack: bundledStack(
+          await text(`${BUNDLE_CHECKOUT}/${BUNDLE_ROOT}`),
+          (entry) => readText(join(tree.root, BUNDLE_CHECKOUT, entry)),
         ),
         contract: JSON.stringify(
           assembledContract((file) =>

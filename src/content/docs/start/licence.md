@@ -99,9 +99,9 @@ ships outbound. See [sign-off and licensing](https://lemonfiber.app/spec/50-gove
 ## The services lemonfiber runs are not affected
 
 Every service the stack takes from another project is OSI-licensed open source.
-The two lemonfiber publishes itself are under the Hippocratic License, like the
+The three lemonfiber publishes itself are under the Hippocratic License, like the
 rest of the project. The authoritative licence for each one is recorded against
-it in the stack manifest.
+it in its plugin's manifest.
 The stack distributes configuration that _references_ public container images;
 it does not link against, embed or redistribute their code. **No copyleft
 obligation propagates in either direction** — this licence choice has no effect

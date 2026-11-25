@@ -18,10 +18,6 @@
 	path = vendor/sdk-php
 	url = https://github.com/lemonfiber/sdk-php.git
 	branch = main
-[submodule "lemonfiber-media-stack"]
-	path = vendor/lemonfiber-media-stack
-	url = https://github.com/lemonfiber/lemonfiber-media-stack.git
-	branch = main
 [submodule "lemonfiber-web"]
 	path = vendor/lemonfiber-web
 	url = https://github.com/lemonfiber/lemonfiber-web.git

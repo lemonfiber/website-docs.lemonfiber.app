@@ -1,23 +1,24 @@
 ---
 title: Adding a service
 topic: use
-description: Two data edits and no code — a service file in the manifest, and the forms that should carry it.
+description: Two data edits and no code — a service file in your stack manifest, and the forms that should carry it.
 sidebar:
   order: 2
 ---
 
 import Vendored from "../../../components/Vendored.astro";
 
-Adding a service to the stack requires no lemonfiber change and no lemonfiber
-release. It is two data edits, and then the checks.
+Adding a service to a stack of your own requires no lemonfiber change and no
+lemonfiber release. It is two data edits in its stack directory.
 
 1. A `services/<id>.toml` file holding its `[[service]]` entry, named in the
    `include` list of `stack.toml`.
 2. Its profile added to whichever forms should carry it.
 
-Then `just ci` in the stack directory. If you are working on your own stack
-rather than the bundled one, point lemonfiber at it with
-[`--stack-dir`](/commands/global-flags/).
+Then point lemonfiber at the directory with
+[`--stack-dir`](/commands/global-flags/). The stack lemonfiber ships has no such
+directory: it is assembled from the bundle in `lemonfiber-plugins`, and a service
+enters it as a first-party plugin that bundle pins.
 
 This page is about changing the stack itself. To run one more service beside the
 bundled stack without keeping a stack of your own, install it as a
@@ -58,24 +59,23 @@ explicit tag, because a floating one fails validation and nothing in this stack
 should change because time passed, and `digest` holds the multi-architecture
 index the tag named, which is what Compose runs.
 
-This is Sonarr's file:
+This is a Sonarr file from the stack directory lemonfiber's own tests read:
 
 <Vendored
-  repo="lemonfiber-media-stack"
-  path="services/sonarr.toml"
+  repo="lemonfiber"
+  path="crates/lemonfiber-core/tests/fixtures/somebody-elses-stack/services/sonarr.toml"
   lang="toml"
 />
 
-## What the checks enforce
+## What is checked
 
-`just ci` runs every check that needs no network: the manifest against the
-contract, every form resolving to services from its own profiles only, and the
-rules a change to the manifest must carry. CI adds the networked ones — each pin read from its
-registry, the upstream licence asked of its forge where a pin moves, and every
-profile that needs no VPN subscription started for real. Every check has a specification
-requirement behind it, and each is itself proven to fail when broken.
-[The stack's maintaining guide](https://github.com/lemonfiber/lemonfiber-media-stack/blob/main/docs/maintaining.md#what-ci-enforces)
-lists them all.
+lemonfiber checks the whole manifest of a stack directory when it loads it, and
+[the stack manifest](/advanced/the-stack-manifest/#when-lemonfiber-refuses-a-stack)
+is what to do when it refuses one. A service in the bundled stack is checked
+before it ships, by the `lemonfiber-plugins` repository's CI against every plugin
+the bundle pins;
+[its development guide](https://github.com/lemonfiber/lemonfiber-plugins/blob/main/docs/development.md#what-the-bundle-job-refuses)
+lists what that refuses.
 
 ## Whether it belongs in the bundled stack
 
@@ -86,8 +86,7 @@ already does, and works without a paid tier. An image lemonfiber builds from its
 own code carries lemonfiber's own licence, `Hippocratic-3.0`, instead.
 
 Maintenance status is established from a project's commit and release history,
-never from its own description of itself. `just candidate <url>` reads that
-history and answers `admit`, `watch` or `reject`. A fork advertising itself as
+never from its own description of itself. A fork advertising itself as
 an actively maintained successor, with no releases and no published image, is a
 dead fork — and a dead fork is worse than a slow-moving project that works.
 
@@ -111,6 +110,6 @@ reports which features become unavailable; it does not refuse to run.
 reference, and [the stack manifest](/advanced/the-stack-manifest/) is what to do
 when lemonfiber refuses one. [Running without lemonfiber](/advanced/without-lemonfiber/) is the
 compose project on its own, and
-[the media-stack repository](https://contribute.lemonfiber.app/repos/media-stack/) is where these files
-live. The specification for this is
+[the `lemonfiber-plugins` repository](https://lemonfiber.app/spec/30-repos/lemonfiber-plugins/) is where the
+bundled stack is pinned. The specification for this is
 [F3 stack manifests](https://lemonfiber.app/spec/10-functional/features/f-extensibility/f3-stack-manifests/).

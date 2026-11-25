@@ -1,19 +1,20 @@
 /**
- * The profiles and forms the stack manifest declares, as the pages set them out.
+ * The profiles, forms and services of the stack the pinned bundle ships, as the
+ * pages set them out.
  *
  * `running/forms-and-slices` and `running/the-services` render their tables from
  * these rather than writing them down, so a service added, moved or reworded is
  * on the page in the build that pins it.
  *
- * Pure functions over the manifest's text.
+ * Pure functions over the bundle's text.
  */
-import { parse } from "smol-toml";
+import { parse, stringify } from "smol-toml";
 
 /** One profile, and the services that carry it. */
 export interface Profile {
   readonly id: string;
   readonly description: string;
-  /** The services' display names, in the order the manifest declares them. */
+  /** The services' display names, in the order the bundle pins them. */
   readonly services: readonly string[];
 }
 
@@ -38,60 +39,90 @@ export interface Service {
   readonly smallestForm: string | null;
 }
 
-/** The media stack's checkout, and its manifest's root within it. */
-export const STACK_CHECKOUT = "vendor/lemonfiber-media-stack";
-export const STACK_ROOT = "stack.toml";
+/** The pinned plugins repository's bundle, and its root within it. */
+export const BUNDLE_CHECKOUT = "vendor/lemonfiber-plugins/bundle";
+export const BUNDLE_ROOT = "bundle.toml";
 
 type Table = Record<string, unknown>;
 
-/**
- * The files a manifest's root names in its `include` list, in order: none for a
- * root that keeps its services in itself, as stacks before ARCH-R171 do.
- */
-export function includedIn(root: string): string[] {
-  let read: Table;
+/** Where the copy of a pinned plugin's manifest sits, from the bundle's root. */
+export const pluginManifest = (id: string): string =>
+  `plugins/${id}/plugin.toml`;
+
+const isTable = (value: unknown): value is Table =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+const parsed = (text: string | null): Table | null => {
+  if (text === null) return null;
   try {
-    read = parse(root);
+    return parse(text);
   } catch {
-    return [];
+    return null;
   }
-  const listed = read["include"];
-  return Array.isArray(listed)
-    ? listed.filter((entry): entry is string => typeof entry === "string")
-    : [];
-}
+};
+
+const tablesIn = (read: Table, name: string): Table[] => {
+  const found = read[name];
+  return Array.isArray(found) ? found.filter(isTable) : [];
+};
+
+const withIdFirst = (table: Table): Table => ({ id: table["id"], ...table });
 
 /**
- * The manifest as one document: the root first, then each file its `include`
- * list names, in that order, the way the core and the media stack join it. A
- * root with no `include` is the whole manifest already. `read` answers an
- * entry, relative to the stack's root, with its text, or null; an entry it
- * cannot answer is left out, and a root that is not there is an empty manifest.
+ * The stack service a pinned plugin stands for: named and described by its
+ * manifest's `[plugin]`, in the profile its pin names, published as the
+ * manifest's service whose id is the plugin's.
  */
-export function joinedStack(
-  root: string | null,
+const serviceOf = (pin: Table, manifest: Table): Table => {
+  const plugin = isTable(manifest["plugin"]) ? manifest["plugin"] : {};
+  const own =
+    tablesIn(manifest, "service").find(
+      (service) => service["id"] === pin["id"],
+    ) ?? {};
+  return {
+    id: pin["id"],
+    name: plugin["name"],
+    describes: plugin["description"],
+    without_it: plugin["without_it"],
+    upstream: plugin["upstream"],
+    profile: pin["profile"],
+    port: own["port"],
+    bind: own["bind"],
+    criticality: own["criticality"],
+  };
+};
+
+/**
+ * The stack the bundle ships, as one manifest: its `[[profile]]` and `[[form]]`
+ * tables as the bundle declares them, and one `[[service]]` per `[[plugin]]`
+ * pin, each table with its `id` first. `read` answers a path from the bundle's
+ * root with its text, or null; a pin whose manifest it cannot answer is left
+ * out. A bundle that is not there, or declares none of these, is an empty
+ * manifest.
+ */
+export function bundledStack(
+  bundle: string | null,
   read: (entry: string) => string | null,
 ): string {
+  const root = parsed(bundle);
   if (root === null) return "";
-  const parts = [root];
-  for (const entry of includedIn(root)) {
-    const text = read(entry);
-    if (text !== null) parts.push(`\n# ${entry}\n${text}`);
-  }
-  return parts.join("");
+  const services = tablesIn(root, "plugin").flatMap((pin) => {
+    const id = pin["id"];
+    if (typeof id !== "string") return [];
+    const manifest = parsed(read(pluginManifest(id)));
+    return manifest === null ? [] : [serviceOf(pin, manifest)];
+  });
+  const stack = Object.entries({
+    profile: tablesIn(root, "profile").map(withIdFirst),
+    form: tablesIn(root, "form").map(withIdFirst),
+    service: services,
+  }).filter(([, tables]) => tables.length > 0);
+  return stack.length === 0 ? "" : stringify(Object.fromEntries(stack));
 }
 
 /** The `[[name]]` entries of the manifest, or none where it does not parse. */
-const entries = (stack: string, name: string): Table[] => {
-  let read: Table;
-  try {
-    read = parse(stack);
-  } catch {
-    return [];
-  }
-  const found = read[name];
-  return Array.isArray(found) ? (found as Table[]) : [];
-};
+const entries = (stack: string, name: string): Table[] =>
+  tablesIn(parsed(stack) ?? {}, name);
 
 const text = (value: unknown): string =>
   typeof value === "string" ? value : "";
