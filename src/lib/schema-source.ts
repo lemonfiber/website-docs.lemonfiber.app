@@ -9,7 +9,7 @@ import { assembledContract, CONTRACT_DIRECTORY } from "./contract";
 import { readText } from "./checkout";
 import { parsedJson } from "./schema";
 import { parseRegistry, REGISTRY, type Registry } from "./registry";
-import { joinedStack, STACK_CHECKOUT, STACK_ROOT } from "./stack";
+import { BUNDLE_CHECKOUT, BUNDLE_ROOT, bundledStack } from "./stack";
 
 const CONTRACT = "vendor/lemonfiber/contract";
 
@@ -25,12 +25,13 @@ export const contract = (): unknown =>
 export const vendored = (path: string): string =>
   readText(`vendor/${path}`) ?? "";
 
-/** One file of the pinned media stack, by its path from the stack's root, or null. */
-export const inStack = (entry: string): string | null =>
-  readText(`${STACK_CHECKOUT}/${entry}`);
+/** One file of the pinned bundle, by its path from the bundle's root, or null. */
+export const inBundle = (entry: string): string | null =>
+  readText(`${BUNDLE_CHECKOUT}/${entry}`);
 
-/** The pinned stack manifest, its root and every service file it includes, as one. */
-export const stack = (): string => joinedStack(inStack(STACK_ROOT), inStack);
+/** The stack the pinned bundle ships, with a service for each plugin it pins. */
+export const stack = (): string =>
+  bundledStack(inBundle(BUNDLE_ROOT), inBundle);
 
 /** lemonfiber's registry of problem codes, from the pinned core. */
 export const registry = (): Registry | null =>

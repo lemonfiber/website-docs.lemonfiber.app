@@ -22,7 +22,7 @@ export interface Page {
 
 /** The trees the numbers are derived from, already read. */
 export interface Sources {
-  /** `vendor/lemonfiber-media-stack/stack.toml`, joined with the service files it includes. */
+  /** The stack `vendor/lemonfiber-plugins/bundle/bundle.toml` ships, a service for each plugin it pins. */
   readonly stack: string;
   /** The web API's contract, put back together from `vendor/lemonfiber/contract/web-api/`. */
   readonly contract: string;

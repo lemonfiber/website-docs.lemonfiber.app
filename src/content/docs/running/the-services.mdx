@@ -14,8 +14,9 @@ The stack is twenty-three services. You will rarely run all of them at once —
 it is worth knowing what each one is for, because every diagnostic and every
 trace names them.
 
-Every table on this page is read from the stack manifest this site pins, which
-is where lemonfiber gets it too. None of it is hardcoded in the binary.
+Every table on this page is read from the bundle this site pins: the stack
+lemonfiber ships and the manifest of each plugin it is built from, which is
+where lemonfiber gets it too. None of it is hardcoded in the binary.
 
 ## What each one does
 
@@ -79,10 +80,11 @@ Every image is pinned to an explicit version tag in the manifest. Nothing change
 because time passed — an update happens when you decide it should. See
 [Updating](/running/updating/).
 
-The manifest also records each service's licence and upstream project. Twenty-one
-are open source. The request gate and the decline service are lemonfiber's own
-images, built from `lemonfiber-request-gate` and `lemonfiber-decline` under
-lemonfiber's licence, which is separate and stricter.
+Each plugin's manifest also records its service's licence and upstream project.
+Twenty are open source. Door, the request gate and the decline service are
+lemonfiber's own images, built from `lemonfiber-door`, `lemonfiber-request-gate`
+and `lemonfiber-decline` under lemonfiber's licence, which is separate and
+stricter.
 
 ## Related
 

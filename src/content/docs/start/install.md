@@ -59,10 +59,7 @@ Each release is built for these platforms:
 | `x86_64-unknown-linux-gnu`   | Linux on x86_64, against glibc     |
 | `x86_64-unknown-linux-musl`  | Linux on x86_64, statically linked |
 
-There is no Windows build: the binary does not compile there. On Windows you can
-still run the stack itself, with Docker Desktop and plain `docker compose`, as
-[Running without lemonfiber](/advanced/without-lemonfiber/) describes, but not
-the `lemonfiber` binary.
+There is no Windows build: the binary does not compile there.
 
 ## Getting the binary
 
