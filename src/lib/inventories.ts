@@ -58,7 +58,7 @@ const STARTING_PAGE = `${DOCS}running/starting-and-stopping.md`;
 
 /** The core's glossary: every word `lemonfiber explain` can say more about. */
 export const GLOSSARY =
-  "vendor/lemonfiber/crates/lemonfiber-core/src/glossary.rs";
+  "vendor/lemonfiber/crates/lemonfiber-words/src/glossary.rs";
 
 /**
  * Values a page writes as the operator reads them, `Partly here` for the

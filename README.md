@@ -235,7 +235,7 @@ renders there.
 ### Counts, against what is counted
 
 This site's pages state numbers about the trees under `vendor/`: the twenty-three
-services and the 114 payload kinds among them. Each one is a
+services and the 119 payload kinds among them. Each one is a
 transcription of something machine-readable, and goes false when a pin moves.
 
 `src/lib/inventories.ts` names, for each such set, the tree it is declared in,
