@@ -36,7 +36,7 @@ export interface Sources {
   readonly vocabulary: string;
   /** `vendor/spec/20-architecture/contracts/web-api.md`. */
   readonly webApi: string;
-  /** `vendor/lemonfiber/crates/lemonfiber-core/src/glossary.rs`, the words `explain` knows. */
+  /** `vendor/lemonfiber/crates/lemonfiber-words/src/glossary.rs`, the words `explain` knows. */
   readonly glossary: string;
   /** `vendor/lemonfiber/Cargo.toml`, the core's workspace manifest. */
   readonly workspace: string;

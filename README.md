@@ -224,7 +224,8 @@ site's own, from `src/lib/`. Together they enforce:
 
 `running/forms-and-slices` and `running/the-services` hold no copy of the stack
 at all: their profile, form, service, port and grade tables are rendered from
-the pinned `stack.toml` by the components in `src/components/`.
+the pinned bundle, `vendor/lemonfiber-plugins/bundle/bundle.toml`, by the
+components in `src/components/`.
 
 The mirrors are declared in `mirrors.json`, which is what the mirror rules
 check against. A tree mirror's own root route is the one place an owned page may
@@ -234,7 +235,7 @@ renders there.
 ### Counts, against what is counted
 
 This site's pages state numbers about the trees under `vendor/`: the twenty-three
-services and the 114 payload kinds among them. Each one is a
+services and the 119 payload kinds among them. Each one is a
 transcription of something machine-readable, and goes false when a pin moves.
 
 `src/lib/inventories.ts` names, for each such set, the tree it is declared in,
